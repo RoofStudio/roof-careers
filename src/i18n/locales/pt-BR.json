@@ -1,0 +1,120 @@
+{
+  "brand": {
+    "logoAlt": "Roof Studio"
+  },
+  "nav": {
+    "toLight": "Mudar para o tema claro",
+    "toDark": "Mudar para o tema escuro",
+    "language": "Idioma"
+  },
+  "hero": {
+    "kicker": "Roof Studio · Talentos",
+    "headline": "Queremos muito te conhecer!",
+    "lead": "Se você chegou até aqui, é porque tem algo especial para mostrar. Queremos conhecer você e o seu trabalho.",
+    "question": "Vamos nos conhecer?",
+    "cta": "Começar",
+    "time": "Leva cerca de 3 minutos"
+  },
+  "about": {
+    "label": "A vaga",
+    "title": "AI Creative Talent",
+    "subtitle": "Art Direction, Design & Animation",
+    "p1": "Estamos buscando Diretores de Arte, Designers, Animadores e profissionais criativos com experiência e domínio de ferramentas de Inteligência Artificial, que estejam explorando novas formas de criar.",
+    "p2": "Pessoas com repertório, olhar criativo, experiência e domínio técnico, capazes de transformar ideias em imagens, conceitos, animações e narrativas visuais — e de levar uma ideia além do que já conhecemos.",
+    "p3": "Acreditamos que as ferramentas são parte do processo. O que nos interessa é o que você cria com elas.",
+    "p4": "Queremos conhecer seu trabalho, entender como a IA faz parte do seu processo criativo e descobrir novas possibilidades junto com você.",
+    "p5": "Se você se identifica com esse perfil, preencha o formulário abaixo, compartilhe seu portfólio ou demo reel e selecione as ferramentas de IA que você domina.",
+    "closing": "Vamos descobrir o que vem a seguir."
+  },
+  "form": {
+    "label": "Cadastro profissional",
+    "title": "Sobre você",
+    "subtitle": "O básico para conseguirmos falar com você e ver o seu trabalho.",
+    "optional": "opcional",
+    "requiredMark": "obrigatório",
+    "fields": {
+      "fullName": {
+        "label": "Nome completo",
+        "placeholder": "Digite seu nome completo"
+      },
+      "email": {
+        "label": "E-mail",
+        "placeholder": "voce@email.com"
+      },
+      "phone": {
+        "label": "Telefone / WhatsApp",
+        "placeholder": "Digite seu telefone com DDI e DDD"
+      },
+      "location": {
+        "label": "Localização",
+        "placeholder": "Cidade / País"
+      },
+      "role": {
+        "label": "Área de atuação",
+        "placeholder": "Direção de Arte, Design, Animação, 3D/VFX…"
+      },
+      "portfolio": {
+        "label": "Portfólio / Demo Reel",
+        "placeholder": "Cole o link do seu portfólio ou demo reel"
+      },
+      "links": {
+        "label": "Links adicionais",
+        "placeholder": "Site / Behance / Vimeo / Instagram / LinkedIn, etc."
+      }
+    },
+    "errors": {
+      "required": "Esse campo é obrigatório.",
+      "email": "Confere o e-mail? Ele parece incompleto.",
+      "url": "Coloque um link completo, começando com https://",
+      "tools": "Selecione ao menos uma ferramenta — ou adicione a sua em “Outras”."
+    }
+  },
+  "tools": {
+    "label": "Ferramentas",
+    "title": "Quais ferramentas de IA você usa profissionalmente?",
+    "subtitle": "Selecione todas que se aplicam e indique seu nível em cada uma.",
+    "selectedCount": "{{count}} de {{total}} selecionadas",
+    "clear": "Limpar seleção",
+    "levelFor": "Nível em {{tool}}",
+    "levels": {
+      "basic": "Básico",
+      "intermediate": "Intermediário",
+      "advanced": "Avançado"
+    },
+    "groups": {
+      "workflow": "Workflow / Gerenciamento de IA",
+      "generation": "Geração & ferramentas criativas de IA",
+      "control": "IA avançada / Controle",
+      "api": "APIs / Integração de modelos",
+      "animation": "Animação / 3D / VFX",
+      "editing": "Edição / Pós-produção",
+      "upscaling": "Upscaling / Imagem & vídeo",
+      "audio": "Áudio & voz com IA",
+      "videoProduction": "Produção / Adaptação de vídeo com IA",
+      "other": "Outras"
+    },
+    "other": {
+      "label": "Usa alguma que não está na lista?",
+      "placeholder": "Conte quais — separe por vírgula"
+    }
+  },
+  "submit": {
+    "cta": "Enviar cadastro",
+    "sending": "Enviando…",
+    "privacy": "Seus dados vão direto para a nossa equipe de talentos. Nada de spam.",
+    "checkFields": "Falta preencher alguns campos acima.",
+    "failed": "Não conseguimos enviar agora.",
+    "failedHint": "Tente de novo em alguns instantes. Se continuar, escreva para {{email}}.",
+    "retry": "Tentar de novo"
+  },
+  "thanks": {
+    "title": "Obrigada pelo seu interesse em trabalhar conosco!",
+    "question": "Quer saber mais sobre a gente?",
+    "body": "Acesse o nosso site, conheça nossos trabalhos e venha descobrir um pouco mais sobre o nosso universo.",
+    "cta": "Conhecer a Roof",
+    "bye": "Até breve!"
+  },
+  "footer": {
+    "rights": "Roof Studio"
+  }
+}

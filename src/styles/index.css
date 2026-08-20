@@ -1,0 +1,363 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ──────────────────────────────────────────────────────────────────────
+   ROOF IDENTITY — ported from roof-onboarding-app.
+
+   A token is a ROLE ("recessed surface", "faint text"), never a literal
+   ("gray-400"). The same name works in both themes, so a component never
+   asks which theme is active.
+
+   Vocabulary:
+     surface   page canvas — carries the gradient, rarely used flat
+     panel     raised surface: cards, inputs
+     panel-2   recessed: tool rows, quoted block
+     elevated  stacked over a panel: popover, selected chip
+     fg/muted/faint          text, strongest to faintest
+     line/line-strong        borders and dividers
+     accent (+soft/strong)   lime — ACTION only: submit, selected state
+     ink-on                  dark ink for text ON lime (dark in both themes)
+     positive/negative/warn  state
+     roof-brown/purple/…     brand literals; brown is the structural accent
+   ────────────────────────────────────────────────────────────────────── */
+@theme {
+  /* Brand literals — the logo has its own color, it doesn't follow UI ink. */
+  --color-roof-brown: #6f4630;
+  --color-roof-brown-deep: #5a3826;
+  --color-roof-purple: #8a4fc7;
+  --color-roof-lavender: #c9a6dd;
+  --color-roof-peach: #f9cba7;
+  --color-roof-lime: #c6ef4a;
+  --color-roof-ink: #1a1512;
+
+  --color-brand-logo: var(--c-brand-logo);
+  --color-brand-accent: var(--c-brand-accent);
+
+  /* Semantic surfaces & text. */
+  --color-surface: var(--c-surface);
+  --color-panel: var(--c-panel);
+  --color-panel-2: var(--c-panel-2);
+  --color-elevated: var(--c-elevated);
+  --color-line: var(--c-line);
+  --color-line-strong: var(--c-line-strong);
+  --color-fg: var(--c-fg);
+  --color-muted: var(--c-muted);
+  --color-faint: var(--c-faint);
+
+  /* Lime — action and selection ONLY. Paint decoration with it and it stops
+     meaning "this is the next step". */
+  --color-accent: var(--c-accent);
+  --color-accent-soft: var(--c-accent-soft);
+  --color-accent-strong: var(--c-accent-strong);
+  --color-ink-on: var(--c-ink-on);
+
+  --color-positive: var(--c-positive);
+  --color-positive-soft: var(--c-positive-soft);
+  --color-negative: var(--c-negative);
+  --color-negative-soft: var(--c-negative-soft);
+  --color-warn: var(--c-warn);
+  --color-warn-soft: var(--c-warn-soft);
+
+  /* Category palette — kept apart from the semantic roles on purpose:
+     recoloring a tool group must never touch the color of "error". */
+  --color-viz-lilac: var(--c-viz-lilac);
+  --color-viz-orchid: var(--c-viz-orchid);
+  --color-viz-peach: var(--c-viz-peach);
+  --color-viz-amber: var(--c-viz-amber);
+  --color-viz-mint: var(--c-viz-mint);
+  --color-viz-sky: var(--c-viz-sky);
+  --color-viz-rose: var(--c-viz-rose);
+  --color-viz-plum: var(--c-viz-plum);
+
+  --shadow-soft: var(--s-soft);
+  --shadow-card: var(--s-card);
+  --shadow-lift: var(--s-lift);
+  --shadow-pop: var(--s-pop);
+
+  --radius-card: 1.25rem;
+  --radius-field: 0.75rem;
+
+  --font-display: "Inter", "Segoe UI", system-ui, sans-serif;
+  /* Italic serif — the interface's annotation voice, never data. */
+  --font-note: "Instrument Serif", Georgia, serif;
+
+  --text-label: 0.6875rem;
+  --text-label--line-height: 1.1;
+  --text-label--letter-spacing: 0.08em;
+}
+
+/* Light — warm cream, not white: pure white fights the background gradient
+   and flattens the depth of the cards. */
+:root {
+  --c-surface: #faf3e8;
+  --c-panel: #fdfaf6;
+  --c-panel-2: #f2ece2;
+  --c-elevated: #fffdfa;
+  --c-line: #ece3d6;
+  --c-line-strong: #ddd2c0;
+  --c-brand-logo: #322127;
+  --c-brand-accent: #6f4630;
+
+  /* Warm black. Neutral gray over a peach background reads as dirty. */
+  --c-fg: #1a1512;
+  --c-muted: #7a7063;
+  --c-faint: #948a7b;
+
+  --c-accent: #c6ef4a;
+  --c-accent-soft: #e9fbb8;
+  --c-accent-strong: #a8d92c;
+  --c-ink-on: #1a2408;
+
+  --c-positive: #3f9d6d;
+  --c-positive-soft: #d8f0e2;
+  --c-negative: #dd4f7a;
+  --c-negative-soft: #fbdde6;
+  --c-warn: #d9873a;
+  --c-warn-soft: #fbe9d4;
+
+  --c-viz-lilac: #c3a2e0;
+  --c-viz-orchid: #b07fd4;
+  --c-viz-peach: #efac6e;
+  --c-viz-amber: #e0a93c;
+  --c-viz-mint: #86c9a0;
+  --c-viz-sky: #7fb0dd;
+  --c-viz-rose: #e08aae;
+  --c-viz-plum: #9c4f74;
+
+  --s-soft: 0 1px 2px rgb(90 70 40 / 0.05);
+  --s-card: 0 1px 2px rgb(90 70 40 / 0.04), 0 8px 24px -12px rgb(90 70 40 / 0.12);
+  --s-lift: 0 2px 4px rgb(90 70 40 / 0.06), 0 16px 40px -16px rgb(90 70 40 / 0.22);
+  --s-pop: 0 24px 60px -20px rgb(60 40 20 / 0.35);
+
+  /* The signature of the interface: peach top-left, pink and lavender to the
+     right. Radial layers instead of one linear — a linear draws a hard
+     diagonal, and what we want here is haze. */
+  --canvas-gradient:
+    radial-gradient(900px 620px at 0% -5%, rgb(246 206 146 / 0.75), transparent 58%),
+    radial-gradient(1000px 640px at 100% -10%, rgb(240 200 232 / 0.8), transparent 60%),
+    radial-gradient(900px 700px at 108% 45%, rgb(206 194 244 / 0.72), transparent 58%),
+    linear-gradient(180deg, var(--c-surface), #f7efe4);
+
+  --hero-gradient: linear-gradient(100deg, #e8a13c 0%, #ea9ac6 48%, #b3a3e2 100%);
+
+}
+
+/* Dark — the SAME concept, darkened. Swapping it for neutral gray would ship
+   a different product. */
+:root.dark {
+  --c-surface: #14100e;
+  --c-panel: #221c17;
+  --c-panel-2: #191410;
+  --c-elevated: #2b241d;
+  --c-line: #362c22;
+  --c-line-strong: #4a3c2e;
+  --c-brand-logo: #f9f9f9;
+  --c-brand-accent: #d0a483;
+
+  --c-fg: #f7f1e6;
+  --c-muted: #a2988a;
+  --c-faint: #807669;
+
+  --c-accent: #cbf351;
+  --c-accent-soft: #2e3a10;
+  --c-accent-strong: #dcff6b;
+  /* Stays dark: the lime is light in both themes. */
+  --c-ink-on: #1a2408;
+
+  --c-positive: #5cc98d;
+  --c-positive-soft: #16301f;
+  --c-negative: #f0779c;
+  --c-negative-soft: #3a1420;
+  --c-warn: #eaa65a;
+  --c-warn-soft: #3a2410;
+
+  --c-viz-lilac: #b294d6;
+  --c-viz-orchid: #a376c8;
+  --c-viz-peach: #e09c60;
+  --c-viz-amber: #d49e36;
+  --c-viz-mint: #76ba91;
+  --c-viz-sky: #70a1ce;
+  --c-viz-rose: #d27ca0;
+  --c-viz-plum: #b26088;
+
+  --s-soft: 0 1px 2px rgb(0 0 0 / 0.3);
+  --s-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -12px rgb(0 0 0 / 0.5);
+  --s-lift: 0 2px 4px rgb(0 0 0 / 0.35), 0 16px 40px -16px rgb(0 0 0 / 0.6);
+  --s-pop: 0 24px 60px -20px rgb(0 0 0 / 0.7);
+
+  --canvas-gradient:
+    radial-gradient(900px 620px at 0% -5%, rgb(96 62 26 / 0.5), transparent 58%),
+    radial-gradient(1000px 640px at 100% -10%, rgb(86 40 76 / 0.55), transparent 60%),
+    radial-gradient(900px 700px at 108% 45%, rgb(56 48 106 / 0.5), transparent 58%),
+    linear-gradient(180deg, var(--c-surface), #100d0c);
+
+  --hero-gradient: linear-gradient(100deg, #a86b1e 0%, #a24d80 48%, #5a4f9c 100%);
+
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+/* ONLY the body paints, exactly as in roof-intelligence. Giving `#root` a
+   background-color too lays an opaque cream sheet over the gradient — the haze
+   is then computed, composited and completely invisible, and the page reads as
+   flat cream. The gradient IS the identity; nothing may cover it. */
+body {
+  margin: 0;
+  font-family: var(--font-display);
+  -webkit-font-smoothing: antialiased;
+  color: var(--c-fg);
+  background-color: var(--c-surface);
+  background-image: var(--canvas-gradient);
+  background-attachment: fixed;
+}
+
+/* The text caret must follow the theme, not the input color. */
+input,
+textarea,
+select,
+[contenteditable] {
+  caret-color: var(--c-fg);
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+  border-color: var(--c-accent-strong);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-accent) 40%, transparent);
+}
+
+/* Keyboard users must always see where they are — the tool rows and buttons
+   have no browser-default ring left once restyled. */
+:where(button, a, label):focus-visible {
+  outline: 2px solid var(--c-accent-strong);
+  outline-offset: 2px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--c-line-strong);
+  border: 2px solid transparent;
+  background-clip: content-box;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--c-muted);
+  background-clip: content-box;
+}
+
+::selection {
+  background: var(--c-accent);
+  color: var(--c-ink-on);
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+   Typography — three voices: display, label, note.
+   ────────────────────────────────────────────────────────────────────── */
+
+/** Section title: heavy, tight, uppercase. */
+.display {
+  font-size: 1.5rem;
+  line-height: 1;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  color: var(--c-fg);
+}
+
+/** Section small-caps: "SOBRE VOCÊ", "FERRAMENTAS".
+    `muted`, not `faint`: it is 11px TEXT and needs 4.5:1. Faint is for
+    decoration (icon, hairline), where the ruler does not apply. */
+.label {
+  font-size: 0.6875rem;
+  line-height: 1.1;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+/** Italic serif — a note from the designer, never data. */
+.note {
+  font-family: var(--font-note);
+  font-style: italic;
+  color: var(--c-muted);
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+   Measure — two column widths for the whole page, so nothing is sized
+   ad hoc.
+
+   `.text-column` is proportional (≈60% of the window) instead of a fixed
+   max-width, so the reading blocks keep the same relationship to the
+   viewport at every size rather than drifting from edge-to-edge to a thin
+   ribbon. The floor keeps the line from collapsing on a tablet; the ceiling
+   keeps it from passing the ~75-character measure on a wide monitor.
+
+     360px  -> 331 (92vw, full bleed)
+     768px  -> 544 (the 34rem floor)
+    1280px  -> 768 (60vw exactly)
+    1920px  -> 1088 (the 68rem ceiling)
+   ────────────────────────────────────────────────────────────────────── */
+.text-column {
+  width: min(92vw, max(60vw, 34rem), 68rem);
+  margin-inline: auto;
+}
+
+/* The mosaic and anything else that wants the full spread. */
+.wide-column {
+  width: min(94vw, 78rem);
+  margin-inline: auto;
+}
+
+.hero-gradient {
+  background-image: var(--hero-gradient);
+}
+
+/** The headline gradient. Used once, on "Queremos muito te conhecer!". */
+.hero-text-gradient {
+  background-image: var(--hero-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Subtle floating blob animation used in the background. */
+@keyframes blob-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(30px, -20px, 0) scale(1.05);
+  }
+  66% {
+    transform: translate3d(-20px, 25px, 0) scale(0.97);
+  }
+}
+.blob-drift {
+  animation: blob-drift 14s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .blob-drift {
+    animation: none;
+  }
+}
