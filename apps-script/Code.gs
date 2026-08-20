@@ -332,13 +332,6 @@ var PRACTICE_ROSTER = [
   { id: "generative-art", label: "Generative Art" }
 ]
 
-var AI_EXPERIENCE_ROSTER = [
-  { id: "exploring", label: "Starting out — I am exploring them and learning" },
-  { id: "intermediate", label: "Intermediate — I use them independently in my workflow" },
-  { id: "advanced", label: "Advanced — I use them regularly in professional work" },
-  { id: "expert", label: "Expert — I have deep knowledge and can develop or adapt workflows" }
-]
-
 var AI_WORKFLOW_ROSTER = [
   { id: "as-is", label: "I primarily use existing tools as they are" },
   { id: "combine", label: "I combine multiple tools in my workflow" },
@@ -535,13 +528,6 @@ var BASE_COLUMNS = [
     align: "center",
     value: function (payload) {
       return (payload.practice || []).length
-    }
-  },
-  {
-    header: "AI Experience",
-    width: 260,
-    value: function (payload) {
-      return labelOf(AI_EXPERIENCE_ROSTER, payload.aiExperience)
     }
   },
   {
@@ -1035,7 +1021,7 @@ function notify(payload) {
         "Links: " + (profile.links || "—"),
         "IMDb: " + (profile.imdb || "—"),
         "",
-        "IA: " + (labelOf(AI_EXPERIENCE_ROSTER, payload.aiExperience) || "—"),
+        "IA: " + (labelOf(AI_RELATIONSHIP_ROSTER, payload.aiRelationship) || "—"),
         "Pipeline: " + (labelsFor(STAGE_ROSTER, payload.stages) || "—"),
         distinctToolCount(payload) + " ferramentas",
         payload.otherTools ? "Outras: " + payload.otherTools : "",

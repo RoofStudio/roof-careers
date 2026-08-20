@@ -7,7 +7,6 @@ import ChipGroup from "../components/ChipGroup"
 import Field from "../components/Field"
 import ToolPicker from "../components/ToolPicker"
 import {
-  AI_EXPERIENCE,
   AI_RELATIONSHIP,
   AI_WORKFLOW,
   PIPELINE_STAGES,
@@ -92,7 +91,6 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
   const [profile, setProfile] = useState<ProfilePayload>(EMPTY_PROFILE)
   const [expertise, setExpertise] = useState("")
   const [practice, setPractice] = useState<string[]>([])
-  const [aiExperience, setAiExperience] = useState("")
   const [aiWorkflow, setAiWorkflow] = useState<string[]>([])
   const [aiRelationship, setAiRelationship] = useState("")
   const [projectTypes, setProjectTypes] = useState<string[]>([])
@@ -183,7 +181,6 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
           },
           expertise,
           practice,
-          aiExperience,
           aiWorkflow,
           aiRelationship,
           projectTypes,
@@ -336,16 +333,6 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
 
         {/* ── How you work ───────────────────────────────────────────── */}
         <Card label={t("profile.howYouWorkLabel")}>
-          <ChipGroup
-            id="aiExperience"
-            mode="single"
-            layout="stack"
-            title={t("profile.aiExperienceTitle")}
-            choices={AI_EXPERIENCE}
-            selected={aiExperience}
-            onToggle={(id) => setAiExperience((prev) => (prev === id ? "" : id))}
-          />
-
           <ChipGroup
             id="aiWorkflow"
             layout="stack"

@@ -13,7 +13,6 @@ const PAYLOAD = {
   },
   expertise: "art-director",
   practice: ["art-direction", "concept-art", "visual-development"],
-  aiExperience: "advanced",
   aiWorkflow: ["combine", "node-based"],
   aiRelationship: "professional",
   projectTypes: ["short-film", "commercial"],
@@ -36,7 +35,7 @@ const PAYLOAD = {
     language: "pt-BR",
     timezone: "America/Sao_Paulo",
     userAgent: "Mozilla/5.0 test",
-    formVersion: "3"
+    formVersion: "4"
   },
   guard: { hp: "", elapsedMs: 20000, turnstileToken: "" }
 }
@@ -106,8 +105,9 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
     row["Practice Areas"] === "Art Direction, Concept Art, Visual Development",
     String(row["Practice Areas"]))
   check("2f practice count", row["Practice Count"] === 3)
-  check("2g AI experience label", row["AI Experience"].startsWith("Advanced"),
-    String(row["AI Experience"]))
+  check("2g AI relationship label",
+    row["AI Relationship"] === "I actively use AI tools in professional projects",
+    String(row["AI Relationship"]))
   check("2h AI workflow multi-select",
     row["AI Workflow"] === "I combine multiple tools in my workflow, I use node-based / modular workflows",
     String(row["AI Workflow"]))
@@ -165,7 +165,6 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
     ...PAYLOAD,
     expertise: "",
     practice: [],
-    aiExperience: "",
     aiWorkflow: [],
     aiRelationship: "",
     projectTypes: [],
@@ -176,8 +175,8 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
   })
   const bare = asObject(sheet._grid[0], sheet._grid[1])
   check("4a empty single-selects are blank, not 'undefined'",
-    bare["Primary Expertise"] === "" && bare["AI Experience"] === "",
-    `${bare["Primary Expertise"]} / ${bare["AI Experience"]}`)
+    bare["Primary Expertise"] === "" && bare["AI Relationship"] === "",
+    `${bare["Primary Expertise"]} / ${bare["AI Relationship"]}`)
   check("4b empty multi-selects are blank", bare["Practice Areas"] === "" && bare["Pipeline Stages"] === "")
   check("4c counts are zero, not blank", bare["Practice Count"] === 0 && bare["Pipeline Count"] === 0)
   check("4d the one tool still lands", bare["Tool: Midjourney"] === "Concept art / visual development",
@@ -273,6 +272,9 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
     asObject(headers, sheet._grid[2])["Advanced"] === "")
   check("6g shared columns keep working across versions",
     asObject(headers, sheet._grid[2])["Tools Count"] === 3)
+  check("6h the dropped AI Experience column is never re-created",
+    !headers.includes("AI Experience"),
+    "a removed question must not come back as an empty column")
 }
 
 /* ── 7. Guards ──────────────────────────────────────────────────────────── */

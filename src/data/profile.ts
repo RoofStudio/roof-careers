@@ -62,18 +62,13 @@ export const PRACTICE_AREAS: Choice[] = [
 ].map((id) => choice(id, "practice"))
 
 /**
- * Single select.
- *
- * V5 started this ladder at "Intermediate", which quietly locked out the exact
- * person the invitation asks for — the hero says "or are curious to start", and
- * that person then had no honest box to tick. `exploring` is that box. A form
- * that contradicts its own headline loses the candidate at the first question.
+ * Multi select — how they actually assemble tools, not how good they claim to
+ * be. This and `AI_RELATIONSHIP` are the only two AI questions left: V5 had a
+ * third ("how would you describe your experience with AI tools", a
+ * beginner→expert ladder) which measured almost exactly what the relationship
+ * question measures, one right after the other. Asking the same thing twice
+ * does not double the signal, it just costs the candidate a question.
  */
-export const AI_EXPERIENCE: Choice[] = ["exploring", "intermediate", "advanced", "expert"].map(
-  (id) => choice(id, "aiExperience")
-)
-
-/** Multi select — how they actually assemble tools, not how good they claim to be. */
 export const AI_WORKFLOW: Choice[] = [
   "as-is",
   "combine",

@@ -67,7 +67,6 @@
     "practiceTitle": "Which areas are part of your professional practice?",
     "practiceHint": "Select all that apply.",
     "howYouWorkLabel": "How you work",
-    "aiExperienceTitle": "How would you describe your experience with AI tools?",
     "aiWorkflowTitle": "How would you describe your workflow experience?",
     "aiWorkflowHint": "Select all that apply.",
     "aiRelationshipTitle": "How would you describe your current relationship with AI creative tools?",
@@ -117,12 +116,6 @@
       "editing": "Editing / Post-Production",
       "color-finishing": "Color / Finishing",
       "generative-art": "Generative Art"
-    },
-    "aiExperience": {
-      "exploring": "Starting out — I am exploring them and learning",
-      "intermediate": "Intermediate — I use them independently in my workflow",
-      "advanced": "Advanced — I use them regularly in professional work",
-      "expert": "Expert — I have deep knowledge and can develop or adapt workflows"
     },
     "aiWorkflow": {
       "as-is": "I primarily use existing tools as they are",

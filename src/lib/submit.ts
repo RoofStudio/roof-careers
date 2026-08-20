@@ -23,7 +23,6 @@ export interface SubmissionPayload {
   profile: ProfilePayload
   /** Single-select answers. */
   expertise: string
-  aiExperience: string
   aiRelationship: string
   /** Multi-select answers. */
   practice: string[]
@@ -49,8 +48,8 @@ export interface SubmissionPayload {
   }
 }
 
-/** v3: the ROUGH V5 question set — expertise, practice, pipeline, project credits. */
-export const FORM_VERSION = "3"
+/** v4: the duplicated AI-experience ladder was dropped. */
+export const FORM_VERSION = "4"
 
 const APPS_SCRIPT_URL = import.meta.env.VITE_APPS_SCRIPT_URL as string | undefined
 
@@ -58,7 +57,6 @@ export const buildPayload = (input: {
   profile: ProfilePayload
   expertise: string
   practice: string[]
-  aiExperience: string
   aiWorkflow: string[]
   aiRelationship: string
   projectTypes: string[]
@@ -74,7 +72,6 @@ export const buildPayload = (input: {
   profile: input.profile,
   expertise: input.expertise,
   practice: input.practice,
-  aiExperience: input.aiExperience,
   aiWorkflow: input.aiWorkflow,
   aiRelationship: input.aiRelationship,
   projectTypes: input.projectTypes,

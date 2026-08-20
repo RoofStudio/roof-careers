@@ -67,7 +67,6 @@
     "practiceTitle": "Quais áreas fazem parte da sua prática profissional?",
     "practiceHint": "Marque todas que se aplicam.",
     "howYouWorkLabel": "Como você trabalha",
-    "aiExperienceTitle": "Como você descreveria sua experiência com ferramentas de IA?",
     "aiWorkflowTitle": "Como você descreveria sua experiência com workflows?",
     "aiWorkflowHint": "Marque todas que se aplicam.",
     "aiRelationshipTitle": "Como você descreveria sua relação atual com ferramentas criativas de IA?",
@@ -117,12 +116,6 @@
       "editing": "Edição / Pós-produção",
       "color-finishing": "Cor / Finalização",
       "generative-art": "Arte Generativa"
-    },
-    "aiExperience": {
-      "exploring": "Começando — estou explorando e aprendendo",
-      "intermediate": "Intermediário — uso de forma independente no meu processo",
-      "advanced": "Avançado — uso com frequência em trabalho profissional",
-      "expert": "Especialista — tenho domínio profundo e desenvolvo ou adapto workflows"
     },
     "aiWorkflow": {
       "as-is": "Uso as ferramentas como elas vêm",

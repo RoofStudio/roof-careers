@@ -63,10 +63,6 @@ var PRACTICE_ROSTER = [
 ${choiceList(profile.PRACTICE_AREAS)}
 ]
 
-var AI_EXPERIENCE_ROSTER = [
-${choiceList(profile.AI_EXPERIENCE)}
-]
-
 var AI_WORKFLOW_ROSTER = [
 ${choiceList(profile.AI_WORKFLOW)}
 ]
