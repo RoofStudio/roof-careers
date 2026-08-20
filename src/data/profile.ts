@@ -78,13 +78,18 @@ export const AI_WORKFLOW: Choice[] = [
   "technical-pipelines"
 ].map((id) => choice(id, "aiWorkflow"))
 
-/** Single select — attitude, which is what tells you who to talk to first. */
+/**
+ * Single select — attitude, which is what tells you who to talk to first.
+ *
+ * Three rungs, not five. "I have started incorporating AI" and "I am curious
+ * and interested" sat so close to "I am actively exploring" that the choice
+ * became a matter of self-image rather than fact, and a scale people answer by
+ * mood is not a scale you can filter on.
+ */
 export const AI_RELATIONSHIP: Choice[] = [
   "professional",
   "creative-development",
-  "starting",
-  "exploring",
-  "curious"
+  "exploring"
 ].map((id) => choice(id, "aiRelationship"))
 
 /**

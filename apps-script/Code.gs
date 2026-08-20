@@ -344,9 +344,7 @@ var AI_WORKFLOW_ROSTER = [
 var AI_RELATIONSHIP_ROSTER = [
   { id: "professional", label: "I actively use AI tools in professional projects" },
   { id: "creative-development", label: "I regularly use AI tools for creative development and experimentation" },
-  { id: "starting", label: "I have started incorporating AI into my professional workflow" },
-  { id: "exploring", label: "I am actively exploring AI creative tools" },
-  { id: "curious", label: "I am curious and interested in incorporating AI into my creative practice" }
+  { id: "exploring", label: "I am actively exploring AI creative tools" }
 ]
 
 var PROJECT_TYPE_ROSTER = [

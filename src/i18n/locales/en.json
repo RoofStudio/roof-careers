@@ -128,9 +128,7 @@
     "aiRelationship": {
       "professional": "I actively use AI tools in professional projects",
       "creative-development": "I regularly use AI tools for creative development and experimentation",
-      "starting": "I have started incorporating AI into my professional workflow",
-      "exploring": "I am actively exploring AI creative tools",
-      "curious": "I am curious and interested in incorporating AI into my creative practice"
+      "exploring": "I am actively exploring AI creative tools"
     },
     "projectType": {
       "feature-film": "Feature Film",
