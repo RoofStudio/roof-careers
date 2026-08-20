@@ -34,5 +34,32 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+
+    <!--
+      Self-heal a stale HTML cache.
+
+      GitHub Pages serves index.html with max-age=600 but DELETES the previous
+      build's hashed assets on every deploy. So for ten minutes after a deploy a
+      returning visitor gets cached HTML pointing at files that no longer exist:
+      two 404s, an empty <div id="root">, and a blank page with no JavaScript
+      running to notice. We cannot set cache headers on Pages, so the page
+      checks on itself instead.
+
+      Guarded by sessionStorage so it can only ever happen once — a reload loop
+      would be far worse than the blank page it is fixing. Four seconds is long
+      enough that a slow connection still mounts first; the cost of being wrong
+      is one refresh.
+    -->
+    <script>
+      setTimeout(function () {
+        var root = document.getElementById("root")
+        if (root && root.childElementCount === 0 && !sessionStorage.getItem("roof-stale-reload")) {
+          try { sessionStorage.setItem("roof-stale-reload", "1") } catch (e) {}
+          var url = new URL(location.href)
+          url.searchParams.set("v", Date.now())
+          location.replace(url.toString())
+        }
+      }, 4000)
+    </script>
   </body>
 </html>
