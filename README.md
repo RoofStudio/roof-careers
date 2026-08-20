@@ -6,12 +6,14 @@ seu trabalho já apareceu e quais ferramentas fazem parte do processo dele — c
 nível em cada uma. Cada resposta vira uma linha numa planilha do Google.
 
 **O enquadramento é deliberado: a página fala de ofício, não de IA.** O briefing
-foi "quero chamar atenção de Creative Talents, não de AI Creative Talents". Por
-isso o checklist é organizado por **etapa de pipeline**, com ferramenta
-tradicional e de IA lado a lado: um ótimo diretor que ainda não usa IA consegue
-preencher o formulário inteiro e fazer sentido. O sinal de IA continua todo
-capturado — cada ferramenta carrega uma flag `ai` — mas ele é lido na planilha,
-não estampado na página.
+foi "quero chamar atenção de Creative Talents, não de AI Creative Talents".
+Nenhum título ou rótulo da página carrega "AI" — a palavra aparece só dentro do
+texto do convite e nas perguntas específicas sobre ferramentas, onde ela é
+precisa em vez de ser um crachá.
+
+O conteúdo vem de FORMULARIO ROUGH V5: 20 áreas de produção, 300 checkboxes,
+**204 ferramentas distintas**, mais área de atuação, prática profissional,
+experiência com IA, tipos de projeto liderados e etapas de pipeline.
 
 Site estático (Vite + React + TypeScript + Tailwind v4), publicado no GitHub
 Pages. O sistema visual — tokens, gradiente, tipografia, componentes — é o
@@ -157,43 +159,44 @@ idioma, edite o outro.
 
 ### Mexer na lista de ferramentas
 
-`src/data/tools.ts`, agrupada por **etapa de pipeline** (concepção → vídeo → 3D
-→ rig/animação → performance → captura → look dev → composição → 2D → áudio →
-workflow). Essa ordem não é cosmética: o conjunto de ferramentas marcado **é** a
-pipeline da pessoa, então a coluna `Pipeline` da planilha sai de graça, sem
-nenhuma pergunta a mais.
+`src/data/tools.ts` — 20 áreas de produção, na ordem do V5.
 
-Cada ferramenta é declarada com `t()` (ML-first) ou `c()` (ferramenta de ofício).
-A flag alimenta a coluna `AI Tools Count`. Casos cinzentos vão para `c()` de
-propósito — se fotogrametria contasse como IA, o número deixaria de significar
-alguma coisa.
+**A mesma ferramenta aparece em todas as áreas a que pertence, de propósito.**
+Runway está lá 8 vezes, Autodesk Flow Studio 7. Isso não é duplicação para
+limpar: "Runway para VFX" e "Runway para storyboard" são fatos diferentes sobre
+a pessoa, e essa diferença é justamente o que torna a resposta útil. Por isso
+uma seleção é identificada por **área + ferramenta**, nunca por ferramenta
+sozinha.
 
-O `id` é o que vira coluna na planilha: renomeie o `name` à vontade, mas
-**mantenha o `id`**, senão as linhas antigas deixam de casar com as novas.
+Na planilha os dois lados se reconciliam: **uma coluna por ferramenta distinta**
+(204, não 300), guardando a lista de áreas em que a pessoa marcou. Um filtro só
+responde "quem trabalha com Stable Diffusion" *e* "para quê".
 
-Depois de mexer:
+O V5 abandonou o nível por ferramenta. Com 300 checkboxes, pedir nível em cada
+uma não é um formulário que alguém termine — e uma escala repetida 300 vezes é
+respondida por reflexo, não por reflexão. Profundidade passou a ser perguntada
+uma vez só, nas perguntas de experiência.
+
+### Mexer nas perguntas de perfil
+
+`src/data/profile.ts`. Nenhuma delas tem campo de texto: o briefing era
+descobrir se a pessoa já dirigiu, se tem curta e qual a pipeline dela "sem
+perguntar explicitamente e sem deixar a pessoa escrever sobre isso".
+
+`PROJECT_TYPES` é a mais afiada — pergunta em que tipos de projeto a pessoa teve
+**papel criativo de liderança**, então "já dirigiu?" é respondido como fato
+sobre o trabalho, e cada tipo revela o próprio link de créditos só quando
+marcado.
+
+### Depois de mexer em qualquer um dos dois
 
 ```bash
 npm run sync:tools
 ```
 
-Isso reescreve o bloco `GENERATED` do `apps-script/Code.gs` com a lista completa
-— o script precisa dela para criar uma coluna por ferramenta. `npm run
-test:sheet` roda `--check` antes dos testes e **falha** se os dois lados
-divergirem, então não dá para esquecer.
-
-### As duas perguntas de chip
-
-`src/data/profile.ts`. Elas existem para responder "essa pessoa já dirigiu?" e
-"tem curta?" **sem perguntar isso a ninguém** e sem nenhum campo de texto:
-
-- `ROLES` pergunta sobre o **trabalho**, nunca sobre a pessoa. "Você é diretor?"
-  é pergunta de identidade e as pessoas inflam ou se encolhem; "em que funções
-  você já entregou um projeto?" é pergunta de fato. Marcar `director` responde
-  a primeira sem que a palavra tenha sido apontada para ninguém.
-- `PUBLISHED_WORK` pergunta **onde** o trabalho apareceu, e só aí revela um
-  campo de link. Quem não marca nada não vê campo nenhum — o formulário não
-  cresce.
+Reescreve o bloco `GENERATED` do `apps-script/Code.gs` com todos os rosters — o
+script precisa deles para criar uma coluna por resposta. `npm run test:sheet`
+roda `--check` antes dos testes e **falha** se os dois lados divergirem.
 
 ---
 
@@ -204,67 +207,63 @@ alinhamento, validação, cabeçalho no marrom da marca, congelamento, filtro e
 faixas zebradas. Rode de novo sempre que o schema mudar — é idempotente e
 **nunca reescreve uma linha de dados**.
 
-São **129 colunas**, em duas metades com trabalhos diferentes:
+São **310 colunas**, em duas metades com trabalhos diferentes.
 
-**A metade legível (esquerda)** — o que você olha ao ler *um* candidato:
+**A metade legível (29 colunas, à esquerda)** — o que você olha ao ler *um*
+candidato: `Received At · Full Name · Status · Rating · Primary Expertise ·
+Email · Phone · Location · Portfolio · Additional Links · IMDb / Credits ·
+Additional Reels · Practice Areas · Practice Count · AI Experience ·
+AI Workflow · AI Relationship · Led Projects · Pipeline Stages · Pipeline
+Count · Tools Count · All Tools · Other Tools · Language · Timezone ·
+Submitted At · Form Version · User Agent · Notes`
 
-`Received At · Full Name · Status · Rating · Email · Phone / WhatsApp ·
-Location · Roles · Roles Count · Published In · Published Link ·
-Portfolio / Demo Reel · Additional Links · Pipeline · Tools Count ·
-AI Tools Count · Advanced · Intermediate · Basic · All Tools (with level) ·
-Other Tools · Language · Timezone · Submitted At (client) · Form Version ·
-User Agent · Notes`
+**O bloco de filtragem (281 colunas, à direita)** — uma coluna por clique:
 
-**O bloco de filtragem (direita)** — uma coluna por clique:
+| Prefixo | Quantas | Valor |
+| --- | --- | --- |
+| `Area:` | 26 | `Yes` ou vazio — áreas da prática profissional |
+| `Stage:` | 25 | `Yes` ou vazio — etapas de pipeline |
+| `Workflow:` | 6 | `Yes` ou vazio — como monta workflows |
+| `Led:` | 10 | `Yes` ou vazio — liderou projeto desse tipo |
+| `Link:` | 10 | o link de créditos daquele tipo, ao lado |
+| `Tool:` | 204 | **as áreas** em que usa a ferramenta |
 
-- `Role: …` × 9 — `Yes` ou vazio. "Quem já dirigiu" é um clique no filtro.
-- `Seen: …` × 7 — `Yes` ou vazio. "Quem tem curta" é um clique no filtro.
-- `Tool: …` × 86 — guarda o **nível**, não um tique. Um filtro só responde
-  "quem mexe com Stable Diffusion" *e* "quão fundo".
+As colunas de ferramenta guardam a lista de áreas, não um tique. Um filtro só em
+`Tool: Runway` responde quem usa **e** para quê — e as 300 caixas do formulário
+custam 204 colunas em vez de 300.
 
 `Status` (dropdown), `Rating` (1–5, numérico e ordenável) e `Notes` são as três
 colunas que o formulário não preenche — são do time.
 
-`Pipeline` e `AI Tools Count` são **derivadas**, não perguntadas: saem do padrão
-de ferramentas marcado. `Pipeline` reporta as três etapas com mais ferramentas,
-como fato ("3D — modeling & assets (3) · …") e não como rótulo adivinhado — um
-rótulo errado é pior que nenhum.
-
 `Full Name` é a segunda coluna de propósito: o congelamento para nela, então o
-nome fica visível enquanto você rola pelo bloco largo à direita.
+nome fica visível enquanto você rola pelo bloco largo.
 
 ### Como o schema se mantém honesto
 
 Cabeçalho, largura, formato e o extrator do valor moram no **mesmo objeto**, em
-`COLUMNS`. Antes eram duas listas paralelas: bastava alguém inserir uma coluna
-no meio de uma e esquecer da outra para todas as linhas novas saírem deslocadas
-uma casa, em silêncio.
-
-Os valores são posicionados **por nome de coluna**, nunca por índice. Isso
-significa que:
+`COLUMNS`. Os valores são posicionados **por nome de coluna**, nunca por índice:
 
 - arrastar uma coluna no Sheets não quebra nada;
 - uma coluna sua, que o script não conhece, é preservada;
-- abrir uma planilha antiga e rodar `setupSheet` **acrescenta** as colunas que
-  faltam à direita, sem mexer nas que já existem nem nos dados sob elas.
+- rodar `setupSheet` numa planilha antiga **acrescenta** as colunas que faltam à
+  direita, sem mexer nas existentes nem nos dados sob elas.
 
 Nada é apagado automaticamente: remover coluna tem perda de dado junto, e essa
-decisão é de um humano. Uma planilha v1 mantém a coluna `Field of Work`
-aposentada, com os dados dela intactos.
+decisão é de um humano.
 
 ```bash
 npm run test:sheet
 ```
 
-Roda o `Code.gs` num sandbox com as APIs do Google stubadas e checa **58
-asserções** — planilha nova, colunas reordenadas à mão, planilha v1 subindo para
-v2, nível caindo na coluna certa da ferramenta certa, pipeline derivada,
-honeypot, envio rápido demais e idempotência do `setupSheet`. Apps Script não
-tem teste local; isso é o substituto.
+Roda o `Code.gs` num sandbox com as APIs do Google stubadas e checa **64
+asserções** — planilha nova, colunas reordenadas à mão, planilha v2 subindo para
+v3, a mesma ferramenta marcada em várias áreas, ids desconhecidos, seleções
+vazias, honeypot, envio rápido demais e idempotência. Apps Script não tem teste
+local; isso é o substituto.
 
 > O sandbox recusa `getRange` além da largura da planilha, como o Google faz.
 > Foi assim que apareceu um bug real: uma planilha nova tem 26 colunas, e
-> escrever 129 cabeçalhos de uma vez lança exceção — `setupSheet` teria quebrado
+> escrever os cabeçalhos de uma vez lança exceção — `setupSheet` teria quebrado
 > na primeira execução de verdade.
 
 ---

@@ -1,86 +1,134 @@
 /**
- * The tools someone works with, grouped BY PIPELINE STAGE — not by "AI vs the
- * rest".
+ * The tool catalogue, from FORMULARIO ROUGH V5 — 20 categories, 301 checkboxes,
+ * 205 distinct tools.
  *
- * That ordering is deliberate and does three jobs at once:
+ * A TOOL APPEARS IN EVERY CATEGORY IT BELONGS TO, ON PURPOSE.
+ * Runway shows up 8 times, Autodesk Flow Studio 7. That is not redundancy to be
+ * cleaned up — "Runway for VFX" and "Runway for storyboard" are different facts
+ * about a person, and the difference is exactly what makes the answer useful.
+ * A selection is therefore keyed by CATEGORY + TOOL, never by tool alone.
  *
- *   1. The page stops asking "are you an AI person?" and starts asking "what is
- *      your craft?". A great director who uses no AI at all can still fill this
- *      in and make sense — under the old grouping they had nothing to check and
- *      left.
- *   2. The PIPELINE falls out of the pattern for free. Houdini + Nuke + Karma
- *      reads as VFX; Blender + Cascadeur + After Effects reads as character
- *      animation; ComfyUI + FLUX + LoRA reads as diffusion. Nobody had to be
- *      asked, and nobody had to type.
- *   3. Tools that generate motion, geometry or performance — not images — get a
- *      natural home instead of being an appendix.
+ * In the sheet the two views are reconciled: one column per distinct tool
+ * (205, not 301), holding the list of categories the person picked it in. One
+ * filter then answers both "who works with Stable Diffusion" and "for what".
  *
- * The AI signal is not lost: every tool carries `ai`, so the sheet still
- * answers "who uses Stable Diffusion" and "how AI-fluent is this person".
+ * V5 dropped per-tool proficiency: at 301 checkboxes, asking for a level on
+ * each one is not a form anybody finishes. Depth is asked once, in the
+ * experience questions in `profile.ts`, which is also more honest — a scale
+ * repeated 301 times gets answered by reflex, not by thought.
  *
- * `id` is what lands in the spreadsheet column, so it must stay stable even if
- * a product renames itself: rename the `name`, keep the `id`.
+ * `id` is what becomes a spreadsheet column, so it must stay stable even if a
+ * product renames itself: change the `name`, keep the `id`.
  */
 
 export interface Tool {
   id: string
   name: string
-  /**
-   * True for ML-first tools — the ones that exist because of a model.
-   * Gray areas are resolved conservatively (photogrammetry and realtime
-   * tracking count as capture, not AI), so "AI Tools Count" stays meaningful
-   * rather than becoming a number that flatters everyone.
-   */
-  ai: boolean
 }
 
 export interface ToolGroup {
   id: string
   labelKey: string
-  /** Stage swatch from the viz palette — decoration, never state. */
+  /** Category swatch from the viz palette — decoration, never state. */
   accent: string
   tools: Tool[]
 }
 
-/** `t` = ML-first, `c` = craft tool. Two letters keeps the table readable. */
-const t = (id: string, name: string): Tool => ({ id, name, ai: true })
-const c = (id: string, name: string): Tool => ({ id, name, ai: false })
+const x = (id: string, name: string): Tool => ({ id, name })
 
 export const TOOL_GROUPS: ToolGroup[] = [
+  {
+    id: "development",
+    labelKey: "tools.groups.development",
+    accent: "bg-viz-lilac",
+    tools: [
+      x("chatgpt", "ChatGPT"),
+      x("claude", "Claude"),
+      x("google-gemini", "Google Gemini"),
+      x("perplexity", "Perplexity"),
+      x("sudowrite", "Sudowrite"),
+      x("final-draft", "Final Draft"),
+      x("scriptbook", "ScriptBook"),
+      x("storyfit", "StoryFit"),
+      x("celtx", "Celtx"),
+      x("filmustage", "Filmustage"),
+      x("ltx-studio", "LTX Studio"),
+      x("storyflow", "Storyflow"),
+      x("dramatron", "Dramatron"),
+      x("novelcrafter", "NovelCrafter"),
+      x("jasper", "Jasper"),
+      x("copy-ai", "Copy.ai")
+    ]
+  },
+  {
+    id: "planning",
+    labelKey: "tools.groups.planning",
+    accent: "bg-viz-sky",
+    tools: [
+      x("filmustage", "Filmustage"),
+      x("studiobinder", "StudioBinder"),
+      x("celtx", "Celtx"),
+      x("movie-magic-scheduling", "Movie Magic Scheduling"),
+      x("movie-magic-budgeting", "Movie Magic Budgeting"),
+      x("scenechronize", "Scenechronize"),
+      x("sethero", "SetHero"),
+      x("shot-lister", "Shot Lister"),
+      x("decupa", "Decupa")
+    ]
+  },
   {
     id: "concept",
     labelKey: "tools.groups.concept",
     accent: "bg-viz-orchid",
     tools: [
-      c("photoshop", "Photoshop"),
-      c("illustrator", "Illustrator"),
-      c("procreate", "Procreate"),
-      c("figma", "Figma"),
-      t("midjourney", "Midjourney"),
-      t("flux", "FLUX"),
-      t("stable-diffusion", "Stable Diffusion"),
-      t("chatgpt-gpt-image", "ChatGPT / GPT Image"),
-      t("adobe-firefly", "Adobe Firefly"),
-      t("leonardo-ai", "Leonardo AI"),
-      t("ideogram", "Ideogram"),
-      t("krea", "Krea"),
-      t("magnific", "Magnific")
+      x("midjourney", "Midjourney"),
+      x("chatgpt-gpt-image", "ChatGPT / GPT Image"),
+      x("flux", "FLUX"),
+      x("adobe-firefly", "Adobe Firefly"),
+      x("stable-diffusion", "Stable Diffusion"),
+      x("leonardo-ai", "Leonardo AI"),
+      x("ideogram", "Ideogram"),
+      x("krea", "Krea"),
+      x("recraft", "Recraft"),
+      x("magnific", "Magnific"),
+      x("freepik-ai", "Freepik AI"),
+      x("playground", "Playground"),
+      x("scenario", "Scenario"),
+      x("openart", "OpenArt"),
+      x("dreamstudio", "DreamStudio"),
+      x("comfyui", "ComfyUI"),
+      x("fooocus", "Fooocus"),
+      x("tensor-art", "Tensor.Art"),
+      x("seaart", "SeaArt"),
+      x("mage-space", "Mage.Space"),
+      x("artbreeder", "Artbreeder"),
+      x("nightcafe", "NightCafe")
     ]
   },
   {
-    id: "video",
-    labelKey: "tools.groups.video",
+    id: "storyboard",
+    labelKey: "tools.groups.storyboard",
     accent: "bg-viz-lilac",
     tools: [
-      t("runway", "Runway"),
-      t("kling", "Kling"),
-      t("google-veo", "Google Veo"),
-      t("sora", "Sora"),
-      t("luma-dream-machine", "Luma Dream Machine"),
-      t("pika", "Pika"),
-      t("hailuo-ai", "Hailuo AI"),
-      t("viggle", "Viggle"),
-      t("eve-aive", "EVE (Aive)")
+      x("ltx-studio", "LTX Studio"),
+      x("runway", "Runway"),
+      x("kling", "Kling"),
+      x("google-veo", "Google Veo"),
+      x("luma", "Luma"),
+      x("hailuo", "Hailuo"),
+      x("pika", "Pika"),
+      x("sora", "Sora"),
+      x("adobe-firefly", "Adobe Firefly"),
+      x("krea", "Krea"),
+      x("boords", "Boords"),
+      x("storyboarder", "Storyboarder"),
+      x("storyboardhero", "StoryboardHero"),
+      x("storyboard-ai", "StoryBoard AI"),
+      x("storyboarder-ai", "Storyboarder.ai"),
+      x("drawstory", "Drawstory"),
+      x("storyliner", "Storyliner"),
+      x("frameforge", "FrameForge"),
+      x("decupa", "Decupa")
     ]
   },
   {
@@ -88,141 +136,367 @@ export const TOOL_GROUPS: ToolGroup[] = [
     labelKey: "tools.groups.modeling",
     accent: "bg-viz-sky",
     tools: [
-      c("blender", "Blender"),
-      c("maya", "Maya"),
-      c("cinema-4d", "Cinema 4D"),
-      c("houdini", "Houdini"),
-      c("zbrush", "ZBrush"),
-      c("substance-3d", "Substance 3D"),
-      c("marvelous-designer", "Marvelous Designer"),
-      t("meshy", "Meshy"),
-      t("tripo", "Tripo"),
-      t("rodin", "Rodin (Hyper3D)"),
-      t("luma-genie", "Luma Genie")
+      x("autodesk-flow-studio", "Autodesk Flow Studio"),
+      x("meshy", "Meshy"),
+      x("tripo-ai", "Tripo AI"),
+      x("hyper3d-rodin", "Hyper3D / Rodin"),
+      x("luma-3d", "Luma 3D"),
+      x("spline-ai", "Spline AI"),
+      x("masterpiece-x", "Masterpiece X"),
+      x("csm", "CSM"),
+      x("3dfy-ai", "3DFY.ai"),
+      x("kaedim", "Kaedim"),
+      x("alpha3d", "Alpha3D"),
+      x("scenario", "Scenario"),
+      x("polycam", "Polycam"),
+      x("realitycapture", "RealityCapture"),
+      x("nvidia-get3d", "NVIDIA GET3D"),
+      x("point-e", "Point-E"),
+      x("shap-e", "Shap-E"),
+      x("trellis", "Trellis"),
+      x("hunyuan3d", "Hunyuan3D"),
+      x("stable-fast-3d", "Stable Fast 3D")
     ]
   },
   {
-    id: "rigAnim",
-    labelKey: "tools.groups.rigAnim",
+    id: "character",
+    labelKey: "tools.groups.character",
     accent: "bg-viz-mint",
     tools: [
-      t("cascadeur", "Cascadeur"),
-      t("autodesk-flow-studio", "Autodesk Flow Studio"),
-      t("move-ai", "Move.ai"),
-      t("rokoko-vision", "Rokoko Vision"),
-      t("deepmotion", "DeepMotion"),
-      t("plask", "Plask"),
-      c("mixamo", "Mixamo / AccuRig"),
-      c("character-animator", "Adobe Character Animator")
+      x("metahuman", "MetaHuman"),
+      x("metahuman-animator", "MetaHuman Animator"),
+      x("reallusion-character-creator", "Reallusion Character Creator"),
+      x("autodesk-flow-studio", "Autodesk Flow Studio"),
+      x("meshy", "Meshy"),
+      x("tripo-ai", "Tripo AI"),
+      x("wonder-studio", "Wonder Studio"),
+      x("wonder-dynamics", "Wonder Dynamics"),
+      x("kinetix", "Kinetix"),
+      x("inworld", "Inworld"),
+      x("soul-machines", "Soul Machines"),
+      x("synthesia", "Synthesia"),
+      x("heygen", "HeyGen"),
+      x("d-id", "D-ID"),
+      x("character-ai", "Character.AI")
     ]
   },
   {
-    id: "performance",
-    labelKey: "tools.groups.performance",
-    accent: "bg-viz-rose",
+    id: "rigging",
+    labelKey: "tools.groups.rigging",
+    accent: "bg-viz-mint",
     tools: [
-      t("runway-act-two", "Runway Act-Two"),
-      t("hedra", "Hedra"),
-      t("liveportrait", "LivePortrait"),
-      t("audio2face", "NVIDIA Audio2Face"),
-      t("respeecher", "Respeecher")
+      x("autodesk-flow-studio", "Autodesk Flow Studio"),
+      x("accurig", "AccuRIG"),
+      x("mixamo", "Mixamo"),
+      x("cascadeur", "Cascadeur"),
+      x("rigify", "Rigify"),
+      x("auto-rig-pro", "Auto-Rig Pro"),
+      x("deepmotion", "DeepMotion"),
+      x("reallusion", "Reallusion"),
+      x("character-creator", "Character Creator"),
+      x("meshy", "Meshy"),
+      x("tripo-ai", "Tripo AI")
     ]
   },
   {
-    id: "scan",
-    labelKey: "tools.groups.scan",
+    id: "animation",
+    labelKey: "tools.groups.animation",
     accent: "bg-viz-peach",
     tools: [
-      c("polycam", "Polycam"),
-      c("kiri-engine", "KIRI Engine"),
-      c("postshot", "Postshot (Gaussian Splatting)")
+      x("cascadeur", "Cascadeur"),
+      x("autodesk-flow-studio", "Autodesk Flow Studio"),
+      x("deepmotion-animate-3d", "DeepMotion Animate 3D"),
+      x("move-ai", "Move AI"),
+      x("rokoko", "Rokoko"),
+      x("plask", "Plask"),
+      x("radical", "RADiCAL"),
+      x("kinetix", "Kinetix"),
+      x("wonder-studio", "Wonder Studio"),
+      x("wonder-dynamics", "Wonder Dynamics"),
+      x("metahuman-animator", "MetaHuman Animator"),
+      x("mixamo", "Mixamo"),
+      x("accurig", "AccuRIG"),
+      x("reallusion", "Reallusion"),
+      x("viggle", "Viggle"),
+      x("runway", "Runway"),
+      x("kling", "Kling"),
+      x("animatediff", "AnimateDiff"),
+      x("magicanimate", "MagicAnimate"),
+      x("liveportrait", "LivePortrait"),
+      x("comfyui", "ComfyUI"),
+      x("blender-ai-workflows", "Blender AI Workflows"),
+      x("maya-ai-workflows", "Maya AI Workflows"),
+      x("unreal-engine-ai-workflows", "Unreal Engine AI Workflows")
     ]
   },
   {
-    id: "lookdev",
-    labelKey: "tools.groups.lookdev",
-    accent: "bg-viz-amber",
+    id: "mocap",
+    labelKey: "tools.groups.mocap",
+    accent: "bg-viz-peach",
     tools: [
-      c("unreal-engine", "Unreal Engine"),
-      c("redshift", "Redshift"),
-      c("octane", "Octane"),
-      c("arnold", "Arnold"),
-      c("v-ray", "V-Ray"),
-      c("karma", "Karma")
+      x("autodesk-flow-studio", "Autodesk Flow Studio"),
+      x("move-ai", "Move AI"),
+      x("rokoko-vision", "Rokoko Vision"),
+      x("rokoko-studio", "Rokoko Studio"),
+      x("deepmotion-animate-3d", "DeepMotion Animate 3D"),
+      x("plask", "Plask"),
+      x("radical", "RADiCAL"),
+      x("metahuman-animator", "MetaHuman Animator"),
+      x("kinetix", "Kinetix"),
+      x("viggle", "Viggle"),
+      x("mediapipe", "MediaPipe"),
+      x("openpose", "OpenPose"),
+      x("mocap-for-all", "Mocap For All"),
+      x("arkit-iphone-capture", "ARKit / iPhone Capture"),
+      x("faceware", "Faceware"),
+      x("rokoko-face-capture", "Rokoko Face Capture")
     ]
   },
   {
-    id: "comp",
-    labelKey: "tools.groups.comp",
-    accent: "bg-viz-plum",
-    tools: [
-      c("after-effects", "After Effects"),
-      c("nuke", "Nuke"),
-      c("fusion", "Fusion"),
-      c("flame", "Flame"),
-      c("davinci-resolve", "DaVinci Resolve"),
-      c("premiere-pro", "Premiere Pro"),
-      c("final-cut-pro", "Final Cut Pro"),
-      t("topaz-video-ai", "Topaz Video AI"),
-      t("topaz-photo-ai", "Topaz Photo AI")
-    ]
-  },
-  {
-    id: "anim2d",
-    labelKey: "tools.groups.anim2d",
+    id: "video",
+    labelKey: "tools.groups.video",
     accent: "bg-viz-orchid",
     tools: [
-      c("toon-boom-harmony", "Toon Boom Harmony"),
-      c("tvpaint", "TVPaint"),
-      c("adobe-animate", "Adobe Animate"),
-      c("rive", "Rive"),
-      c("cavalry", "Cavalry")
+      x("google-veo", "Google Veo"),
+      x("kling", "Kling"),
+      x("runway", "Runway"),
+      x("luma", "Luma"),
+      x("hailuo", "Hailuo"),
+      x("pika", "Pika"),
+      x("sora", "Sora"),
+      x("adobe-firefly-video", "Adobe Firefly Video"),
+      x("seedance", "Seedance"),
+      x("vidu", "Vidu"),
+      x("pixverse", "PixVerse"),
+      x("hunyuanvideo", "HunyuanVideo"),
+      x("ltx-video", "LTX Video"),
+      x("wan", "Wan"),
+      x("krea-video", "Krea Video"),
+      x("haiper", "Haiper"),
+      x("genmo", "Genmo"),
+      x("stable-video-diffusion", "Stable Video Diffusion"),
+      x("cogvideo", "CogVideo"),
+      x("mochi", "Mochi")
     ]
   },
   {
-    id: "audio",
-    labelKey: "tools.groups.audio",
-    accent: "bg-viz-lilac",
-    tools: [t("elevenlabs", "ElevenLabs"), t("suno", "Suno"), t("udio", "Udio")]
+    id: "vfx",
+    labelKey: "tools.groups.vfx",
+    accent: "bg-viz-plum",
+    tools: [
+      x("runway", "Runway"),
+      x("nuke", "Nuke"),
+      x("adobe-after-effects", "Adobe After Effects"),
+      x("davinci-resolve", "DaVinci Resolve"),
+      x("autodesk-flow-studio", "Autodesk Flow Studio"),
+      x("wonder-studio", "Wonder Studio"),
+      x("wonder-dynamics", "Wonder Dynamics"),
+      x("comfyui", "ComfyUI"),
+      x("stable-diffusion", "Stable Diffusion"),
+      x("flux", "FLUX"),
+      x("krea", "Krea"),
+      x("topaz-video-ai", "Topaz Video AI"),
+      x("magnific", "Magnific"),
+      x("mocha-pro", "Mocha Pro"),
+      x("silhouette", "Silhouette")
+    ]
   },
   {
-    id: "workflow",
-    labelKey: "tools.groups.workflow",
-    accent: "bg-viz-sky",
+    id: "roto",
+    labelKey: "tools.groups.roto",
+    accent: "bg-viz-plum",
     tools: [
-      t("comfyui", "ComfyUI"),
-      t("invokeai", "InvokeAI"),
-      t("swarmui", "SwarmUI"),
-      t("automatic1111", "AUTOMATIC1111 / SD WebUI"),
-      t("sd-webui-forge", "Stable Diffusion WebUI Forge"),
-      t("fooocus", "Fooocus"),
-      t("controlnet", "ControlNet"),
-      t("lora", "LoRA"),
-      t("openpose", "OpenPose"),
-      t("replicate", "Replicate"),
-      t("fal-ai", "fal.ai"),
-      t("hugging-face", "Hugging Face"),
-      t("figma-weave", "Figma Weave"),
-      c("n8n", "n8n")
+      x("runway", "Runway"),
+      x("adobe-after-effects-roto-brush", "Adobe After Effects / Roto Brush"),
+      x("nuke", "Nuke"),
+      x("davinci-resolve-magic-mask", "DaVinci Resolve / Magic Mask"),
+      x("silhouette", "Silhouette"),
+      x("mocha-pro", "Mocha Pro"),
+      x("autodesk-flow-studio", "Autodesk Flow Studio"),
+      x("wonder-studio", "Wonder Studio"),
+      x("comfyui", "ComfyUI")
+    ]
+  },
+  {
+    id: "editing",
+    labelKey: "tools.groups.editing",
+    accent: "bg-viz-amber",
+    tools: [
+      x("adobe-premiere-pro", "Adobe Premiere Pro"),
+      x("davinci-resolve", "DaVinci Resolve"),
+      x("runway", "Runway"),
+      x("descript", "Descript"),
+      x("capcut", "CapCut"),
+      x("filmora", "Filmora"),
+      x("autopod", "Autopod"),
+      x("opusclip", "OpusClip"),
+      x("wisecut", "Wisecut"),
+      x("gling", "Gling"),
+      x("timebolt", "TimeBolt"),
+      x("firecut", "FireCut"),
+      x("submagic", "Submagic")
+    ]
+  },
+  {
+    id: "color",
+    labelKey: "tools.groups.color",
+    accent: "bg-viz-amber",
+    tools: [
+      x("davinci-resolve", "DaVinci Resolve"),
+      x("colourlab-ai", "Colourlab AI"),
+      x("adobe-premiere-pro", "Adobe Premiere Pro"),
+      x("topaz-video-ai", "Topaz Video AI"),
+      x("neat-video", "Neat Video"),
+      x("filmconvert", "FilmConvert"),
+      x("dehancer", "Dehancer"),
+      x("runway", "Runway")
+    ]
+  },
+  {
+    id: "upscaling",
+    labelKey: "tools.groups.upscaling",
+    accent: "bg-viz-rose",
+    tools: [
+      x("topaz-video-ai", "Topaz Video AI"),
+      x("topaz-photo-ai", "Topaz Photo AI"),
+      x("magnific", "Magnific"),
+      x("real-esrgan", "Real-ESRGAN"),
+      x("video2x", "Video2X"),
+      x("davinci-resolve-super-scale", "DaVinci Resolve Super Scale"),
+      x("adobe-firefly", "Adobe Firefly"),
+      x("hitpaw", "HitPaw"),
+      x("avclabs", "AVCLabs"),
+      x("tensorpix", "TensorPix")
+    ]
+  },
+  {
+    id: "voice",
+    labelKey: "tools.groups.voice",
+    accent: "bg-viz-rose",
+    tools: [
+      x("elevenlabs", "ElevenLabs"),
+      x("openai", "OpenAI"),
+      x("google-ai", "Google AI"),
+      x("murf", "Murf"),
+      x("playht", "PlayHT"),
+      x("resemble-ai", "Resemble AI"),
+      x("speechify", "Speechify"),
+      x("descript", "Descript"),
+      x("heygen", "HeyGen"),
+      x("synthesia", "Synthesia"),
+      x("fish-audio", "Fish Audio"),
+      x("cartesia", "Cartesia"),
+      x("wellsaid", "WellSaid"),
+      x("lovo", "LOVO"),
+      x("altered-studio", "Altered Studio"),
+      x("voice-ai", "Voice.ai"),
+      x("adobe-podcast", "Adobe Podcast"),
+      x("rask-ai", "Rask AI"),
+      x("papercup", "Papercup"),
+      x("dubverse", "Dubverse")
+    ]
+  },
+  {
+    id: "sound",
+    labelKey: "tools.groups.sound",
+    accent: "bg-viz-plum",
+    tools: [
+      x("adobe-podcast", "Adobe Podcast"),
+      x("elevenlabs", "ElevenLabs"),
+      x("adobe-enhance-speech", "Adobe Enhance Speech"),
+      x("descript", "Descript"),
+      x("auphonic", "Auphonic"),
+      x("izotope-rx", "iZotope RX"),
+      x("supertone", "Supertone"),
+      x("krisp", "Krisp"),
+      x("resemble-ai", "Resemble AI"),
+      x("voice-ai", "Voice.ai"),
+      x("landr", "LANDR"),
+      x("soundraw", "Soundraw")
+    ]
+  },
+  {
+    id: "music",
+    labelKey: "tools.groups.music",
+    accent: "bg-viz-lilac",
+    tools: [
+      x("suno", "Suno"),
+      x("udio", "Udio"),
+      x("elevenlabs-music", "ElevenLabs Music"),
+      x("stable-audio", "Stable Audio"),
+      x("aiva", "AIVA"),
+      x("soundraw", "Soundraw"),
+      x("boomy", "Boomy"),
+      x("beatoven-ai", "Beatoven.ai"),
+      x("mubert", "Mubert"),
+      x("loudly", "Loudly"),
+      x("musicfy", "Musicfy"),
+      x("cassetteai", "CassetteAI")
+    ]
+  },
+  {
+    id: "localization",
+    labelKey: "tools.groups.localization",
+    accent: "bg-viz-mint",
+    tools: [
+      x("whisper", "Whisper"),
+      x("elevenlabs", "ElevenLabs"),
+      x("descript", "Descript"),
+      x("adobe-premiere-pro", "Adobe Premiere Pro"),
+      x("capcut", "CapCut"),
+      x("heygen", "HeyGen"),
+      x("rask-ai", "Rask AI"),
+      x("deepl", "DeepL"),
+      x("google-translate", "Google Translate"),
+      x("papercup", "Papercup"),
+      x("dubverse", "Dubverse"),
+      x("synthesia", "Synthesia")
+    ]
+  },
+  {
+    id: "marketing",
+    labelKey: "tools.groups.marketing",
+    accent: "bg-viz-amber",
+    tools: [
+      x("chatgpt", "ChatGPT"),
+      x("claude", "Claude"),
+      x("gemini", "Gemini"),
+      x("midjourney", "Midjourney"),
+      x("gpt-image", "GPT Image"),
+      x("adobe-firefly", "Adobe Firefly"),
+      x("runway", "Runway"),
+      x("kling", "Kling"),
+      x("google-veo", "Google Veo"),
+      x("luma", "Luma"),
+      x("heygen", "HeyGen"),
+      x("elevenlabs", "ElevenLabs"),
+      x("descript", "Descript"),
+      x("opusclip", "OpusClip"),
+      x("capcut", "CapCut"),
+      x("canva-ai", "Canva AI"),
+      x("adobe-express", "Adobe Express")
     ]
   }
 ]
 
-export const ALL_TOOLS: (Tool & { group: string })[] = TOOL_GROUPS.flatMap((g) =>
-  g.tools.map((tool) => ({ ...tool, group: g.id }))
+/** A single checkbox: the same tool in two categories is two of these. */
+export const selectionKey = (groupId: string, toolId: string) => `${groupId}:${toolId}`
+
+export const parseSelectionKey = (key: string) => {
+  const at = key.indexOf(":")
+  return { groupId: key.slice(0, at), toolId: key.slice(at + 1) }
+}
+
+/** Distinct tools, by id — 205 of them, versus 301 checkboxes. */
+export const TOOL_BY_ID: Record<string, Tool> = Object.fromEntries(
+  TOOL_GROUPS.flatMap((group) => group.tools.map((tool) => [tool.id, tool]))
 )
 
-/** Flat lookup by id, for building the sheet row. */
-export const TOOL_BY_ID: Record<string, Tool & { group: string }> = Object.fromEntries(
-  ALL_TOOLS.map((tool) => [tool.id, tool])
+export const GROUP_BY_ID: Record<string, ToolGroup> = Object.fromEntries(
+  TOOL_GROUPS.map((group) => [group.id, group])
 )
 
-export const TOTAL_TOOLS = ALL_TOOLS.length
+/** Checkboxes, not distinct tools — this is what the counter compares against. */
+export const TOTAL_CHECKBOXES = TOOL_GROUPS.reduce((n, group) => n + group.tools.length, 0)
 
-/**
- * Proficiency ladder. Stored as the id, shown translated.
- * Three rungs, not five: a candidate who has to choose between "advanced" and
- * "very advanced" is answering a question about themselves, not about the tool.
- */
-export const LEVELS = ["basic", "intermediate", "advanced"] as const
-export type Level = (typeof LEVELS)[number]
+export const TOTAL_TOOLS = Object.keys(TOOL_BY_ID).length

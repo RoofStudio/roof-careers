@@ -1,54 +1,139 @@
 /**
- * The two chip questions that carry the signals the team needs to filter on —
- * without ever asking for them directly, and without a single line of prose.
+ * The profile questions, from FORMULARIO ROUGH V5.
  *
- * The brief was: find out whether someone has directed, whether they have a
- * short film, what their pipeline looks like — "sem perguntar explicitamente e
- * sem deixar a pessoa escrever sobre isso. Para não ficar longo."
+ * Every one of them is a click. There is no free-text field in here by design:
+ * the brief was to learn whether someone has directed, whether they have a
+ * short film and what their pipeline looks like "sem perguntar explicitamente e
+ * sem deixar a pessoa escrever sobre isso".
  *
- * So:
- *   ROLES     asks about the WORK, never the person. "Are you a director?" is a
- *             question about identity and people either inflate or shrink from
- *             it. "Which roles have you delivered a project in?" is a question
- *             about facts. Ticking `director` answers "has this person
- *             directed" without the word ever being aimed at them. How MANY
- *             they tick separates the generalist from the specialist for free.
+ * `PROJECT_TYPES` is the sharpest of them. It asks in which kinds of project
+ * the person held a LEADING creative role, so "have they directed?" is answered
+ * as a fact about the work rather than a question about the person — and each
+ * type reveals its own credits link only once ticked, so the form grows only
+ * for people who have something to put there.
  *
- *   PUBLISHED asks WHERE the work was seen rather than yes/no, so "do they have
- *             a short?" becomes a filterable column instead of a line of text
- *             someone has to read. Ticking any of these reveals a single link
- *             field; ticking none leaves the form exactly as short as it was.
- *
- * The pipeline is not here on purpose — it is read off the tool selection in
- * `tools.ts`, which costs no question at all.
- *
- * `id` is the spreadsheet column, so it must stay stable. Every id gets its own
- * column: filtering "who has directed" has to be one click, not a text search.
+ * `id` becomes a spreadsheet column, so ids must stay stable. Labels live in
+ * the locale files; only the ids are here.
  */
 
-export interface Chip {
+export interface Choice {
   id: string
   labelKey: string
 }
 
-export const ROLES: Chip[] = [
-  { id: "director", labelKey: "profile.roles.director" },
-  { id: "art-director", labelKey: "profile.roles.artDirector" },
-  { id: "animator", labelKey: "profile.roles.animator" },
-  { id: "designer", labelKey: "profile.roles.designer" },
-  { id: "storyboard", labelKey: "profile.roles.storyboard" },
-  { id: "modeling", labelKey: "profile.roles.modeling" },
-  { id: "lookdev", labelKey: "profile.roles.lookdev" },
-  { id: "compositor", labelKey: "profile.roles.compositor" },
-  { id: "editor", labelKey: "profile.roles.editor" }
-]
+const choice = (id: string, key: string): Choice => ({ id, labelKey: `profile.${key}.${id}` })
 
-export const PUBLISHED_WORK: Chip[] = [
-  { id: "short-film", labelKey: "profile.published.shortFilm" },
-  { id: "festival", labelKey: "profile.published.festival" },
-  { id: "commercial", labelKey: "profile.published.commercial" },
-  { id: "music-video", labelKey: "profile.published.musicVideo" },
-  { id: "series", labelKey: "profile.published.series" },
-  { id: "game", labelKey: "profile.published.game" },
-  { id: "installation", labelKey: "profile.published.installation" }
-]
+/** Single select — the headline answer, and the first filter anyone will use. */
+export const PRIMARY_EXPERTISE: Choice[] = [
+  "art-director",
+  "designer",
+  "animator",
+  "other"
+].map((id) => choice(id, "expertise"))
+
+/** Multi select. Breadth here separates the generalist from the specialist. */
+export const PRACTICE_AREAS: Choice[] = [
+  "art-direction",
+  "creative-direction",
+  "graphic-design",
+  "motion-design",
+  "2d-animation",
+  "3d-animation",
+  "character-animation",
+  "character-design",
+  "concept-art",
+  "visual-development",
+  "storyboard",
+  "previs",
+  "3d-modeling",
+  "3d-generalist",
+  "rigging",
+  "motion-capture",
+  "facial-animation",
+  "vfx",
+  "compositing",
+  "look-development",
+  "environment-design",
+  "lighting",
+  "virtual-production",
+  "editing",
+  "color-finishing",
+  "generative-art"
+].map((id) => choice(id, "practice"))
+
+/**
+ * Single select.
+ *
+ * V5 started this ladder at "Intermediate", which quietly locked out the exact
+ * person the invitation asks for — the hero says "or are curious to start", and
+ * that person then had no honest box to tick. `exploring` is that box. A form
+ * that contradicts its own headline loses the candidate at the first question.
+ */
+export const AI_EXPERIENCE: Choice[] = ["exploring", "intermediate", "advanced", "expert"].map(
+  (id) => choice(id, "aiExperience")
+)
+
+/** Multi select — how they actually assemble tools, not how good they claim to be. */
+export const AI_WORKFLOW: Choice[] = [
+  "as-is",
+  "combine",
+  "customized",
+  "node-based",
+  "per-project",
+  "technical-pipelines"
+].map((id) => choice(id, "aiWorkflow"))
+
+/** Single select — attitude, which is what tells you who to talk to first. */
+export const AI_RELATIONSHIP: Choice[] = [
+  "professional",
+  "creative-development",
+  "starting",
+  "exploring",
+  "curious"
+].map((id) => choice(id, "aiRelationship"))
+
+/**
+ * Multi select, and the only question that opens a text field — one credits
+ * link per project type, revealed on tick.
+ */
+export const PROJECT_TYPES: Choice[] = [
+  "feature-film",
+  "short-film",
+  "commercial",
+  "music-video",
+  "animation-film",
+  "series",
+  "branded-content",
+  "digital-campaign",
+  "experimental",
+  "generative-film"
+].map((id) => choice(id, "projectType"))
+
+/** Multi select. The pipeline, stated rather than inferred. */
+export const PIPELINE_STAGES: Choice[] = [
+  "concept-development",
+  "art-direction",
+  "design",
+  "visual-development",
+  "storyboard",
+  "previs",
+  "production-live-action",
+  "2d-animation",
+  "3d-animation",
+  "character-development",
+  "3d-modeling",
+  "texturing",
+  "rigging",
+  "motion-capture",
+  "layout",
+  "lighting",
+  "vfx",
+  "compositing",
+  "rotoscoping",
+  "editing",
+  "color-finishing",
+  "sound-music",
+  "localization",
+  "restoration-upscaling",
+  "final-delivery"
+].map((id) => choice(id, "stage"))

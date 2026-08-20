@@ -1,4 +1,4 @@
-import { TOOL_BY_ID, type Level } from "../data/tools"
+import { GROUP_BY_ID, TOOL_BY_ID, parseSelectionKey } from "../data/tools"
 
 export interface ProfilePayload {
   fullName: string
@@ -7,21 +7,32 @@ export interface ProfilePayload {
   location: string
   portfolio: string
   links: string
+  imdb: string
+  reels: string
+}
+
+/** One tool, in one production area. The same tool can appear more than once. */
+export interface ToolPick {
+  id: string
+  name: string
+  group: string
+  groupName: string
 }
 
 export interface SubmissionPayload {
   profile: ProfilePayload
-  /** Roles the person has actually delivered a project in. */
-  roles: string[]
-  /** Where their work has been seen, plus one link if any of it has. */
-  published: string[]
-  publishedLink: string
-  /**
-   * Only the checked tools. `group` and `ai` ride along so the sheet can derive
-   * the pipeline and the AI-fluency count without holding a second copy of the
-   * tool table that would drift out of date.
-   */
-  tools: { id: string; name: string; level: Level; group: string; ai: boolean }[]
+  /** Single-select answers. */
+  expertise: string
+  aiExperience: string
+  aiRelationship: string
+  /** Multi-select answers. */
+  practice: string[]
+  aiWorkflow: string[]
+  stages: string[]
+  projectTypes: string[]
+  /** Credits link per project type, keyed by project type id. */
+  projectLinks: Record<string, string>
+  tools: ToolPick[]
   otherTools: string
   meta: {
     submittedAt: string
@@ -31,28 +42,29 @@ export interface SubmissionPayload {
     /** Bump when the field set changes, so old rows stay readable. */
     formVersion: string
   }
-  /** Anti-spam signals — the Apps Script decides what to do with them. */
   guard: {
-    /** Honeypot: a human never fills a field they cannot see. */
     hp: string
-    /** Milliseconds between page load and submit. Bots are instant. */
     elapsedMs: number
-    /** Cloudflare Turnstile token, when the sitekey is configured. */
     turnstileToken: string
   }
 }
 
-/** v2: roles/published replaced the free-text "Field of Work". */
-export const FORM_VERSION = "2"
+/** v3: the ROUGH V5 question set — expertise, practice, pipeline, project credits. */
+export const FORM_VERSION = "3"
 
 const APPS_SCRIPT_URL = import.meta.env.VITE_APPS_SCRIPT_URL as string | undefined
 
 export const buildPayload = (input: {
   profile: ProfilePayload
-  roles: string[]
-  published: string[]
-  publishedLink: string
-  selected: Record<string, Level>
+  expertise: string
+  practice: string[]
+  aiExperience: string
+  aiWorkflow: string[]
+  aiRelationship: string
+  projectTypes: string[]
+  projectLinks: Record<string, string>
+  stages: string[]
+  selected: Set<string>
   otherTools: string
   hp: string
   elapsedMs: number
@@ -60,17 +72,27 @@ export const buildPayload = (input: {
   language: string
 }): SubmissionPayload => ({
   profile: input.profile,
-  roles: input.roles,
-  published: input.published,
-  publishedLink: input.publishedLink.trim(),
-  tools: Object.entries(input.selected).map(([id, level]) => {
-    const tool = TOOL_BY_ID[id]
+  expertise: input.expertise,
+  practice: input.practice,
+  aiExperience: input.aiExperience,
+  aiWorkflow: input.aiWorkflow,
+  aiRelationship: input.aiRelationship,
+  projectTypes: input.projectTypes,
+  // A link for a type they did not tick is an orphan the columns cannot
+  // explain, so it never leaves the browser.
+  projectLinks: Object.fromEntries(
+    input.projectTypes
+      .map((id) => [id, (input.projectLinks[id] ?? "").trim()] as const)
+      .filter(([, link]) => link)
+  ),
+  stages: input.stages,
+  tools: [...input.selected].map((key) => {
+    const { groupId, toolId } = parseSelectionKey(key)
     return {
-      id,
-      name: tool?.name ?? id,
-      level,
-      group: tool?.group ?? "",
-      ai: tool?.ai ?? false
+      id: toolId,
+      name: TOOL_BY_ID[toolId]?.name ?? toolId,
+      group: groupId,
+      groupName: GROUP_BY_ID[groupId]?.id ?? groupId
     }
   }),
   otherTools: input.otherTools.trim(),
