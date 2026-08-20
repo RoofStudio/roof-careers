@@ -9,9 +9,24 @@ function makeSheet(initialRows = []) {
   const grid = initialRows.map((r) => [...r])
   const calls = { widths: {}, formats: {}, aligns: {}, validations: {}, frozen: {} }
 
+  // A real sheet can never hold data past its own width, so seeded rows set
+  // the floor. 26 is what Google gives a brand-new spreadsheet.
+  let maxColumns = Math.max(26, ...grid.map((r) => r.length), 0)
+
   const cell = (r, c) => (grid[r] && grid[r][c] !== undefined ? grid[r][c] : "")
 
-  const range = (row, col, numRows, numCols) => ({
+  // Google throws when a range runs past the sheet's real width. The fake used
+  // to allow it, which hid a crash that only appeared on a live spreadsheet.
+  const range = (row, col, numRows, numCols) => {
+    if (col + numCols - 1 > maxColumns) {
+      throw new Error(
+        `range exceeds sheet width: needs col ${col + numCols - 1}, sheet has ${maxColumns}`
+      )
+    }
+    return rangeApi(row, col, numRows, numCols)
+  }
+
+  const rangeApi = (row, col, numRows, numCols) => ({
     getValues: () => {
       const out = []
       for (let r = 0; r < numRows; r++) {
@@ -27,13 +42,13 @@ function makeSheet(initialRows = []) {
         grid[gr] ||= []
         line.forEach((v, c) => (grid[gr][col - 1 + c] = v))
       })
-      return range(row, col, numRows, numCols)
+      return rangeApi(row, col, numRows, numCols)
     },
-    setFontWeight: () => range(row, col, numRows, numCols),
-    setBackground: () => range(row, col, numRows, numCols),
-    setFontColor: () => range(row, col, numRows, numCols),
-    setVerticalAlignment: () => range(row, col, numRows, numCols),
-    setWrap: () => range(row, col, numRows, numCols),
+    setFontWeight: () => rangeApi(row, col, numRows, numCols),
+    setBackground: () => rangeApi(row, col, numRows, numCols),
+    setFontColor: () => rangeApi(row, col, numRows, numCols),
+    setVerticalAlignment: () => rangeApi(row, col, numRows, numCols),
+    setWrap: () => rangeApi(row, col, numRows, numCols),
     setNumberFormat: (f) => ((calls.formats[col] = f), range(row, col, numRows, numCols)),
     setHorizontalAlignment: (a) => ((calls.aligns[col] = a), range(row, col, numRows, numCols)),
     setDataValidation: (v) => ((calls.validations[col] = v), range(row, col, numRows, numCols)),
@@ -50,6 +65,11 @@ function makeSheet(initialRows = []) {
     getLastRow: () => grid.length,
     getLastColumn: () => grid.reduce((n, r) => Math.max(n, r.length), 0),
     getMaxRows: () => MAX_ROWS,
+    getMaxColumns: () => maxColumns,
+    insertColumnsAfter: (_after, howMany) => {
+      calls.insertedColumns = (calls.insertedColumns || 0) + howMany
+      maxColumns += howMany
+    },
     getRange: range,
     appendRow: (row) => grid.push([...row]),
     setRowHeight: () => {},

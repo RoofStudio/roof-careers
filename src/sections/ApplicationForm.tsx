@@ -1,10 +1,12 @@
 import React, { useMemo, useRef, useState } from "react"
-import { motion } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion"
 import { useTranslation } from "react-i18next"
 import { HiArrowRight, HiExclamationTriangle, HiPaperAirplane } from "react-icons/hi2"
 import Button from "../components/Button"
+import ChipGroup from "../components/ChipGroup"
 import Field from "../components/Field"
 import ToolPicker from "../components/ToolPicker"
+import { PUBLISHED_WORK, ROLES } from "../data/profile"
 import { TOTAL_TOOLS, type Level } from "../data/tools"
 import { buildPayload, submitApplication, type ProfilePayload } from "../lib/submit"
 import { TURNSTILE_ENABLED, useTurnstile } from "../lib/turnstile"
@@ -17,7 +19,6 @@ const EMPTY_PROFILE: ProfilePayload = {
   email: "",
   phone: "",
   location: "",
-  role: "",
   portfolio: "",
   links: ""
 }
@@ -48,6 +49,9 @@ const isUsableUrl = (value: string) => {
   }
 }
 
+const toggleIn = (list: string[], id: string) =>
+  list.includes(id) ? list.filter((x) => x !== id) : [...list, id]
+
 interface ApplicationFormProps {
   onSuccess: () => void
 }
@@ -57,6 +61,9 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
   const { resolvedTheme } = useTheme()
 
   const [profile, setProfile] = useState<ProfilePayload>(EMPTY_PROFILE)
+  const [roles, setRoles] = useState<string[]>([])
+  const [published, setPublished] = useState<string[]>([])
+  const [publishedLink, setPublishedLink] = useState("")
   const [selected, setSelected] = useState<Record<string, Level>>({})
   const [otherTools, setOtherTools] = useState("")
   const [errors, setErrors] = useState<Errors>({})
@@ -141,6 +148,11 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
             portfolio: normalizeUrl(profile.portfolio),
             links: profile.links.trim()
           },
+          roles,
+          // A link with nothing ticked is an orphan: drop it rather than store
+          // a claim the columns cannot explain.
+          published,
+          publishedLink: published.length ? normalizeUrl(publishedLink) : "",
           selected,
           otherTools,
           hp,
@@ -166,7 +178,7 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
   return (
     <section id="form" className="wide-column scroll-mt-20 pb-24">
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-8">
-        {/* ── Sobre você ─────────────────────────────────────────────── */}
+        {/* ── O básico ───────────────────────────────────────────────── */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -215,24 +227,17 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
               inputMode="tel"
             />
 
-            <Field
-              id="location"
-              label={t("form.fields.location.label")}
-              placeholder={t("form.fields.location.placeholder")}
-              value={profile.location}
-              onChange={setField("location")}
-              error={errors.location}
-              autoComplete="address-level2"
-            />
-
-            <Field
-              id="role"
-              label={t("form.fields.role.label")}
-              placeholder={t("form.fields.role.placeholder")}
-              value={profile.role}
-              onChange={setField("role")}
-              optional
-            />
+            <div className="sm:col-span-2">
+              <Field
+                id="location"
+                label={t("form.fields.location.label")}
+                placeholder={t("form.fields.location.placeholder")}
+                value={profile.location}
+                onChange={setField("location")}
+                error={errors.location}
+                autoComplete="address-level2"
+              />
+            </div>
 
             <div className="sm:col-span-2">
               <Field
@@ -272,6 +277,69 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
               value={hp}
               onChange={(e) => setHp(e.target.value)}
             />
+          </div>
+        </motion.div>
+
+        {/* ── Seu trabalho ───────────────────────────────────────────────
+            Two chip questions instead of "are you a director?" and "do you
+            have a short film?". Nothing to type, one tap per answer, and both
+            land in the sheet as columns you can filter on. */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.15 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="text-column rounded-card border border-line bg-panel p-7 shadow-card sm:p-10"
+        >
+          <p className="label mb-6">{t("profile.rolesLabel")}</p>
+
+          <div className="flex flex-col gap-8">
+            <ChipGroup
+              id="roles"
+              title={t("profile.rolesTitle")}
+              hint={t("profile.rolesHint")}
+              chips={ROLES}
+              selected={roles}
+              onToggle={(id) => setRoles((prev) => toggleIn(prev, id))}
+            />
+
+            <div>
+              <ChipGroup
+                id="published"
+                title={t("profile.publishedTitle")}
+                hint={t("profile.publishedHint")}
+                chips={PUBLISHED_WORK}
+                selected={published}
+                onToggle={(id) => setPublished((prev) => toggleIn(prev, id))}
+              />
+
+              {/* The link only exists once there is something to link to. Tick
+                  nothing and the form stays exactly as short as it was. */}
+              <AnimatePresence initial={false}>
+                {published.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.22, ease: "easeOut" }}
+                    className="overflow-hidden"
+                  >
+                    <div className="pt-5">
+                      <Field
+                        id="publishedLink"
+                        type="url"
+                        label={t("form.fields.publishedLink.label")}
+                        placeholder={t("form.fields.publishedLink.placeholder")}
+                        value={publishedLink}
+                        onChange={setPublishedLink}
+                        optional
+                        inputMode="url"
+                      />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </motion.div>
 

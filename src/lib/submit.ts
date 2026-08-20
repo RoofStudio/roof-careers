@@ -1,19 +1,27 @@
-import { TOOL_NAMES, type Level } from "../data/tools"
+import { TOOL_BY_ID, type Level } from "../data/tools"
 
 export interface ProfilePayload {
   fullName: string
   email: string
   phone: string
   location: string
-  role: string
   portfolio: string
   links: string
 }
 
 export interface SubmissionPayload {
   profile: ProfilePayload
-  /** Only the checked tools, each with its level. */
-  tools: { id: string; name: string; level: Level }[]
+  /** Roles the person has actually delivered a project in. */
+  roles: string[]
+  /** Where their work has been seen, plus one link if any of it has. */
+  published: string[]
+  publishedLink: string
+  /**
+   * Only the checked tools. `group` and `ai` ride along so the sheet can derive
+   * the pipeline and the AI-fluency count without holding a second copy of the
+   * tool table that would drift out of date.
+   */
+  tools: { id: string; name: string; level: Level; group: string; ai: boolean }[]
   otherTools: string
   meta: {
     submittedAt: string
@@ -34,12 +42,16 @@ export interface SubmissionPayload {
   }
 }
 
-export const FORM_VERSION = "1"
+/** v2: roles/published replaced the free-text "Field of Work". */
+export const FORM_VERSION = "2"
 
 const APPS_SCRIPT_URL = import.meta.env.VITE_APPS_SCRIPT_URL as string | undefined
 
 export const buildPayload = (input: {
   profile: ProfilePayload
+  roles: string[]
+  published: string[]
+  publishedLink: string
   selected: Record<string, Level>
   otherTools: string
   hp: string
@@ -48,11 +60,19 @@ export const buildPayload = (input: {
   language: string
 }): SubmissionPayload => ({
   profile: input.profile,
-  tools: Object.entries(input.selected).map(([id, level]) => ({
-    id,
-    name: TOOL_NAMES[id] ?? id,
-    level
-  })),
+  roles: input.roles,
+  published: input.published,
+  publishedLink: input.publishedLink.trim(),
+  tools: Object.entries(input.selected).map(([id, level]) => {
+    const tool = TOOL_BY_ID[id]
+    return {
+      id,
+      name: tool?.name ?? id,
+      level,
+      group: tool?.group ?? "",
+      ai: tool?.ai ?? false
+    }
+  }),
   otherTools: input.otherTools.trim(),
   meta: {
     submittedAt: new Date().toISOString(),

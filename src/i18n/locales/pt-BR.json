@@ -8,30 +8,26 @@
     "language": "Idioma"
   },
   "hero": {
-    "kicker": "Roof Studio · Talentos",
-    "headline": "Queremos muito te conhecer!",
-    "lead": "Se você chegou até aqui, é porque tem algo especial para mostrar. Queremos conhecer você e o seu trabalho.",
-    "question": "Vamos nos conhecer?",
+    "kicker": "Talento criativo",
+    "headline": "Somos a Roof Studio, e queremos te conhecer.",
+    "lead": "Sempre acreditamos que uma boa animação tem que parecer que você pode pegar na mão.",
+    "question": "Parece com você?",
     "cta": "Começar",
     "time": "Leva cerca de 3 minutos"
   },
   "about": {
-    "label": "A vaga",
-    "title": "AI Creative Talent",
-    "subtitle": "Art Direction, Design & Animation",
-    "p1": "Estamos buscando Diretores de Arte, Designers, Animadores e profissionais criativos com experiência e domínio de ferramentas de Inteligência Artificial, que estejam explorando novas formas de criar.",
-    "p2": "Pessoas com repertório, olhar criativo, experiência e domínio técnico, capazes de transformar ideias em imagens, conceitos, animações e narrativas visuais — e de levar uma ideia além do que já conhecemos.",
-    "p3": "Acreditamos que as ferramentas são parte do processo. O que nos interessa é o que você cria com elas.",
-    "p4": "Queremos conhecer seu trabalho, entender como a IA faz parte do seu processo criativo e descobrir novas possibilidades junto com você.",
-    "p5": "Se você se identifica com esse perfil, preencha o formulário abaixo, compartilhe seu portfólio ou demo reel e selecione as ferramentas de IA que você domina.",
-    "closing": "Vamos descobrir o que vem a seguir."
+    "label": "O convite",
+    "title": "O ofício vem primeiro",
+    "subtitle": "Artistas, Diretores de Arte, Designers & Animadores",
+    "p1": "Sempre acreditamos que uma boa animação tem que parecer que você pode pegar na mão. Cada detalhe pensado, cada frame justificando o seu lugar. É esse o padrão de tudo o que a gente faz.",
+    "p2": "Procuramos Artistas, Diretores de Arte, Designers e Animadores que compartilhem essa obsessão pelo ofício — e que já estejam usando ferramentas de IA como parte do jeito de criar, ou tenham curiosidade de começar.",
+    "closing": "Parece com você? Preenche o formulário abaixo e vamos conversar."
   },
   "form": {
-    "label": "Cadastro profissional",
-    "title": "Sobre você",
-    "subtitle": "O básico para conseguirmos falar com você e ver o seu trabalho.",
+    "label": "Sobre você",
+    "title": "O básico",
+    "subtitle": "Para conseguirmos falar com você e ver o seu trabalho.",
     "optional": "opcional",
-    "requiredMark": "obrigatório",
     "fields": {
       "fullName": {
         "label": "Nome completo",
@@ -49,10 +45,6 @@
         "label": "Localização",
         "placeholder": "Cidade / País"
       },
-      "role": {
-        "label": "Área de atuação",
-        "placeholder": "Direção de Arte, Design, Animação, 3D/VFX…"
-      },
       "portfolio": {
         "label": "Portfólio / Demo Reel",
         "placeholder": "Cole o link do seu portfólio ou demo reel"
@@ -60,18 +52,49 @@
       "links": {
         "label": "Links adicionais",
         "placeholder": "Site / Behance / Vimeo / Instagram / LinkedIn, etc."
+      },
+      "publishedLink": {
+        "label": "Link de um deles",
+        "placeholder": "Cole o link — o trabalho de que você mais se orgulha"
       }
     },
     "errors": {
       "required": "Esse campo é obrigatório.",
       "email": "Confere o e-mail? Ele parece incompleto.",
       "url": "Coloque um link completo, começando com https://",
-      "tools": "Selecione ao menos uma ferramenta — ou adicione a sua em “Outras”."
+      "tools": "Selecione ao menos uma ferramenta — ou adicione a sua em “Usa mais alguma?”."
+    }
+  },
+  "profile": {
+    "rolesLabel": "Seu trabalho",
+    "rolesTitle": "Em que funções você já entregou um projeto?",
+    "rolesHint": "Marque todas que se aplicam — quantas forem.",
+    "publishedTitle": "Onde seu trabalho já apareceu?",
+    "publishedHint": "Deixe em branco se nenhuma se encaixa ainda.",
+    "roles": {
+      "director": "Direção",
+      "artDirector": "Direção de Arte",
+      "animator": "Animação",
+      "designer": "Design",
+      "storyboard": "Storyboard",
+      "modeling": "Modelagem",
+      "lookdev": "Look Dev",
+      "compositor": "Composição",
+      "editor": "Edição"
+    },
+    "published": {
+      "shortFilm": "Curta",
+      "festival": "Festival",
+      "commercial": "Comercial",
+      "musicVideo": "Videoclipe",
+      "series": "Série / Streaming",
+      "game": "Game",
+      "installation": "Instalação"
     }
   },
   "tools": {
-    "label": "Ferramentas",
-    "title": "Quais ferramentas de IA você usa profissionalmente?",
+    "label": "Suas ferramentas",
+    "title": "Quais ferramentas fazem parte do seu processo?",
     "subtitle": "Selecione todas que se aplicam e indique seu nível em cada uma.",
     "selectedCount": "{{count}} de {{total}} selecionadas",
     "clear": "Limpar seleção",
@@ -82,26 +105,27 @@
       "advanced": "Avançado"
     },
     "groups": {
-      "workflow": "Workflow / Gerenciamento de IA",
-      "generation": "Geração & ferramentas criativas de IA",
-      "control": "IA avançada / Controle",
-      "api": "APIs / Integração de modelos",
-      "animation": "Animação / 3D / VFX",
-      "editing": "Edição / Pós-produção",
-      "upscaling": "Upscaling / Imagem & vídeo",
-      "audio": "Áudio & voz com IA",
-      "videoProduction": "Produção / Adaptação de vídeo com IA",
-      "other": "Outras"
+      "concept": "Concepção & imagem",
+      "video": "Vídeo generativo",
+      "modeling": "3D — modelagem & assets",
+      "rigAnim": "Rig, animação & captura",
+      "performance": "Face, lipsync & performance",
+      "scan": "Escaneamento & captura de cena",
+      "lookdev": "Look dev & render",
+      "comp": "Composição & finalização",
+      "anim2d": "2D & motion design",
+      "audio": "Áudio & voz",
+      "workflow": "Workflow, controle & modelos"
     },
     "other": {
-      "label": "Usa alguma que não está na lista?",
+      "label": "Usa mais alguma?",
       "placeholder": "Conte quais — separe por vírgula"
     }
   },
   "submit": {
-    "cta": "Enviar cadastro",
+    "cta": "Enviar",
     "sending": "Enviando…",
-    "privacy": "Seus dados vão direto para a nossa equipe de talentos. Nada de spam.",
+    "privacy": "Seus dados vão direto para a nossa equipe. Nada de spam.",
     "checkFields": "Falta preencher alguns campos acima.",
     "failed": "Não conseguimos enviar agora.",
     "failedHint": "Tente de novo em alguns instantes. Se continuar, escreva para {{email}}.",

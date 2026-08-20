@@ -8,30 +8,26 @@
     "language": "Language"
   },
   "hero": {
-    "kicker": "Roof Studio · Talent",
-    "headline": "We really want to meet you!",
-    "lead": "If you made it this far, it's because you have something special to show. We want to know you and your work.",
-    "question": "Shall we get to know each other?",
+    "kicker": "Creative Talent",
+    "headline": "We're Roof Studio, and we want to meet you.",
+    "lead": "We've always believed great animation should feel like you could hold it in your hand.",
+    "question": "Sound like you?",
     "cta": "Get started",
     "time": "Takes about 3 minutes"
   },
   "about": {
-    "label": "The role",
-    "title": "AI Creative Talent",
-    "subtitle": "Art Direction, Design & Animation",
-    "p1": "We're looking for Art Directors, Designers, Animators and creative professionals with experience and command of AI tools, who are exploring new ways of creating.",
-    "p2": "People with repertoire, a creative eye, experience and technical craft — able to turn ideas into images, concepts, animation and visual narrative, and to take an idea further than what we already know.",
-    "p3": "We believe the tools are part of the process. What interests us is what you create with them.",
-    "p4": "We want to see your work, understand how AI fits into your creative process, and discover new possibilities together with you.",
-    "p5": "If this sounds like you, fill in the form below, share your portfolio or demo reel, and select the AI tools you work with.",
-    "closing": "Let's find out what comes next."
+    "label": "The invitation",
+    "title": "Craft first",
+    "subtitle": "Artists, Art Directors, Designers & Animators",
+    "p1": "We've always believed great animation should feel like you could hold it in your hand. Every detail considered, every frame earning its place. That's the standard everything we make is built on.",
+    "p2": "We're looking for Artists, Art Directors, Designers and Animators who share that obsession with craft and who are already putting AI tools to work as part of how they create, or are curious to start.",
+    "closing": "Sound like you? Fill out the form below and let's talk."
   },
   "form": {
-    "label": "Professional registration",
-    "title": "About you",
-    "subtitle": "The basics, so we can reach you and see your work.",
+    "label": "About you",
+    "title": "The basics",
+    "subtitle": "So we can reach you and see your work.",
     "optional": "optional",
-    "requiredMark": "required",
     "fields": {
       "fullName": {
         "label": "Full name",
@@ -49,10 +45,6 @@
         "label": "Location",
         "placeholder": "City / Country"
       },
-      "role": {
-        "label": "Field of work",
-        "placeholder": "Art Direction, Design, Animation, 3D/VFX…"
-      },
       "portfolio": {
         "label": "Portfolio / Demo Reel",
         "placeholder": "Paste a link to your portfolio or demo reel"
@@ -60,18 +52,49 @@
       "links": {
         "label": "Additional links",
         "placeholder": "Website / Behance / Vimeo / Instagram / LinkedIn, etc."
+      },
+      "publishedLink": {
+        "label": "Link to one of them",
+        "placeholder": "Paste a link — the piece you're proudest of"
       }
     },
     "errors": {
       "required": "This field is required.",
       "email": "Double-check the email — it looks incomplete.",
       "url": "Use a full link, starting with https://",
-      "tools": "Select at least one tool — or add yours under “Other”."
+      "tools": "Select at least one tool — or add yours under “Anything else”."
+    }
+  },
+  "profile": {
+    "rolesLabel": "Your work",
+    "rolesTitle": "Which roles have you delivered a project in?",
+    "rolesHint": "Pick every one that applies — however many that is.",
+    "publishedTitle": "Where has your work been seen?",
+    "publishedHint": "Leave blank if none of these fit yet.",
+    "roles": {
+      "director": "Direction",
+      "artDirector": "Art Direction",
+      "animator": "Animation",
+      "designer": "Design",
+      "storyboard": "Storyboard",
+      "modeling": "Modeling",
+      "lookdev": "Look Dev",
+      "compositor": "Compositing",
+      "editor": "Editing"
+    },
+    "published": {
+      "shortFilm": "Short film",
+      "festival": "Festival",
+      "commercial": "Commercial",
+      "musicVideo": "Music video",
+      "series": "Series / Streaming",
+      "game": "Game",
+      "installation": "Installation"
     }
   },
   "tools": {
-    "label": "Tools",
-    "title": "Which AI tools do you use professionally?",
+    "label": "Your toolkit",
+    "title": "Which tools are part of your process?",
     "subtitle": "Select all that apply and set your level for each one.",
     "selectedCount": "{{count}} of {{total}} selected",
     "clear": "Clear selection",
@@ -82,26 +105,27 @@
       "advanced": "Advanced"
     },
     "groups": {
-      "workflow": "AI workflow / management",
-      "generation": "AI generation & creative tools",
-      "control": "Advanced AI / control",
-      "api": "AI API / model integration",
-      "animation": "Animation / 3D / VFX",
-      "editing": "Editing / post-production",
-      "upscaling": "Upscaling / image & video",
-      "audio": "AI audio / voice",
-      "videoProduction": "AI video production / adaptation",
-      "other": "Other"
+      "concept": "Concept & image",
+      "video": "Generative video",
+      "modeling": "3D — modeling & assets",
+      "rigAnim": "Rig, animation & capture",
+      "performance": "Face, lipsync & performance",
+      "scan": "Scanning & scene capture",
+      "lookdev": "Look dev & render",
+      "comp": "Compositing & finishing",
+      "anim2d": "2D & motion design",
+      "audio": "Audio & voice",
+      "workflow": "Workflow, control & models"
     },
     "other": {
-      "label": "Using something that isn't on the list?",
+      "label": "Anything else you work with?",
       "placeholder": "Tell us which — separate with commas"
     }
   },
   "submit": {
-    "cta": "Submit registration",
+    "cta": "Send",
     "sending": "Sending…",
-    "privacy": "Your details go straight to our talent team. No spam.",
+    "privacy": "Your details go straight to our team. No spam.",
     "checkFields": "Some fields above still need your attention.",
     "failed": "We couldn't send it right now.",
     "failedHint": "Try again in a moment. If it keeps failing, write to {{email}}.",

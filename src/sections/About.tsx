@@ -3,7 +3,7 @@ import { motion } from "framer-motion"
 import { useTranslation } from "react-i18next"
 import { HiSparkles } from "react-icons/hi2"
 
-const PARAGRAPHS = ["about.p1", "about.p2", "about.p3", "about.p4", "about.p5"] as const
+const PARAGRAPHS = ["about.p1", "about.p2"] as const
 
 /** The role, in the deck's words. Copy only — the ask lives in the form below. */
 const About: React.FC = () => {

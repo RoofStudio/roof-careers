@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx",
     "format": "prettier --write \"src/**/*.{ts,tsx,css,json}\"",
-    "test:sheet": "node apps-script/test/schema.test.mjs"
+    "test:sheet": "node scripts/sync-tools.mjs --check && node apps-script/test/schema.test.mjs",
+    "sync:tools": "node scripts/sync-tools.mjs"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.0.17",
