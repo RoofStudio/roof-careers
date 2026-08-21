@@ -12,22 +12,29 @@ const PAYLOAD = {
     reels: "https://vimeo.com/ana"
   },
   expertise: "art-director",
-  practice: ["art-direction", "concept-art", "visual-development"],
+  responsibility: "drive",
+  workMode: "creative-lead",
+  reach: "end-to-end",
+  challenge: "leading-complex",
+  aiIntegration: "pipeline",
   aiWorkflow: ["combine", "node-based"],
-  aiRelationship: "professional",
+  strength: "languages-worlds",
+  finishing: "responsible",
+  aiLedLink: "https://vimeo.com/ai-led",
+  aiExecutedLink: "https://vimeo.com/ai-exec",
   projectTypes: ["short-film", "commercial"],
   projectLinks: {
     "short-film": "https://vimeo.com/curta",
     commercial: "https://vimeo.com/ad"
   },
-  stages: ["art-direction", "storyboard", "compositing"],
+  pipeline: ["direction-concept", "3d-animation", "vfx-post"],
   tools: [
     // Runway ticked in three areas — one tool, three facts.
     { id: "runway", name: "Runway", group: "storyboard" },
     { id: "runway", name: "Runway", group: "vfx" },
-    { id: "runway", name: "Runway", group: "animation" },
+    { id: "runway", name: "Runway", group: "video" },
     { id: "midjourney", name: "Midjourney", group: "concept" },
-    { id: "cascadeur", name: "Cascadeur", group: "animation" }
+    { id: "cascadeur", name: "Cascadeur", group: "character" }
   ],
   otherTools: "Krea",
   meta: {
@@ -35,7 +42,7 @@ const PAYLOAD = {
     language: "pt-BR",
     timezone: "America/Sao_Paulo",
     userAgent: "Mozilla/5.0 test",
-    formVersion: "4"
+    formVersion: "5"
   },
   guard: { hp: "", elapsedMs: 20000, turnstileToken: "" }
 }
@@ -61,14 +68,15 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
     JSON.stringify(headers) === JSON.stringify(sandbox.HEADERS))
   check("1c headers are unique", new Set(headers).size === headers.length,
     "a prefix collision would silently overwrite a column")
-  check("1d one column per distinct tool (204, not the 300 checkboxes)",
-    sandbox.TOOL_ROSTER.length === 204 &&
+  check("1d one column per distinct tool (92, not the 128 checkboxes)",
+    sandbox.TOOL_ROSTER.length === 92 &&
       sandbox.TOOL_ROSTER.every((t) => headers.includes(`Tool: ${t.label}`)),
     `roster=${sandbox.TOOL_ROSTER.length}`)
-  check("1e one column per practice area",
-    sandbox.PRACTICE_ROSTER.every((c) => headers.includes(`Area: ${c.label}`)))
-  check("1f one column per pipeline stage",
-    sandbox.STAGE_ROSTER.every((c) => headers.includes(`Stage: ${c.label}`)))
+  check("1e one column per pipeline area",
+    sandbox.PIPELINE_ROSTER.every((c) => headers.includes(`Pipeline: ${c.label}`)))
+  check("1f the nine ladders each get a readable column",
+    ["Primary Practice","Responsibility","Work Mode","Project Reach","Visual Challenge",
+     "AI Integration","AI Workflow","Core Strength","Finishing"].every((h) => headers.includes(h)))
   check("1g project types get both a flag and a credits link",
     sandbox.PROJECT_TYPE_ROSTER.every(
       (c) => headers.includes(`Led: ${c.label}`) && headers.includes(`Link: ${c.label}`)
@@ -100,22 +108,26 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
   check("2b name", row["Full Name"] === "Ana Ribeiro")
   check("2c accents survive", row["Location"] === "São Paulo / Brasil", String(row["Location"]))
   check("2d single-select resolves to its label",
-    row["Primary Expertise"] === "Art Director", String(row["Primary Expertise"]))
-  check("2e practice areas readable, in roster order",
-    row["Practice Areas"] === "Art Direction, Concept Art, Visual Development",
-    String(row["Practice Areas"]))
-  check("2f practice count", row["Practice Count"] === 3)
-  check("2g AI relationship label",
-    row["AI Relationship"] === "I actively use AI tools in professional projects",
-    String(row["AI Relationship"]))
+    row["Primary Practice"] === "Art Director", String(row["Primary Practice"]))
+  check("2e responsibility ladder resolves",
+    row["Responsibility"].startsWith("Drive"), String(row["Responsibility"]))
+  check("2f reach ladder resolves",
+    row["Project Reach"] === "End-to-end, including refinement and finishing",
+    String(row["Project Reach"]))
+  check("2g AI integration resolves",
+    row["AI Integration"].startsWith("Pipeline"), String(row["AI Integration"]))
+  check("2g2 the two AI project links land in their own columns",
+    row["AI Project (led)"] === "https://vimeo.com/ai-led" &&
+      row["AI Project (executed)"] === "https://vimeo.com/ai-exec")
   check("2h AI workflow multi-select",
-    row["AI Workflow"] === "I combine multiple tools in my workflow, I use node-based / modular workflows",
+    row["AI Workflow"] ===
+      "I combine different AI tools in the same workflow, I use node-based / modular workflows",
     String(row["AI Workflow"]))
   check("2i led projects", row["Led Projects"] === "Short Film, Commercial / Advertising",
     String(row["Led Projects"]))
-  check("2j pipeline stages in roster order, not click order",
-    row["Pipeline Stages"] === "Art Direction, Storyboard, Compositing",
-    String(row["Pipeline Stages"]))
+  check("2j pipeline areas in roster order, not click order",
+    row["Pipeline Areas"] === "Direction & Concept, 3D & Animation, VFX & Post-production",
+    String(row["Pipeline Areas"]))
   check("2k tools counted DISTINCTLY — Runway ticked 3x is one tool",
     row["Tools Count"] === 3, String(row["Tools Count"]))
   check("2l all tools deduplicated", row["All Tools"] === "Runway, Midjourney, Cascadeur",
@@ -123,7 +135,6 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
   check("2m other tools", row["Other Tools"] === "Krea")
   check("2n status seeded", row["Status"] === "Novo")
   check("2o rating left for the team", row["Rating"] === "")
-  check("2p imdb kept", row["IMDb / Credits"] === "https://imdb.com/name/nm123")
   check("2q received at is a real timestamp",
     Object.prototype.toString.call(row["Received At"]) === "[object Date]" &&
       Math.abs(row["Received At"].getTime() - Date.now()) < 60_000)
@@ -141,13 +152,14 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
   check("3a a tool NOT selected is blank, not absent",
     row["Tool: Stable Diffusion"] === "", JSON.stringify(row["Tool: Stable Diffusion"]))
   check("3b a tool column lists the AREAS it was ticked in, so one filter says who + for what",
-    row["Tool: Runway"] === "Storyboard / previs / animatic, VFX / compositing, Animation",
+    row["Tool: Runway"] ===
+      "Storyboard / previs / animatic, Video generation, VFX / compositing / cleanup",
     String(row["Tool: Runway"]))
   check("3c a tool ticked in one area lists just that area",
-    row["Tool: Cascadeur"] === "Animation", String(row["Tool: Cascadeur"]))
-  check("3d practice area flag", row["Area: Concept Art"] === "Yes")
-  check("3e unticked practice area is blank", row["Area: Rigging"] === "")
-  check("3f pipeline stage flag", row["Stage: Storyboard"] === "Yes")
+    row["Tool: Cascadeur"] === "Character / rigging / animation", String(row["Tool: Cascadeur"]))
+  check("3d pipeline area flag", row["Pipeline: Direction & Concept"] === "Yes")
+  check("3e unticked pipeline area is blank", row["Pipeline: Production"] === "")
+  check("3f second pipeline flag", row["Pipeline: VFX & Post-production"] === "Yes")
   check("3g 'led a short film' is one filter click", row["Led: Short Film"] === "Yes")
   check("3h and its credits link sits right beside it",
     row["Link: Short Film"] === "https://vimeo.com/curta", String(row["Link: Short Film"]))
@@ -164,28 +176,36 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
   post(sandbox, {
     ...PAYLOAD,
     expertise: "",
-    practice: [],
+    responsibility: "",
+    workMode: "",
+    reach: "",
+    challenge: "",
+    aiIntegration: "",
     aiWorkflow: [],
-    aiRelationship: "",
+    strength: "",
+    finishing: "",
+    aiLedLink: "",
+    aiExecutedLink: "",
     projectTypes: [],
     projectLinks: {},
-    stages: [],
+    pipeline: [],
     tools: [{ id: "midjourney", name: "Midjourney", group: "concept" }],
     otherTools: ""
   })
   const bare = asObject(sheet._grid[0], sheet._grid[1])
-  check("4a empty single-selects are blank, not 'undefined'",
-    bare["Primary Expertise"] === "" && bare["AI Relationship"] === "",
-    `${bare["Primary Expertise"]} / ${bare["AI Relationship"]}`)
-  check("4b empty multi-selects are blank", bare["Practice Areas"] === "" && bare["Pipeline Stages"] === "")
-  check("4c counts are zero, not blank", bare["Practice Count"] === 0 && bare["Pipeline Count"] === 0)
+  check("4a empty ladders are blank, not 'undefined'",
+    bare["Primary Practice"] === "" && bare["Responsibility"] === "" && bare["Finishing"] === "",
+    `${bare["Primary Practice"]} / ${bare["Responsibility"]}`)
+  check("4b empty multi-selects are blank",
+    bare["AI Workflow"] === "" && bare["Pipeline Areas"] === "")
+  check("4c tools count is a number, not blank", bare["Tools Count"] === 1)
   check("4d the one tool still lands", bare["Tool: Midjourney"] === "Concept art / visual development",
     String(bare["Tool: Midjourney"]))
 
   // An id the roster does not know must not blow up the row.
   post(sandbox, { ...PAYLOAD, expertise: "gaffer", tools: [{ id: "nope", name: "Nope", group: "zzz" }] })
   const odd = asObject(sheet._grid[0], sheet._grid[2])
-  check("4e unknown single-select id resolves to blank", odd["Primary Expertise"] === "")
+  check("4e unknown single-select id resolves to blank", odd["Primary Practice"] === "")
   check("4f unknown tool does not appear anywhere", odd["All Tools"] === "Nope" && odd["Tools Count"] === 1)
 }
 
@@ -219,7 +239,8 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
   check("4b5 ordinary text is left alone", row["Email"] === "ana@exemplo.com",
     JSON.stringify(row["Email"]))
   check("4b6 numbers are not turned into strings",
-    row["Practice Count"] === 3 && typeof row["Practice Count"] === "number")
+    row["Tools Count"] === 3 && typeof row["Tools Count"] === "number",
+    String(row["Tools Count"]))
   check("4b7 the timestamp is still a Date",
     Object.prototype.toString.call(row["Received At"]) === "[object Date]")
   // Text columns keep the default format on purpose: a plain-text ("@") cell
@@ -238,7 +259,8 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
 
   const row = asObject(sheet._grid[0], sheet._grid[1])
   check("5a reordered: name still correct", row["Full Name"] === "Ana Ribeiro")
-  check("5b reordered: per-tool column still correct", row["Tool: Cascadeur"] === "Animation")
+  check("5b reordered: per-tool column still correct",
+    row["Tool: Cascadeur"] === "Character / rigging / animation")
   check("5c reordered: header row untouched",
     JSON.stringify(sheet._grid[0]) === JSON.stringify(shuffled))
 }
@@ -258,23 +280,24 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
   post(sandbox, PAYLOAD)
   const headers = sheet._grid[0]
 
-  check("6a v3 columns appended",
-    headers.includes("Primary Expertise") && headers.includes("Led: Short Film") &&
-      headers.includes("Area: Concept Art"))
+  check("6a v5 columns appended",
+    headers.includes("Primary Practice") && headers.includes("Led: Short Film") &&
+      headers.includes("Pipeline: Direction & Concept") && headers.includes("Responsibility"))
   check("6b v2 columns kept their position",
     JSON.stringify(headers.slice(0, legacy.length)) === JSON.stringify(legacy))
-  check("6c retired v2 columns are preserved, not deleted",
+  check("6c retired columns are preserved, not deleted",
     headers.includes("Roles") && headers.includes("Advanced"),
-    "removing a column would destroy v2 data")
+    "removing a column would destroy older data")
   check("6d existing data row untouched", JSON.stringify(sheet._grid[1]) === JSON.stringify(oldRow))
   check("6e new row lands correctly", asObject(headers, sheet._grid[2])["Full Name"] === "Ana Ribeiro")
   check("6f retired column gets blank, never garbage",
     asObject(headers, sheet._grid[2])["Advanced"] === "")
   check("6g shared columns keep working across versions",
     asObject(headers, sheet._grid[2])["Tools Count"] === 3)
-  check("6h the dropped AI Experience column is never re-created",
-    !headers.includes("AI Experience"),
-    "a removed question must not come back as an empty column")
+  check("6h dropped questions never come back as empty columns",
+    !headers.includes("AI Experience") && !headers.includes("Practice Areas") &&
+      !headers.includes("AI Relationship"),
+    "a removed question must not be re-created")
 }
 
 /* ── 7. Guards ──────────────────────────────────────────────────────────── */

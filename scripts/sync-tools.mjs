@@ -59,24 +59,44 @@ var EXPERTISE_ROSTER = [
 ${choiceList(profile.PRIMARY_EXPERTISE)}
 ]
 
-var PRACTICE_ROSTER = [
-${choiceList(profile.PRACTICE_AREAS)}
+var RESPONSIBILITY_ROSTER = [
+${choiceList(profile.RESPONSIBILITY)}
+]
+
+var WORK_MODE_ROSTER = [
+${choiceList(profile.WORK_MODE)}
+]
+
+var REACH_ROSTER = [
+${choiceList(profile.PROJECT_REACH)}
+]
+
+var CHALLENGE_ROSTER = [
+${choiceList(profile.VISUAL_CHALLENGE)}
+]
+
+var AI_INTEGRATION_ROSTER = [
+${choiceList(profile.AI_INTEGRATION)}
 ]
 
 var AI_WORKFLOW_ROSTER = [
 ${choiceList(profile.AI_WORKFLOW)}
 ]
 
-var AI_RELATIONSHIP_ROSTER = [
-${choiceList(profile.AI_RELATIONSHIP)}
+var STRENGTH_ROSTER = [
+${choiceList(profile.CORE_STRENGTH)}
+]
+
+var FINISHING_ROSTER = [
+${choiceList(profile.FINISHING)}
+]
+
+var PIPELINE_ROSTER = [
+${choiceList(profile.PIPELINE_AREAS)}
 ]
 
 var PROJECT_TYPE_ROSTER = [
 ${choiceList(profile.PROJECT_TYPES)}
-]
-
-var STAGE_ROSTER = [
-${choiceList(profile.PIPELINE_STAGES)}
 ]
 ${END}`
 
@@ -103,6 +123,6 @@ if (process.argv.includes("--check")) {
 fs.writeFileSync(CODE_PATH, next)
 console.log(
   `synced ${Object.keys(TOOL_BY_ID).length} tools, ${TOOL_GROUPS.length} areas, ` +
-    `${profile.PRACTICE_AREAS.length} practice areas, ${profile.PIPELINE_STAGES.length} stages, ` +
+    `${profile.PIPELINE_AREAS.length} pipeline areas, ` +
     `${profile.PROJECT_TYPES.length} project types into Code.gs`
 )

@@ -1,16 +1,18 @@
 /**
- * The profile questions, from FORMULARIO ROUGH V5.
+ * The profile questions, from FORM_ROUGH_V9.
  *
- * Every one of them is a click. There is no free-text field in here by design:
- * the brief was to learn whether someone has directed, whether they have a
- * short film and what their pipeline looks like "sem perguntar explicitamente e
- * sem deixar a pessoa escrever sobre isso".
+ * Every one of them is a click. The brief was to learn how senior someone is,
+ * how far they carry a project and whether they have directed — "sem perguntar
+ * explicitamente e sem deixar a pessoa escrever sobre isso".
  *
- * `PROJECT_TYPES` is the sharpest of them. It asks in which kinds of project
- * the person held a LEADING creative role, so "have they directed?" is answered
- * as a fact about the work rather than a question about the person — and each
- * type reveals its own credits link only once ticked, so the form grows only
- * for people who have something to put there.
+ * V9 replaced V5's flat list of 26 practice areas with nine ladders. A ladder
+ * asks about the WORK ("how far do you typically follow a project?") rather
+ * than about the person ("are you senior?"), which is the only version of that
+ * question people answer honestly.
+ *
+ * `PROJECT_TYPES` stays the sharpest of them: it asks where the person held a
+ * creative or artistic LEADERSHIP role, so "have they directed?" is answered as
+ * a fact about the work, and each type reveals its own link only once ticked.
  *
  * `id` becomes a spreadsheet column, so ids must stay stable. Labels live in
  * the locale files; only the ids are here.
@@ -23,79 +25,82 @@ export interface Choice {
 
 const choice = (id: string, key: string): Choice => ({ id, labelKey: `profile.${key}.${id}` })
 
-/** Single select — the headline answer, and the first filter anyone will use. */
-export const PRIMARY_EXPERTISE: Choice[] = [
-  "art-director",
-  "designer",
-  "animator",
-  "other"
-].map((id) => choice(id, "expertise"))
+/** Q1 — the headline answer, and the first filter anyone will reach for. */
+export const PRIMARY_EXPERTISE: Choice[] = ["art-director", "designer", "animator"].map((id) =>
+  choice(id, "expertise")
+)
 
-/** Multi select. Breadth here separates the generalist from the specialist. */
-export const PRACTICE_AREAS: Choice[] = [
-  "art-direction",
-  "creative-direction",
-  "graphic-design",
-  "motion-design",
-  "2d-animation",
+/** Q2 — how much of the creative call is theirs. */
+export const RESPONSIBILITY: Choice[] = ["execute", "develop", "lead", "drive"].map((id) =>
+  choice(id, "responsibility")
+)
+
+/** Q3 — the same axis seen from the day-to-day rather than from the job title. */
+export const WORK_MODE: Choice[] = [
+  "defined-direction",
+  "autonomy",
+  "area-lead",
+  "creative-lead"
+].map((id) => choice(id, "workMode"))
+
+/** Q4 — how far down the pipeline they stay. Separates concept from finishing. */
+export const PROJECT_REACH: Choice[] = [
+  "concept-development",
+  "concept-production",
+  "concept-final",
+  "end-to-end"
+].map((id) => choice(id, "reach"))
+
+/** Q5 — the difficulty they take on, not the volume. */
+export const VISUAL_CHALLENGE: Choice[] = [
+  "execution",
+  "complex-solutions",
+  "visual-languages",
+  "leading-complex"
+].map((id) => choice(id, "challenge"))
+
+/** Q6 — where AI actually sits in the process, from a tool to a pipeline. */
+export const AI_INTEGRATION: Choice[] = ["development", "production", "pipeline"].map((id) =>
+  choice(id, "aiIntegration")
+)
+
+/**
+ * Q7 — multi select. These are modes, not rungs: someone can combine tools AND
+ * build custom workflows, and forcing a single answer would throw away the
+ * overlap that actually distinguishes people.
+ */
+export const AI_WORKFLOW: Choice[] = ["combine", "customized", "node-based", "per-project"].map(
+  (id) => choice(id, "aiWorkflow")
+)
+
+/** Q8 — what they are best at, in their own words but from a fixed list. */
+export const CORE_STRENGTH: Choice[] = [
+  "concepts-directions",
+  "complex-challenges",
+  "languages-worlds",
+  "execution-refinement"
+].map((id) => choice(id, "strength"))
+
+/** Q9 — ownership of the final quality, which is where craft shows or does not. */
+export const FINISHING: Choice[] = ["oversee", "develop-refine", "responsible", "elevate"].map(
+  (id) => choice(id, "finishing")
+)
+
+/**
+ * Multi select. V9 collapsed V5's 25 granular stages into 7 areas — the fine
+ * grain was asking a candidate to fill in a production schedule.
+ */
+export const PIPELINE_AREAS: Choice[] = [
+  "direction-concept",
+  "design-2d",
   "3d-animation",
-  "character-animation",
-  "character-design",
-  "concept-art",
-  "visual-development",
-  "storyboard",
-  "previs",
-  "3d-modeling",
-  "3d-generalist",
-  "rigging",
-  "motion-capture",
-  "facial-animation",
-  "vfx",
-  "compositing",
-  "look-development",
-  "environment-design",
-  "lighting",
-  "virtual-production",
-  "editing",
+  "pre-production",
+  "vfx-post",
   "color-finishing",
-  "generative-art"
-].map((id) => choice(id, "practice"))
+  "production"
+].map((id) => choice(id, "pipeline"))
 
-/**
- * Multi select — how they actually assemble tools, not how good they claim to
- * be. This and `AI_RELATIONSHIP` are the only two AI questions left: V5 had a
- * third ("how would you describe your experience with AI tools", a
- * beginner→expert ladder) which measured almost exactly what the relationship
- * question measures, one right after the other. Asking the same thing twice
- * does not double the signal, it just costs the candidate a question.
- */
-export const AI_WORKFLOW: Choice[] = [
-  "as-is",
-  "combine",
-  "customized",
-  "node-based",
-  "per-project",
-  "technical-pipelines"
-].map((id) => choice(id, "aiWorkflow"))
-
-/**
- * Single select — attitude, which is what tells you who to talk to first.
- *
- * Three rungs, not five. "I have started incorporating AI" and "I am curious
- * and interested" sat so close to "I am actively exploring" that the choice
- * became a matter of self-image rather than fact, and a scale people answer by
- * mood is not a scale you can filter on.
- */
-export const AI_RELATIONSHIP: Choice[] = [
-  "professional",
-  "creative-development",
-  "exploring"
-].map((id) => choice(id, "aiRelationship"))
-
-/**
- * Multi select, and the only question that opens a text field — one credits
- * link per project type, revealed on tick.
- */
+/** Multi select, and the only question that opens a link per option. */
 export const PROJECT_TYPES: Choice[] = [
   "feature-film",
   "short-film",
@@ -108,32 +113,3 @@ export const PROJECT_TYPES: Choice[] = [
   "experimental",
   "generative-film"
 ].map((id) => choice(id, "projectType"))
-
-/** Multi select. The pipeline, stated rather than inferred. */
-export const PIPELINE_STAGES: Choice[] = [
-  "concept-development",
-  "art-direction",
-  "design",
-  "visual-development",
-  "storyboard",
-  "previs",
-  "production-live-action",
-  "2d-animation",
-  "3d-animation",
-  "character-development",
-  "3d-modeling",
-  "texturing",
-  "rigging",
-  "motion-capture",
-  "layout",
-  "lighting",
-  "vfx",
-  "compositing",
-  "rotoscoping",
-  "editing",
-  "color-finishing",
-  "sound-music",
-  "localization",
-  "restoration-upscaling",
-  "final-delivery"
-].map((id) => choice(id, "stage"))

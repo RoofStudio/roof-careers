@@ -7,12 +7,17 @@ import ChipGroup from "../components/ChipGroup"
 import Field from "../components/Field"
 import ToolPicker from "../components/ToolPicker"
 import {
-  AI_RELATIONSHIP,
+  AI_INTEGRATION,
   AI_WORKFLOW,
-  PIPELINE_STAGES,
-  PRACTICE_AREAS,
+  CORE_STRENGTH,
+  FINISHING,
+  PIPELINE_AREAS,
   PRIMARY_EXPERTISE,
-  PROJECT_TYPES
+  PROJECT_REACH,
+  PROJECT_TYPES,
+  RESPONSIBILITY,
+  VISUAL_CHALLENGE,
+  WORK_MODE
 } from "../data/profile"
 import { TOTAL_CHECKBOXES } from "../data/tools"
 import { buildPayload, submitApplication, type ProfilePayload } from "../lib/submit"
@@ -27,9 +32,7 @@ const EMPTY_PROFILE: ProfilePayload = {
   phone: "",
   location: "",
   portfolio: "",
-  links: "",
-  imdb: "",
-  reels: ""
+  links: ""
 }
 
 type FieldKey = keyof ProfilePayload
@@ -90,12 +93,19 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
 
   const [profile, setProfile] = useState<ProfilePayload>(EMPTY_PROFILE)
   const [expertise, setExpertise] = useState("")
-  const [practice, setPractice] = useState<string[]>([])
+  const [responsibility, setResponsibility] = useState("")
+  const [workMode, setWorkMode] = useState("")
+  const [reach, setReach] = useState("")
+  const [challenge, setChallenge] = useState("")
+  const [aiIntegration, setAiIntegration] = useState("")
   const [aiWorkflow, setAiWorkflow] = useState<string[]>([])
-  const [aiRelationship, setAiRelationship] = useState("")
+  const [strength, setStrength] = useState("")
+  const [finishing, setFinishing] = useState("")
+  const [pipeline, setPipeline] = useState<string[]>([])
   const [projectTypes, setProjectTypes] = useState<string[]>([])
   const [projectLinks, setProjectLinks] = useState<Record<string, string>>({})
-  const [stages, setStages] = useState<string[]>([])
+  const [aiLedLink, setAiLedLink] = useState("")
+  const [aiExecutedLink, setAiExecutedLink] = useState("")
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [otherTools, setOtherTools] = useState("")
   const [errors, setErrors] = useState<Errors>({})
@@ -175,19 +185,24 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
           profile: {
             ...profile,
             portfolio: normalizeUrl(profile.portfolio),
-            links: profile.links.trim(),
-            imdb: normalizeUrl(profile.imdb),
-            reels: profile.reels.trim()
+            links: profile.links.trim()
           },
           expertise,
-          practice,
+          responsibility,
+          workMode,
+          reach,
+          challenge,
+          aiIntegration,
           aiWorkflow,
-          aiRelationship,
+          strength,
+          finishing,
+          pipeline,
+          aiLedLink: normalizeUrl(aiLedLink),
+          aiExecutedLink: normalizeUrl(aiExecutedLink),
           projectTypes,
           projectLinks: Object.fromEntries(
             Object.entries(projectLinks).map(([id, link]) => [id, normalizeUrl(link)])
           ),
-          stages,
           selected,
           otherTools,
           hp,
@@ -310,8 +325,12 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
           </div>
         </Card>
 
-        {/* ── Your practice ──────────────────────────────────────────── */}
-        <Card label={t("profile.profileLabel")}>
+        {/* ── Your creative practice ─────────────────────────────
+            Nine ladders instead of the flat list of 26 practice areas V5 had.
+            Each asks about the WORK ("how far do you follow a project?") rather
+            than about the person ("are you senior?") — the only version of that
+            question anyone answers honestly. */}
+        <Card label={t("profile.practiceLabel")}>
           <ChipGroup
             id="expertise"
             mode="single"
@@ -322,17 +341,55 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
           />
 
           <ChipGroup
-            id="practice"
-            title={t("profile.practiceTitle")}
-            hint={t("profile.practiceHint")}
-            choices={PRACTICE_AREAS}
-            selected={practice}
-            onToggle={(id) => setPractice((prev) => toggleIn(prev, id))}
+            id="responsibility"
+            mode="single"
+            layout="stack"
+            title={t("profile.responsibilityTitle")}
+            choices={RESPONSIBILITY}
+            selected={responsibility}
+            onToggle={(id) => setResponsibility((prev) => (prev === id ? "" : id))}
           />
-        </Card>
 
-        {/* ── How you work ───────────────────────────────────────────── */}
-        <Card label={t("profile.howYouWorkLabel")}>
+          <ChipGroup
+            id="workMode"
+            mode="single"
+            layout="stack"
+            title={t("profile.workModeTitle")}
+            choices={WORK_MODE}
+            selected={workMode}
+            onToggle={(id) => setWorkMode((prev) => (prev === id ? "" : id))}
+          />
+
+          <ChipGroup
+            id="reach"
+            mode="single"
+            layout="stack"
+            title={t("profile.reachTitle")}
+            choices={PROJECT_REACH}
+            selected={reach}
+            onToggle={(id) => setReach((prev) => (prev === id ? "" : id))}
+          />
+
+          <ChipGroup
+            id="challenge"
+            mode="single"
+            layout="stack"
+            title={t("profile.challengeTitle")}
+            choices={VISUAL_CHALLENGE}
+            selected={challenge}
+            onToggle={(id) => setChallenge((prev) => (prev === id ? "" : id))}
+          />
+
+          <ChipGroup
+            id="aiIntegration"
+            mode="single"
+            layout="stack"
+            title={t("profile.aiIntegrationTitle")}
+            choices={AI_INTEGRATION}
+            selected={aiIntegration}
+            onToggle={(id) => setAiIntegration((prev) => (prev === id ? "" : id))}
+          />
+
           <ChipGroup
             id="aiWorkflow"
             layout="stack"
@@ -344,21 +401,42 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
           />
 
           <ChipGroup
-            id="aiRelationship"
+            id="strength"
             mode="single"
             layout="stack"
-            title={t("profile.aiRelationshipTitle")}
-            hint={t("profile.aiRelationshipHint")}
-            choices={AI_RELATIONSHIP}
-            selected={aiRelationship}
-            onToggle={(id) => setAiRelationship((prev) => (prev === id ? "" : id))}
+            title={t("profile.strengthTitle")}
+            choices={CORE_STRENGTH}
+            selected={strength}
+            onToggle={(id) => setStrength((prev) => (prev === id ? "" : id))}
+          />
+
+          <ChipGroup
+            id="finishing"
+            mode="single"
+            layout="stack"
+            title={t("profile.finishingTitle")}
+            choices={FINISHING}
+            selected={finishing}
+            onToggle={(id) => setFinishing((prev) => (prev === id ? "" : id))}
           />
         </Card>
 
-        {/* ── Project experience ─────────────────────────────────────────
-            "Held a LEADING creative role" answers "has this person directed?"
-            as a fact about the work, never as a question about the person. The
-            credits link appears per type, only once that type is ticked. */}
+        {/* ── Production pipeline ──────────────────────────── */}
+        <Card label={t("profile.pipelineLabel")}>
+          <ChipGroup
+            id="pipeline"
+            title={t("profile.pipelineTitle")}
+            hint={t("profile.pipelineHint")}
+            choices={PIPELINE_AREAS}
+            selected={pipeline}
+            onToggle={(id) => setPipeline((prev) => toggleIn(prev, id))}
+          />
+        </Card>
+
+        {/* ── Project experience ─────────────────────────────
+            "Creative or artistic LEADERSHIP role" answers "has this person
+            directed?" as a fact about the work, never as a question about the
+            person. The link appears per type, only once that type is ticked. */}
         <Card label={t("profile.projectLabel")}>
           <div className="flex flex-col gap-2">
             <p className="text-sm font-semibold text-fg">{t("profile.projectTitle")}</p>
@@ -426,16 +504,43 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
           </div>
         </Card>
 
-        {/* ── Production pipeline ────────────────────────────────────── */}
-        <Card label={t("profile.stageLabel")}>
-          <ChipGroup
-            id="stages"
-            title={t("profile.stageTitle")}
-            hint={t("profile.stageHint")}
-            choices={PIPELINE_STAGES}
-            selected={stages}
-            onToggle={(id) => setStages((prev) => toggleIn(prev, id))}
-          />
+        {/* ── AI projects ─────────────────────────────────
+            Two links, split by the distinction the team actually cares about:
+            who DIRECTED the use of AI versus who operated it. */}
+        <Card label={t("profile.aiProjectsLabel")}>
+          <div className="grid gap-6">
+            <p className="text-sm text-muted">{t("profile.aiProjectsIntro")}</p>
+
+            <div>
+              <p className="mb-1 text-sm font-semibold text-fg">{t("profile.ledLabel")}</p>
+              <p className="mb-3 text-xs text-faint">{t("profile.ledHint")}</p>
+              <Field
+                id="aiLedLink"
+                type="url"
+                label={t("profile.projectLinkLabel")}
+                placeholder={t("profile.linkPlaceholder")}
+                value={aiLedLink}
+                onChange={setAiLedLink}
+                optional
+                inputMode="url"
+              />
+            </div>
+
+            <div>
+              <p className="mb-1 text-sm font-semibold text-fg">{t("profile.executedLabel")}</p>
+              <p className="mb-3 text-xs text-faint">{t("profile.executedHint")}</p>
+              <Field
+                id="aiExecutedLink"
+                type="url"
+                label={t("profile.projectLinkLabel")}
+                placeholder={t("profile.linkPlaceholder")}
+                value={aiExecutedLink}
+                onChange={setAiExecutedLink}
+                optional
+                inputMode="url"
+              />
+            </div>
+          </div>
         </Card>
 
         {/* ── Tools ──────────────────────────────────────────────────── */}
@@ -497,30 +602,6 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
             </p>
           )}
         </motion.div>
-
-        {/* ── Additional links ───────────────────────────────────────── */}
-        <Card label={t("profile.projectLabel")}>
-          <div className="grid gap-5">
-            <Field
-              id="imdb"
-              type="url"
-              label={t("profile.imdbLabel")}
-              placeholder={t("profile.imdbPlaceholder")}
-              value={profile.imdb}
-              onChange={setField("imdb")}
-              optional
-              inputMode="url"
-            />
-            <Field
-              id="reels"
-              label={t("profile.reelsLabel")}
-              placeholder={t("profile.reelsPlaceholder")}
-              value={profile.reels}
-              onChange={setField("reels")}
-              optional
-            />
-          </div>
-        </Card>
 
         {/* ── Submit ─────────────────────────────────────────────────── */}
         <div className="text-column flex flex-col items-center gap-4">

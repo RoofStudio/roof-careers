@@ -7,8 +7,6 @@ export interface ProfilePayload {
   location: string
   portfolio: string
   links: string
-  imdb: string
-  reels: string
 }
 
 /** One tool, in one production area. The same tool can appear more than once. */
@@ -21,16 +19,24 @@ export interface ToolPick {
 
 export interface SubmissionPayload {
   profile: ProfilePayload
-  /** Single-select answers. */
+  /** The nine single-select ladders from V9, in the order they are asked. */
   expertise: string
-  aiRelationship: string
+  responsibility: string
+  workMode: string
+  reach: string
+  challenge: string
+  aiIntegration: string
+  strength: string
+  finishing: string
   /** Multi-select answers. */
-  practice: string[]
   aiWorkflow: string[]
-  stages: string[]
+  pipeline: string[]
   projectTypes: string[]
-  /** Credits link per project type, keyed by project type id. */
+  /** Link per project type, keyed by project type id. */
   projectLinks: Record<string, string>
+  /** Two AI project links: one where they led, one where they executed. */
+  aiLedLink: string
+  aiExecutedLink: string
   tools: ToolPick[]
   otherTools: string
   meta: {
@@ -48,20 +54,27 @@ export interface SubmissionPayload {
   }
 }
 
-/** v4: the duplicated AI-experience ladder was dropped. */
-export const FORM_VERSION = "4"
+/** v5: the ROUGH V9 question set — nine ladders, 7 pipeline areas, 92 tools. */
+export const FORM_VERSION = "5"
 
 const APPS_SCRIPT_URL = import.meta.env.VITE_APPS_SCRIPT_URL as string | undefined
 
 export const buildPayload = (input: {
   profile: ProfilePayload
   expertise: string
-  practice: string[]
+  responsibility: string
+  workMode: string
+  reach: string
+  challenge: string
+  aiIntegration: string
+  strength: string
+  finishing: string
   aiWorkflow: string[]
-  aiRelationship: string
+  pipeline: string[]
   projectTypes: string[]
   projectLinks: Record<string, string>
-  stages: string[]
+  aiLedLink: string
+  aiExecutedLink: string
   selected: Set<string>
   otherTools: string
   hp: string
@@ -71,9 +84,17 @@ export const buildPayload = (input: {
 }): SubmissionPayload => ({
   profile: input.profile,
   expertise: input.expertise,
-  practice: input.practice,
+  responsibility: input.responsibility,
+  workMode: input.workMode,
+  reach: input.reach,
+  challenge: input.challenge,
+  aiIntegration: input.aiIntegration,
+  strength: input.strength,
+  finishing: input.finishing,
   aiWorkflow: input.aiWorkflow,
-  aiRelationship: input.aiRelationship,
+  pipeline: input.pipeline,
+  aiLedLink: input.aiLedLink.trim(),
+  aiExecutedLink: input.aiExecutedLink.trim(),
   projectTypes: input.projectTypes,
   // A link for a type they did not tick is an orphan the columns cannot
   // explain, so it never leaves the browser.
@@ -82,7 +103,6 @@ export const buildPayload = (input: {
       .map((id) => [id, (input.projectLinks[id] ?? "").trim()] as const)
       .filter(([, link]) => link)
   ),
-  stages: input.stages,
   tools: [...input.selected].map((key) => {
     const { groupId, toolId } = parseSelectionKey(key)
     return {
