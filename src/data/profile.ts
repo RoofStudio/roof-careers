@@ -26,8 +26,8 @@ export interface Choice {
 const choice = (id: string, key: string): Choice => ({ id, labelKey: `profile.${key}.${id}` })
 
 /** Q1 — the headline answer, and the first filter anyone will reach for. */
-export const PRIMARY_EXPERTISE: Choice[] = ["art-director", "designer", "animator"].map((id) =>
-  choice(id, "expertise")
+export const PRIMARY_EXPERTISE: Choice[] = ["art-director", "designer", "animator", "other"].map(
+  (id) => choice(id, "expertise")
 )
 
 /** Q2 — how much of the creative call is theirs. */

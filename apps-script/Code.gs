@@ -181,7 +181,8 @@ var AREA_ROSTER = [
 var EXPERTISE_ROSTER = [
   { id: "art-director", label: "Art Director" },
   { id: "designer", label: "Designer" },
-  { id: "animator", label: "Animator" }
+  { id: "animator", label: "Animator" },
+  { id: "other", label: "Other" }
 ]
 
 var RESPONSIBILITY_ROSTER = [

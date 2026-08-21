@@ -91,7 +91,8 @@
     "expertise": {
       "art-director": "Diretor de Arte",
       "designer": "Designer",
-      "animator": "Animador"
+      "animator": "Animador",
+      "other": "Outro"
     },
     "responsibility": {
       "execute": "Executo — trabalho a partir de uma direção já definida",

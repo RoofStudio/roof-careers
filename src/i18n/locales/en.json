@@ -91,7 +91,8 @@
     "expertise": {
       "art-director": "Art Director",
       "designer": "Designer",
-      "animator": "Animator"
+      "animator": "Animator",
+      "other": "Other"
     },
     "responsibility": {
       "execute": "Execute — I work from an established direction",
