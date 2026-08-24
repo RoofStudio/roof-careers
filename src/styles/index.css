@@ -2,7 +2,19 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ──────────────────────────────────────────────────────────────────────
-   ROOF IDENTITY — ported from roof-onboarding-app.
+   ROOF IDENTITY
+
+   THE PALETTE IS NOT INVENTED HERE. Every value below traces back to the
+   nine variables roofstudio.tv declares on its own :root — copied verbatim:
+
+     --black-1  #000000     --brown-1  #332127     --white-1  #F5EBE1
+     --beige-1  #FFD6B8     --beige-2  #F5EBE1     --yellow-1 #CA9E3F
+     --green-1  #D8FF6E     --purple-1 #DFB1DF     --red-1    #C50000
+
+   Nine colors cannot dress a form. A form needs a raised panel, a recessed
+   panel, a hairline, three weights of ink. Those are TINTS, and every one of
+   them names in a comment which brand color it is a tint of and how far it
+   was walked. A value that cannot name its parent does not belong in here.
 
    A token is a ROLE ("recessed surface", "faint text"), never a literal
    ("gray-400"). The same name works in both themes, so a component never
@@ -15,20 +27,60 @@
      elevated  stacked over a panel: popover, selected chip
      fg/muted/faint          text, strongest to faintest
      line/line-strong        borders and dividers
-     accent (+soft/strong)   lime — ACTION only: submit, selected state
-     ink-on                  dark ink for text ON lime (dark in both themes)
+     accent (+soft/strong)   green-1 — ACTION only: submit, selected state
+     ink-on                  brown-1 ink for text ON green-1 (dark in both themes)
      positive/negative/warn  state
-     roof-brown/purple/…     brand literals; brown is the structural accent
+     roof-*                  the brand literals, unmodified
    ────────────────────────────────────────────────────────────────────── */
+
+/* ──────────────────────────────────────────────────────────────────────
+   Brand type — the two faces roofstudio.tv serves, self-hosted from
+   public/fonts so the page does not depend on the studio site being up.
+
+   Ambit ships 400 and 600 ONLY. There is no 800 and there never was.
+   `font-synthesis` is switched off on body below, so a stray
+   `font-weight: 800` renders as the real 600 instead of a smeared faux
+   bold — headlines earn their presence from SIZE and TRACKING here, which
+   is exactly how the studio's own site builds them.
+   ────────────────────────────────────────────────────────────────────── */
+@font-face {
+  font-family: "Ambit";
+  src:
+    url("/fonts/ambit-regular.woff2") format("woff2"),
+    url("/fonts/ambit-regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Ambit";
+  src:
+    url("/fonts/ambit-semibold.woff2") format("woff2"),
+    url("/fonts/ambit-semibold.woff") format("woff");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "GT-Alpina";
+  src:
+    url("/fonts/GT-Alpina-Standard-Light-Italic.woff2") format("woff2"),
+    url("/fonts/GT-Alpina-Standard-Light-Italic.woff") format("woff");
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
 @theme {
-  /* Brand literals — the logo has its own color, it doesn't follow UI ink. */
-  --color-roof-brown: #6f4630;
-  --color-roof-brown-deep: #5a3826;
-  --color-roof-purple: #8a4fc7;
-  --color-roof-lavender: #c9a6dd;
-  --color-roof-peach: #f9cba7;
-  --color-roof-lime: #c6ef4a;
-  --color-roof-ink: #1a1512;
+  /* Brand literals, exactly as roofstudio.tv declares them. */
+  --color-roof-black: #000000;
+  --color-roof-brown: #332127;
+  --color-roof-white: #f5ebe1;
+  --color-roof-beige: #ffd6b8;
+  --color-roof-yellow: #ca9e3f;
+  --color-roof-green: #d8ff6e;
+  --color-roof-purple: #dfb1df;
+  --color-roof-red: #c50000;
 
   --color-brand-logo: var(--c-brand-logo);
   --color-brand-accent: var(--c-brand-accent);
@@ -44,8 +96,8 @@
   --color-muted: var(--c-muted);
   --color-faint: var(--c-faint);
 
-  /* Lime — action and selection ONLY. Paint decoration with it and it stops
-     meaning "this is the next step". */
+  /* green-1 — action and selection ONLY. Paint decoration with it and it
+     stops meaning "this is the next step". */
   --color-accent: var(--c-accent);
   --color-accent-soft: var(--c-accent-soft);
   --color-accent-strong: var(--c-accent-strong);
@@ -58,16 +110,13 @@
   --color-warn: var(--c-warn);
   --color-warn-soft: var(--c-warn-soft);
 
-  /* Category palette — kept apart from the semantic roles on purpose:
-     recoloring a tool group must never touch the color of "error". */
-  --color-viz-lilac: var(--c-viz-lilac);
-  --color-viz-orchid: var(--c-viz-orchid);
-  --color-viz-peach: var(--c-viz-peach);
-  --color-viz-amber: var(--c-viz-amber);
-  --color-viz-mint: var(--c-viz-mint);
-  --color-viz-sky: var(--c-viz-sky);
-  --color-viz-rose: var(--c-viz-rose);
-  --color-viz-plum: var(--c-viz-plum);
+  /* Category swatches — the four brand hues that still read as a 8px dot on
+     a panel. Kept apart from the semantic roles on purpose: recoloring a
+     tool group must never touch the color of "error". */
+  --color-viz-green: var(--c-viz-green);
+  --color-viz-purple: var(--c-viz-purple);
+  --color-viz-beige: var(--c-viz-beige);
+  --color-viz-yellow: var(--c-viz-yellow);
 
   --shadow-soft: var(--s-soft);
   --shadow-card: var(--s-card);
@@ -77,108 +126,117 @@
   --radius-card: 1.25rem;
   --radius-field: 0.75rem;
 
-  --font-display: "Inter", "Segoe UI", system-ui, sans-serif;
-  /* Italic serif — the interface's annotation voice, never data. */
-  --font-note: "Instrument Serif", Georgia, serif;
+  --font-display: "Ambit", "Segoe UI", system-ui, sans-serif;
+  /* The studio's annotation voice — italic serif, never data. */
+  --font-note: "GT-Alpina", Georgia, serif;
 
   --text-label: 0.6875rem;
   --text-label--line-height: 1.1;
   --text-label--letter-spacing: 0.08em;
 }
 
-/* Light — warm cream, not white: pure white fights the background gradient
-   and flattens the depth of the cards. */
+/* Light — beige-1 IS the page, white-1 is the paper laid on it.
+
+   That is the studio site's own relationship, not a reading of it:
+   `body { background: var(--beige-1) }`. Getting it backwards (cream page,
+   peach only in the gradient) produces something that samples the right
+   hexes and still does not look like the brand, because the peach is the
+   ground everything else sits on. */
 :root {
-  --c-surface: #faf3e8;
-  --c-panel: #fdfaf6;
-  --c-panel-2: #f2ece2;
-  --c-elevated: #fffdfa;
-  --c-line: #ece3d6;
-  --c-line-strong: #ddd2c0;
-  --c-brand-logo: #322127;
-  --c-brand-accent: #6f4630;
+  --c-surface: #ffd6b8; /* beige-1, verbatim — the studio's page color */
+  --c-panel: #fbf3ea; /* white-1, lifted — paper on the peach */
+  --c-panel-2: #f3e6d8; /* white-1 → beige-1, 34% */
+  --c-elevated: #fffcf7; /* white-1, lifted further */
+  --c-line: #e4d3c3; /* white-1 → brown-1, 12% */
+  --c-line-strong: #cdb5a5; /* white-1 → brown-1, 26% */
+  --c-brand-logo: #332127; /* brown-1, verbatim */
+  --c-brand-accent: #6e5230; /* yellow-1 → brown-1, 55%. Raw yellow-1 is
+                                2.3:1 on cream — a display color, not a
+                                text color. */
 
-  /* Warm black. Neutral gray over a peach background reads as dirty. */
-  --c-fg: #1a1512;
-  --c-muted: #7a7063;
-  --c-faint: #948a7b;
+  /* brown-1 is the studio's ink. A neutral gray over peach reads as dirty.
 
-  --c-accent: #c6ef4a;
-  --c-accent-soft: #e9fbb8;
-  --c-accent-strong: #a8d92c;
-  --c-ink-on: #1a2408;
+     Both tints are darker than they would need to be on cream, and that is
+     the price of the peach: beige-1 has a relative luminance of 0.73 against
+     white-1's 0.84, so every ink on it loses roughly half a point of
+     contrast. Measured against the SURFACE, which is the worst case —
+     `.hero` puts faint text straight onto it:
+       fg     11.6:1    muted   6.2:1    faint   4.8:1
+     Faint used to sit at 3.1:1, below the 4.5 small text owes the reader,
+     and it carries every form hint on the page. */
+  --c-fg: #332127; /* brown-1, verbatim */
+  --c-muted: #5c4850; /* brown-1 → white-1, 14% */
+  --c-faint: #6d5a64; /* brown-1 → white-1, 24% */
 
-  --c-positive: #3f9d6d;
-  --c-positive-soft: #d8f0e2;
-  --c-negative: #dd4f7a;
-  --c-negative-soft: #fbdde6;
-  --c-warn: #d9873a;
-  --c-warn-soft: #fbe9d4;
+  --c-accent: #d8ff6e; /* green-1, verbatim */
+  --c-accent-soft: #eefac6; /* green-1 → white-1, 68% */
+  --c-accent-strong: #b7d360; /* green-1 → brown-1, 20% */
+  --c-ink-on: #332127; /* brown-1 on green-1 — 13.7:1 */
 
-  --c-viz-lilac: #c3a2e0;
-  --c-viz-orchid: #b07fd4;
-  --c-viz-peach: #efac6e;
-  --c-viz-amber: #e0a93c;
-  --c-viz-mint: #86c9a0;
-  --c-viz-sky: #7fb0dd;
-  --c-viz-rose: #e08aae;
-  --c-viz-plum: #9c4f74;
+  --c-positive: #5f8f2e; /* green-1 → brown-1, 58% */
+  --c-positive-soft: #e6f5c6; /* green-1 → white-1, 72% */
+  --c-negative: #c50000; /* red-1, verbatim */
+  --c-negative-soft: #f2d5cd; /* red-1 → white-1, 82% */
+  --c-warn: #8a6a22; /* yellow-1 → brown-1, 32% */
+  --c-warn-soft: #f6e6c6; /* yellow-1 → white-1, 76% */
 
-  --s-soft: 0 1px 2px rgb(90 70 40 / 0.05);
-  --s-card: 0 1px 2px rgb(90 70 40 / 0.04), 0 8px 24px -12px rgb(90 70 40 / 0.12);
-  --s-lift: 0 2px 4px rgb(90 70 40 / 0.06), 0 16px 40px -16px rgb(90 70 40 / 0.22);
-  --s-pop: 0 24px 60px -20px rgb(60 40 20 / 0.35);
+  --c-viz-green: #d8ff6e; /* green-1 */
+  --c-viz-purple: #dfb1df; /* purple-1 */
+  --c-viz-beige: #ffd6b8; /* beige-1 */
+  --c-viz-yellow: #ca9e3f; /* yellow-1 */
 
-  /* The signature of the interface: peach top-left, pink and lavender to the
-     right. Radial layers instead of one linear — a linear draws a hard
-     diagonal, and what we want here is haze. */
+  --s-soft: 0 1px 2px rgb(51 33 39 / 0.05);
+  --s-card: 0 1px 2px rgb(51 33 39 / 0.05), 0 8px 24px -12px rgb(51 33 39 / 0.14);
+  --s-lift: 0 2px 4px rgb(51 33 39 / 0.07), 0 16px 40px -16px rgb(51 33 39 / 0.24);
+  --s-pop: 0 24px 60px -20px rgb(51 33 39 / 0.38);
+
+  /* The signature of the interface, and it is the studio's: yellow-1 bleeding
+     in from the top-left, purple-1 down the right, over the beige-1 ground.
+     Two hues only — the site never runs three at once. Radial layers instead
+     of one linear: a linear draws a hard diagonal, and this wants haze. */
   --canvas-gradient:
-    radial-gradient(900px 620px at 0% -5%, rgb(246 206 146 / 0.75), transparent 58%),
-    radial-gradient(1000px 640px at 100% -10%, rgb(240 200 232 / 0.8), transparent 60%),
-    radial-gradient(900px 700px at 108% 45%, rgb(206 194 244 / 0.72), transparent 58%),
-    linear-gradient(180deg, var(--c-surface), #f7efe4);
+    radial-gradient(1000px 680px at -5% -10%, rgb(202 158 63 / 0.62), transparent 62%),
+    radial-gradient(1000px 640px at 104% 8%, rgb(223 177 223 / 0.68), transparent 60%),
+    radial-gradient(1100px 800px at 110% 62%, rgb(223 177 223 / 0.5), transparent 58%),
+    linear-gradient(180deg, var(--c-surface), #ffcfae);
 
-  --hero-gradient: linear-gradient(100deg, #e8a13c 0%, #ea9ac6 48%, #b3a3e2 100%);
-
+  /* Kept for the decorative slabs. NOT for type — see `.hero-text-gradient`. */
+  --hero-gradient: linear-gradient(100deg, #ca9e3f 0%, #dfb1df 52%, #ffd6b8 100%);
 }
 
 /* Dark — the SAME concept, darkened. Swapping it for neutral gray would ship
-   a different product. */
+   a different product. Every value here is brown-1 or white-1 walked toward
+   black-1; green-1 never moves, because it is a light color in both themes. */
 :root.dark {
-  --c-surface: #14100e;
-  --c-panel: #221c17;
-  --c-panel-2: #191410;
-  --c-elevated: #2b241d;
-  --c-line: #362c22;
-  --c-line-strong: #4a3c2e;
-  --c-brand-logo: #f9f9f9;
-  --c-brand-accent: #d0a483;
+  --c-surface: #1a1114; /* brown-1 → black-1, 62% */
+  --c-panel: #2a1c21; /* brown-1 → black-1, 30% */
+  --c-panel-2: #211519; /* brown-1 → black-1, 48% */
+  --c-elevated: #35242a; /* brown-1, lifted */
+  --c-line: #402c33; /* brown-1, lifted 12% */
+  --c-line-strong: #573c45; /* brown-1, lifted 28% */
+  --c-brand-logo: #f5ebe1; /* white-1, verbatim */
+  --c-brand-accent: #ddbe7c; /* yellow-1 → white-1, 40% */
 
-  --c-fg: #f7f1e6;
-  --c-muted: #a2988a;
-  --c-faint: #807669;
+  --c-fg: #f5ebe1; /* white-1, verbatim */
+  --c-muted: #b3a099; /* white-1 → brown-1, 32% */
+  --c-faint: #8d7a78; /* white-1 → brown-1, 52% */
 
-  --c-accent: #cbf351;
-  --c-accent-soft: #2e3a10;
-  --c-accent-strong: #dcff6b;
-  /* Stays dark: the lime is light in both themes. */
-  --c-ink-on: #1a2408;
+  --c-accent: #d8ff6e; /* green-1, verbatim — unchanged on purpose */
+  --c-accent-soft: #384415; /* green-1 → black-1, 78% */
+  --c-accent-strong: #e6ff9b; /* green-1 → white-1, 32% */
+  --c-ink-on: #332127; /* stays brown-1: green-1 is light in both themes */
 
-  --c-positive: #5cc98d;
-  --c-positive-soft: #16301f;
-  --c-negative: #f0779c;
-  --c-negative-soft: #3a1420;
-  --c-warn: #eaa65a;
-  --c-warn-soft: #3a2410;
+  --c-positive: #a9dd6a; /* green-1 → brown-1, 22% */
+  --c-positive-soft: #2c3a14;
+  --c-negative: #e2726c; /* red-1 → white-1, 42% */
+  --c-negative-soft: #3d1618;
+  --c-warn: #d8b063; /* yellow-1 → white-1, 22% */
+  --c-warn-soft: #3d2e12;
 
-  --c-viz-lilac: #b294d6;
-  --c-viz-orchid: #a376c8;
-  --c-viz-peach: #e09c60;
-  --c-viz-amber: #d49e36;
-  --c-viz-mint: #76ba91;
-  --c-viz-sky: #70a1ce;
-  --c-viz-rose: #d27ca0;
-  --c-viz-plum: #b26088;
+  --c-viz-green: #d8ff6e;
+  --c-viz-purple: #dfb1df;
+  --c-viz-beige: #ffd6b8;
+  --c-viz-yellow: #d8b063; /* raw yellow-1 goes muddy against brown */
 
   --s-soft: 0 1px 2px rgb(0 0 0 / 0.3);
   --s-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -12px rgb(0 0 0 / 0.5);
@@ -186,13 +244,12 @@
   --s-pop: 0 24px 60px -20px rgb(0 0 0 / 0.7);
 
   --canvas-gradient:
-    radial-gradient(900px 620px at 0% -5%, rgb(96 62 26 / 0.5), transparent 58%),
-    radial-gradient(1000px 640px at 100% -10%, rgb(86 40 76 / 0.55), transparent 60%),
-    radial-gradient(900px 700px at 108% 45%, rgb(56 48 106 / 0.5), transparent 58%),
-    linear-gradient(180deg, var(--c-surface), #100d0c);
+    radial-gradient(1000px 680px at -5% -10%, rgb(202 158 63 / 0.2), transparent 62%),
+    radial-gradient(1000px 640px at 104% 8%, rgb(223 177 223 / 0.18), transparent 60%),
+    radial-gradient(1100px 800px at 110% 62%, rgb(223 177 223 / 0.13), transparent 58%),
+    linear-gradient(180deg, var(--c-surface), #120b0e);
 
-  --hero-gradient: linear-gradient(100deg, #a86b1e 0%, #a24d80 48%, #5a4f9c 100%);
-
+  --hero-gradient: linear-gradient(100deg, #ca9e3f 0%, #dfb1df 52%, #8a6a5a 100%);
 }
 
 html {
@@ -212,6 +269,10 @@ body,
 body {
   margin: 0;
   font-family: var(--font-display);
+  /* Ambit has 400 and 600, full stop. Without this, every `font-bold` and
+     `font-extrabold` on the page becomes a synthetic smear of the 600 — the
+     one thing that reliably makes a licensed typeface look counterfeit. */
+  font-synthesis-weight: none;
   -webkit-font-smoothing: antialiased;
   color: var(--c-fg);
   background-color: var(--c-surface);
@@ -269,13 +330,15 @@ select:focus-visible {
    Typography — three voices: display, label, note.
    ────────────────────────────────────────────────────────────────────── */
 
-/** Section title: heavy, tight, uppercase. */
+/** Section title: uppercase, tight, Ambit 600 — the heaviest weight that
+    exists in this family. Presence comes from the tracking, not from a
+    weight the font does not ship. */
 .display {
   font-size: 1.5rem;
   line-height: 1;
-  font-weight: 800;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
   color: var(--c-fg);
 }
 
@@ -324,16 +387,35 @@ select:focus-visible {
   margin-inline: auto;
 }
 
+/** A decorative band. NOT for type — the studio has no gradient-filled
+    letterform anywhere: the ROOF wordmark and every page headline are flat
+    brown-1 over a coloured field, and the gradient stays in the ground. */
 .hero-gradient {
   background-image: var(--hero-gradient);
 }
 
-/** The headline gradient. Used once, on "Queremos muito te conhecer!". */
-.hero-text-gradient {
-  background-image: var(--hero-gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+/* ──────────────────────────────────────────────────────────────────────
+   CREATIVE TALENT — the banner line.
+
+   This is the one piece of type on the page allowed to behave like signage
+   rather than like an interface. It is set in Ambit at the family's real
+   600, blown up and tracked WIDE (uppercase Ambit at +0.16em is the
+   studio's own signage voice), and it sits on green-1 with brown-1 ink —
+   the brand's highest-contrast pair, 13.7:1.
+
+   `clamp` rather than breakpoints: the line must fill its measure at every
+   width, and the floor is set where "CREATIVE TALENT" still fits one line
+   on a 360px phone.
+   ────────────────────────────────────────────────────────────────────── */
+.banner-type {
+  font-family: var(--font-display);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  /* Tracking adds space AFTER the last letter too, which reads as a limp
+     right edge on a centered line. Pull it back. */
+  margin-right: -0.16em;
+  line-height: 1;
 }
 
 /* Subtle floating blob animation used in the background. */

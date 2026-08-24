@@ -1,13 +1,35 @@
 import { GROUP_BY_ID, TOOL_BY_ID, parseSelectionKey } from "../data/tools"
 
+/**
+ * The contact block. The five named link fields replaced one free-text
+ * "Additional links" box: people put three URLs, a comma and a note in there,
+ * and the sheet ended up with a column nobody could filter.
+ */
 export interface ProfilePayload {
   fullName: string
   email: string
   phone: string
   location: string
   portfolio: string
-  links: string
+  website: string
+  behance: string
+  vimeo: string
+  instagram: string
+  linkedin: string
+  otherLink: string
 }
+
+/** The optional link fields, in the order the form asks for them. */
+export const LINK_FIELDS = [
+  "website",
+  "behance",
+  "vimeo",
+  "instagram",
+  "linkedin",
+  "otherLink"
+] as const
+
+export type LinkField = (typeof LINK_FIELDS)[number]
 
 /** One tool, in one production area. The same tool can appear more than once. */
 export interface ToolPick {
@@ -19,17 +41,16 @@ export interface ToolPick {
 
 export interface SubmissionPayload {
   profile: ProfilePayload
-  /** The nine single-select ladders from V9, in the order they are asked. */
-  expertise: string
-  responsibility: string
-  workMode: string
-  reach: string
-  challenge: string
-  aiIntegration: string
-  strength: string
-  finishing: string
-  /** Multi-select answers. */
+  /**
+   * EVERY answer is a list. v6 dropped the last of the single-select
+   * questions, so nothing here is a bare string any more — a reader that
+   * assumes one value per field will silently drop the extras.
+   */
+  expertise: string[]
+  reach: string[]
+  aiIntegration: string[]
   aiWorkflow: string[]
+  strength: string[]
   pipeline: string[]
   projectTypes: string[]
   /** Link per project type, keyed by project type id. */
@@ -54,22 +75,22 @@ export interface SubmissionPayload {
   }
 }
 
-/** v5: the ROUGH V9 question set — nine ladders, 7 pipeline areas, 92 tools. */
-export const FORM_VERSION = "5"
+/**
+ * v6: the August 2026 trim — five questions instead of nine, all of them
+ * multi-select, seven pipeline areas, six project types, eight tool areas,
+ * and the contact links split into named fields.
+ */
+export const FORM_VERSION = "6"
 
 const APPS_SCRIPT_URL = import.meta.env.VITE_APPS_SCRIPT_URL as string | undefined
 
 export const buildPayload = (input: {
   profile: ProfilePayload
-  expertise: string
-  responsibility: string
-  workMode: string
-  reach: string
-  challenge: string
-  aiIntegration: string
-  strength: string
-  finishing: string
+  expertise: string[]
+  reach: string[]
+  aiIntegration: string[]
   aiWorkflow: string[]
+  strength: string[]
   pipeline: string[]
   projectTypes: string[]
   projectLinks: Record<string, string>
@@ -84,14 +105,10 @@ export const buildPayload = (input: {
 }): SubmissionPayload => ({
   profile: input.profile,
   expertise: input.expertise,
-  responsibility: input.responsibility,
-  workMode: input.workMode,
   reach: input.reach,
-  challenge: input.challenge,
   aiIntegration: input.aiIntegration,
-  strength: input.strength,
-  finishing: input.finishing,
   aiWorkflow: input.aiWorkflow,
+  strength: input.strength,
   pipeline: input.pipeline,
   aiLedLink: input.aiLedLink.trim(),
   aiExecutedLink: input.aiExecutedLink.trim(),

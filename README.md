@@ -2,8 +2,8 @@
 
 Landing page de uma tela só para captação de talento criativo. O candidato lê
 a chamada, preenche o cadastro, marca em que funções já entregou projeto, onde
-seu trabalho já apareceu e quais ferramentas fazem parte do processo dele — com
-nível em cada uma. Cada resposta vira uma linha numa planilha do Google.
+seu trabalho já apareceu e quais ferramentas fazem parte do processo dele. Cada
+resposta vira uma linha numa planilha do Google.
 
 **O enquadramento é deliberado: a página fala de ofício, não de IA.** O briefing
 foi "quero chamar atenção de Creative Talents, não de AI Creative Talents".
@@ -11,13 +11,19 @@ Nenhum título ou rótulo da página carrega "AI" — a palavra aparece só dent
 texto do convite e nas perguntas específicas sobre ferramentas, onde ela é
 precisa em vez de ser um crachá.
 
-O conteúdo vem de FORMULARIO ROUGH V5: 20 áreas de produção, 300 checkboxes,
-**204 ferramentas distintas**, mais área de atuação, prática profissional,
-experiência com IA, tipos de projeto liderados e etapas de pipeline.
+O conteúdo vem de FORMULARIO ROUGH V9, na versão enxugada de agosto/2026:
+8 áreas de produção, 90 checkboxes, **74 ferramentas distintas**, mais cinco
+perguntas de prática criativa, 7 etapas de pipeline e 6 tipos de projeto.
+
+**Nenhuma pergunta é de resposta única.** Todas aceitam múltipla marcação —
+um Designer que também anima não precisa escolher uma mentira. Isso muda a
+planilha: veja "Uma coluna por clique" abaixo.
 
 Site estático (Vite + React + TypeScript + Tailwind v4), publicado no GitHub
-Pages. O sistema visual — tokens, gradiente, tipografia, componentes — é o
-mesmo do [`roof-onboarding-app`](https://github.com/CarlosHallan/roof-onboarding-app).
+Pages. A paleta e as fontes são as do próprio `roofstudio.tv` — os nove hexes
+que o site declara no `:root` e as faces **Ambit** e **GT-Alpina**,
+auto-hospedadas em `public/fonts/`. Nada de Google Fonts. Cada tom derivado em
+`src/styles/index.css` diz em comentário de qual cor da marca ele saiu.
 
 - **PT-BR / EN** com toggle no topo (e `?lang=en` na URL).
 - **Tema claro/escuro**, seguindo o sistema por padrão.
@@ -159,29 +165,35 @@ idioma, edite o outro.
 
 ### Mexer na lista de ferramentas
 
-`src/data/tools.ts` — 20 áreas de produção, na ordem do V5.
+`src/data/tools.ts` — 8 áreas de produção, começando por AI workflow /
+node-based e Produção / planejamento. Edição, color, voz, som, música e
+marketing saíram: estavam perguntando a um Designer sobre software de ADR.
 
 **A mesma ferramenta aparece em todas as áreas a que pertence, de propósito.**
-Runway está lá 8 vezes, Autodesk Flow Studio 7. Isso não é duplicação para
-limpar: "Runway para VFX" e "Runway para storyboard" são fatos diferentes sobre
-a pessoa, e essa diferença é justamente o que torna a resposta útil. Por isso
-uma seleção é identificada por **área + ferramenta**, nunca por ferramenta
-sozinha.
+Runway está lá 3 vezes, ComfyUI 4. Isso não é duplicação para limpar: "Runway
+para VFX" e "Runway para storyboard" são fatos diferentes sobre a pessoa, e
+essa diferença é justamente o que torna a resposta útil. Por isso uma seleção é
+identificada por **área + ferramenta**, nunca por ferramenta sozinha.
 
 Na planilha os dois lados se reconciliam: **uma coluna por ferramenta distinta**
-(204, não 300), guardando a lista de áreas em que a pessoa marcou. Um filtro só
+(74, não 90), guardando a lista de áreas em que a pessoa marcou. Um filtro só
 responde "quem trabalha com Stable Diffusion" *e* "para quê".
 
-O V5 abandonou o nível por ferramenta. Com 300 checkboxes, pedir nível em cada
-uma não é um formulário que alguém termine — e uma escala repetida 300 vezes é
+O V9 abandonou o nível por ferramenta. Pedir nível em cada uma não é um
+formulário que alguém termine — e uma escala repetida dezenas de vezes é
 respondida por reflexo, não por reflexão. Profundidade passou a ser perguntada
 uma vez só, nas perguntas de experiência.
 
 ### Mexer nas perguntas de perfil
 
-`src/data/profile.ts`. Nenhuma delas tem campo de texto: o briefing era
-descobrir se a pessoa já dirigiu, se tem curta e qual a pipeline dela "sem
-perguntar explicitamente e sem deixar a pessoa escrever sobre isso".
+`src/data/profile.ts` — cinco perguntas, todas de múltipla escolha, numeradas
+na tela. Nenhuma delas tem campo de texto: o briefing era descobrir se a pessoa
+já dirigiu, se tem curta e qual a pipeline dela "sem perguntar explicitamente e
+sem deixar a pessoa escrever sobre isso".
+
+O V9 fazia nove. Quatro delas — responsabilidade, modo de trabalho, desafio
+visual e finalização — eram a mesma pergunta de senioridade com quatro chapéus,
+e na quarta o candidato já enxerga a régua sendo levantada. Saíram.
 
 `PROJECT_TYPES` é a mais afiada — pergunta em que tipos de projeto a pessoa teve
 **papel criativo de liderança**, então "já dirigiu?" é respondido como fato
@@ -207,30 +219,44 @@ alinhamento, validação, cabeçalho no marrom da marca, congelamento, filtro e
 faixas zebradas. Rode de novo sempre que o schema mudar — é idempotente e
 **nunca reescreve uma linha de dados**.
 
-São **310 colunas**, em duas metades com trabalhos diferentes.
+São **144 colunas**, em duas metades com trabalhos diferentes.
 
-**A metade legível (29 colunas, à esquerda)** — o que você olha ao ler *um*
-candidato: `Received At · Full Name · Status · Rating · Primary Expertise ·
-Email · Phone · Location · Portfolio · Additional Links · IMDb / Credits ·
-Additional Reels · Practice Areas · Practice Count · AI Experience ·
-AI Workflow · AI Relationship · Led Projects · Pipeline Stages · Pipeline
-Count · Tools Count · All Tools · Other Tools · Language · Timezone ·
-Submitted At · Form Version · User Agent · Notes`
+**A metade legível (32 colunas, à esquerda)** — o que você olha ao ler *um*
+candidato: `Received At · Full Name · Status · Rating · Primary Practice ·
+Email · Phone / WhatsApp · Location · Portfolio / Demo Reel · Site · Behance ·
+Vimeo · Instagram · LinkedIn · Other Link · Project Reach · AI Integration ·
+AI Workflow · Core Strength · Led Projects · Pipeline Areas · AI Project (led) ·
+AI Project (executed) · Tools Count · All Tools · Other Tools · Language ·
+Timezone · Submitted At (client) · Form Version · User Agent · Notes`
 
-**O bloco de filtragem (281 colunas, à direita)** — uma coluna por clique:
+Cada link de contato tem coluna própria. A caixa livre "Additional Links" que
+existia antes juntava três URLs e um comentário numa célula só — dá para ler,
+não dá para filtrar nem clicar.
+
+**O bloco de filtragem (112 colunas, à direita)** — uma coluna por clique:
 
 | Prefixo | Quantas | Valor |
 | --- | --- | --- |
-| `Area:` | 26 | `Yes` ou vazio — áreas da prática profissional |
-| `Stage:` | 25 | `Yes` ou vazio — etapas de pipeline |
-| `Workflow:` | 6 | `Yes` ou vazio — como monta workflows |
-| `Led:` | 10 | `Yes` ou vazio — liderou projeto desse tipo |
-| `Link:` | 10 | o link de créditos daquele tipo, ao lado |
-| `Tool:` | 204 | **as áreas** em que usa a ferramenta |
+| `Practice:` | 4 | `Yes` ou vazio — área de atuação |
+| `Reach:` | 4 | `Yes` ou vazio — até onde acompanha o projeto |
+| `AI:` | 3 | `Yes` ou vazio — onde a IA entra no processo |
+| `Workflow:` | 4 | `Yes` ou vazio — como monta workflows |
+| `Strength:` | 4 | `Yes` ou vazio — no que é mais forte |
+| `Pipeline:` | 7 | `Yes` ou vazio — etapas de pipeline |
+| `Led:` | 6 | `Yes` ou vazio — liderou projeto desse tipo |
+| `Link:` | 6 | o link de créditos daquele tipo, ao lado |
+| `Tool:` | 74 | **as áreas** em que usa a ferramenta |
+
+**Toda pergunta ganhou esse bloco na v6, e não é enfeite.** Enquanto as
+perguntas eram de resposta única, a coluna legível já servia de filtro: escolhia
+um valor no dropdown e pronto. Múltipla escolha matou isso — `Art Director,
+Animator` e `Animator, Art Director` viram dois valores diferentes no filtro, e
+nenhum dos dois é "todo mundo que anima". Uma coluna `Yes`/vazio por opção é o
+único formato que sobrevive à mudança.
 
 As colunas de ferramenta guardam a lista de áreas, não um tique. Um filtro só em
-`Tool: Runway` responde quem usa **e** para quê — e as 300 caixas do formulário
-custam 204 colunas em vez de 300.
+`Tool: Runway` responde quem usa **e** para quê — e as 90 caixas do formulário
+custam 74 colunas em vez de 90.
 
 `Status` (dropdown), `Rating` (1–5, numérico e ordenável) e `Notes` são as três
 colunas que o formulário não preenche — são do time.

@@ -1,5 +1,5 @@
 /**
- * The profile questions, from FORM_ROUGH_V9.
+ * The profile questions, from FORM_ROUGH_V9 as trimmed in the August 2026 pass.
  *
  * Every one of them is a click. The brief was to learn how senior someone is,
  * how far they carry a project and whether they have directed — "sem perguntar
@@ -9,6 +9,14 @@
  * asks about the WORK ("how far do you typically follow a project?") rather
  * than about the person ("are you senior?"), which is the only version of that
  * question people answer honestly.
+ *
+ * FOUR OF THOSE NINE ARE GONE. Responsibility, work mode, visual challenge and
+ * finishing all asked the same thing from four angles, and by the fourth the
+ * candidate can see the ruler being held up. What is left asks it once.
+ *
+ * EVERY LIST IS MULTI-SELECT. There is no single-answer question left in the
+ * form: a designer who also animates was previously forced to pick a lie, and
+ * the overlap is the most useful thing on the page.
  *
  * `PROJECT_TYPES` stays the sharpest of them: it asks where the person held a
  * creative or artistic LEADERSHIP role, so "have they directed?" is answered as
@@ -23,82 +31,59 @@ export interface Choice {
   labelKey: string
 }
 
-const choice = (id: string, key: string): Choice => ({ id, labelKey: `profile.${key}.${id}` })
-
 /** Q1 — the headline answer, and the first filter anyone will reach for. */
 export const PRIMARY_EXPERTISE: Choice[] = ["art-director", "designer", "animator", "other"].map(
-  (id) => choice(id, "expertise")
+  (id) => ({ id, labelKey: `profile.expertise.${id}` })
 )
 
-/** Q2 — how much of the creative call is theirs. */
-export const RESPONSIBILITY: Choice[] = ["execute", "develop", "lead", "drive"].map((id) =>
-  choice(id, "responsibility")
-)
-
-/** Q3 — the same axis seen from the day-to-day rather than from the job title. */
-export const WORK_MODE: Choice[] = [
-  "defined-direction",
-  "autonomy",
-  "area-lead",
-  "creative-lead"
-].map((id) => choice(id, "workMode"))
-
-/** Q4 — how far down the pipeline they stay. Separates concept from finishing. */
+/** Q2 — how far down the pipeline they stay. Separates concept from finishing. */
 export const PROJECT_REACH: Choice[] = [
   "concept-development",
   "concept-production",
   "concept-final",
   "end-to-end"
-].map((id) => choice(id, "reach"))
+].map((id) => ({ id, labelKey: `profile.reach.${id}` }))
 
-/** Q5 — the difficulty they take on, not the volume. */
-export const VISUAL_CHALLENGE: Choice[] = [
-  "execution",
-  "complex-solutions",
-  "visual-languages",
-  "leading-complex"
-].map((id) => choice(id, "challenge"))
-
-/** Q6 — where AI actually sits in the process, from a tool to a pipeline. */
-export const AI_INTEGRATION: Choice[] = ["development", "production", "pipeline"].map((id) =>
-  choice(id, "aiIntegration")
-)
+/** Q3 — where AI actually sits in the process, from a tool to a pipeline. */
+export const AI_INTEGRATION: Choice[] = ["development", "production", "pipeline"].map((id) => ({
+  id,
+  labelKey: `profile.aiIntegration.${id}`
+}))
 
 /**
- * Q7 — multi select. These are modes, not rungs: someone can combine tools AND
- * build custom workflows, and forcing a single answer would throw away the
- * overlap that actually distinguishes people.
+ * Q4 — modes, not rungs: someone can combine tools AND build custom workflows,
+ * and forcing a single answer would throw away the overlap that actually
+ * distinguishes people.
  */
 export const AI_WORKFLOW: Choice[] = ["combine", "customized", "node-based", "per-project"].map(
-  (id) => choice(id, "aiWorkflow")
+  (id) => ({ id, labelKey: `profile.aiWorkflow.${id}` })
 )
 
-/** Q8 — what they are best at, in their own words but from a fixed list. */
+/** Q5 — what they are best at, in their own words but from a fixed list. */
 export const CORE_STRENGTH: Choice[] = [
   "concepts-directions",
   "complex-challenges",
   "languages-worlds",
   "execution-refinement"
-].map((id) => choice(id, "strength"))
-
-/** Q9 — ownership of the final quality, which is where craft shows or does not. */
-export const FINISHING: Choice[] = ["oversee", "develop-refine", "responsible", "elevate"].map(
-  (id) => choice(id, "finishing")
-)
+].map((id) => ({ id, labelKey: `profile.strength.${id}` }))
 
 /**
- * Multi select. V9 collapsed V5's 25 granular stages into 7 areas — the fine
- * grain was asking a candidate to fill in a production schedule.
+ * The pipeline as the studio actually splits it — direction at the top,
+ * 2D and 3D as separate crafts rather than one "animation" bucket, and
+ * finishing folded into post.
+ *
+ * `pre-production`, `3d-animation` and `production` keep the ids they had in
+ * V9 so answers already in the sheet still line up under those columns.
  */
 export const PIPELINE_AREAS: Choice[] = [
-  "direction-concept",
-  "design-2d",
-  "3d-animation",
+  "direction",
   "pre-production",
-  "vfx-post",
-  "color-finishing",
+  "2d-animation",
+  "3d-animation",
+  "vfx",
+  "post-finishing",
   "production"
-].map((id) => choice(id, "pipeline"))
+].map((id) => ({ id, labelKey: `profile.pipeline.${id}` }))
 
 /** Multi select, and the only question that opens a link per option. */
 export const PROJECT_TYPES: Choice[] = [
@@ -106,10 +91,6 @@ export const PROJECT_TYPES: Choice[] = [
   "short-film",
   "commercial",
   "music-video",
-  "animation-film",
   "series",
-  "branded-content",
-  "digital-campaign",
-  "experimental",
   "generative-film"
-].map((id) => choice(id, "projectType"))
+].map((id) => ({ id, labelKey: `profile.projectType.${id}` }))

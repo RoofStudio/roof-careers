@@ -10,17 +10,19 @@ import {
   AI_INTEGRATION,
   AI_WORKFLOW,
   CORE_STRENGTH,
-  FINISHING,
   PIPELINE_AREAS,
   PRIMARY_EXPERTISE,
   PROJECT_REACH,
-  PROJECT_TYPES,
-  RESPONSIBILITY,
-  VISUAL_CHALLENGE,
-  WORK_MODE
+  PROJECT_TYPES
 } from "../data/profile"
 import { TOTAL_CHECKBOXES } from "../data/tools"
-import { buildPayload, submitApplication, type ProfilePayload } from "../lib/submit"
+import {
+  LINK_FIELDS,
+  buildPayload,
+  submitApplication,
+  type LinkField,
+  type ProfilePayload
+} from "../lib/submit"
 import { TURNSTILE_ENABLED, useTurnstile } from "../lib/turnstile"
 import { useTheme } from "../theme"
 
@@ -32,7 +34,22 @@ const EMPTY_PROFILE: ProfilePayload = {
   phone: "",
   location: "",
   portfolio: "",
-  links: ""
+  website: "",
+  behance: "",
+  vimeo: "",
+  instagram: "",
+  linkedin: "",
+  otherLink: ""
+}
+
+/** The locale sub-key for each link field. Only `otherLink` differs. */
+const LINK_LABEL_KEY: Record<LinkField, string> = {
+  website: "website",
+  behance: "behance",
+  vimeo: "vimeo",
+  instagram: "instagram",
+  linkedin: "linkedin",
+  otherLink: "other"
 }
 
 type FieldKey = keyof ProfilePayload
@@ -92,15 +109,12 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
   const { resolvedTheme } = useTheme()
 
   const [profile, setProfile] = useState<ProfilePayload>(EMPTY_PROFILE)
-  const [expertise, setExpertise] = useState("")
-  const [responsibility, setResponsibility] = useState("")
-  const [workMode, setWorkMode] = useState("")
-  const [reach, setReach] = useState("")
-  const [challenge, setChallenge] = useState("")
-  const [aiIntegration, setAiIntegration] = useState("")
+  // Every question is multi-select now, so every answer is a list.
+  const [expertise, setExpertise] = useState<string[]>([])
+  const [reach, setReach] = useState<string[]>([])
+  const [aiIntegration, setAiIntegration] = useState<string[]>([])
   const [aiWorkflow, setAiWorkflow] = useState<string[]>([])
-  const [strength, setStrength] = useState("")
-  const [finishing, setFinishing] = useState("")
+  const [strength, setStrength] = useState<string[]>([])
   const [pipeline, setPipeline] = useState<string[]>([])
   const [projectTypes, setProjectTypes] = useState<string[]>([])
   const [projectLinks, setProjectLinks] = useState<Record<string, string>>({})
@@ -135,10 +149,7 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
     setErrors((prev) => (prev.tools ? { ...prev, tools: undefined } : prev))
   }
 
-  const toolProgress = useMemo(
-    () => `${selectedCount} / ${TOTAL_CHECKBOXES}`,
-    [selectedCount]
-  )
+  const toolProgress = useMemo(() => `${selectedCount} / ${TOTAL_CHECKBOXES}`, [selectedCount])
 
   const validate = (): Errors => {
     const next: Errors = {}
@@ -185,17 +196,15 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
           profile: {
             ...profile,
             portfolio: normalizeUrl(profile.portfolio),
-            links: profile.links.trim()
+            ...(Object.fromEntries(
+              LINK_FIELDS.map((key) => [key, normalizeUrl(profile[key])])
+            ) as Record<LinkField, string>)
           },
           expertise,
-          responsibility,
-          workMode,
           reach,
-          challenge,
           aiIntegration,
           aiWorkflow,
           strength,
-          finishing,
           pipeline,
           aiLedLink: normalizeUrl(aiLedLink),
           aiExecutedLink: normalizeUrl(aiExecutedLink),
@@ -224,6 +233,7 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
 
   const hasFieldErrors = Object.keys(errors).length > 0
   const sending = status === "sending"
+  const selectAll = t("profile.selectAll")
 
   return (
     <section id="form" className="wide-column scroll-mt-20 pb-24">
@@ -295,17 +305,30 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
                   inputMode="url"
                 />
               </div>
+            </div>
+          </div>
 
-              <div className="sm:col-span-2">
+          {/* One named row per service, instead of the single free-text box
+              this used to be. People filled that box with three URLs, a comma
+              and a note, and the sheet got a column nobody could filter. */}
+          <div>
+            <p className="text-sm font-semibold text-fg">{t("form.fields.links.label")}</p>
+            <p className="mt-1 text-xs text-faint">{t("form.fields.links.hint")}</p>
+
+            <div className="mt-4 flex flex-col gap-4">
+              {LINK_FIELDS.map((key) => (
                 <Field
-                  id="links"
-                  label={t("form.fields.links.label")}
-                  placeholder={t("form.fields.links.placeholder")}
-                  value={profile.links}
-                  onChange={setField("links")}
+                  key={key}
+                  id={key}
+                  type="url"
+                  label={t(`form.fields.links.${LINK_LABEL_KEY[key]}.label`)}
+                  placeholder={t(`form.fields.links.${LINK_LABEL_KEY[key]}.placeholder`)}
+                  value={profile[key]}
+                  onChange={setField(key)}
                   optional
+                  inputMode="url"
                 />
-              </div>
+              ))}
             </div>
           </div>
 
@@ -326,75 +349,49 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
         </Card>
 
         {/* ── Your creative practice ─────────────────────────────
-            Nine ladders instead of the flat list of 26 practice areas V5 had.
-            Each asks about the WORK ("how far do you follow a project?") rather
-            than about the person ("are you senior?") — the only version of that
-            question anyone answers honestly. */}
+            Five questions, numbered, all multi-select. V9 asked nine, and four
+            of them — responsibility, work mode, visual challenge, finishing —
+            were the same seniority question wearing four hats. By the fourth
+            the candidate can see the ruler being held up. */}
         <Card label={t("profile.practiceLabel")}>
           <ChipGroup
             id="expertise"
-            mode="single"
+            number={1}
             title={t("profile.expertiseTitle")}
+            hint={selectAll}
             choices={PRIMARY_EXPERTISE}
             selected={expertise}
-            onToggle={(id) => setExpertise((prev) => (prev === id ? "" : id))}
-          />
-
-          <ChipGroup
-            id="responsibility"
-            mode="single"
-            layout="stack"
-            title={t("profile.responsibilityTitle")}
-            choices={RESPONSIBILITY}
-            selected={responsibility}
-            onToggle={(id) => setResponsibility((prev) => (prev === id ? "" : id))}
-          />
-
-          <ChipGroup
-            id="workMode"
-            mode="single"
-            layout="stack"
-            title={t("profile.workModeTitle")}
-            choices={WORK_MODE}
-            selected={workMode}
-            onToggle={(id) => setWorkMode((prev) => (prev === id ? "" : id))}
+            onToggle={(id) => setExpertise((prev) => toggleIn(prev, id))}
           />
 
           <ChipGroup
             id="reach"
-            mode="single"
+            number={2}
             layout="stack"
             title={t("profile.reachTitle")}
+            hint={selectAll}
             choices={PROJECT_REACH}
             selected={reach}
-            onToggle={(id) => setReach((prev) => (prev === id ? "" : id))}
-          />
-
-          <ChipGroup
-            id="challenge"
-            mode="single"
-            layout="stack"
-            title={t("profile.challengeTitle")}
-            choices={VISUAL_CHALLENGE}
-            selected={challenge}
-            onToggle={(id) => setChallenge((prev) => (prev === id ? "" : id))}
+            onToggle={(id) => setReach((prev) => toggleIn(prev, id))}
           />
 
           <ChipGroup
             id="aiIntegration"
-            mode="single"
+            number={3}
             layout="stack"
             title={t("profile.aiIntegrationTitle")}
+            hint={selectAll}
             choices={AI_INTEGRATION}
             selected={aiIntegration}
-            onToggle={(id) => setAiIntegration((prev) => (prev === id ? "" : id))}
+            onToggle={(id) => setAiIntegration((prev) => toggleIn(prev, id))}
           />
 
           <ChipGroup
             id="aiWorkflow"
+            number={4}
             layout="stack"
             title={t("profile.aiWorkflowTitle")}
-            hint={t("profile.aiWorkflowHint")}
+            hint={selectAll}
             choices={AI_WORKFLOW}
             selected={aiWorkflow}
             onToggle={(id) => setAiWorkflow((prev) => toggleIn(prev, id))}
@@ -402,22 +399,13 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
 
           <ChipGroup
             id="strength"
-            mode="single"
+            number={5}
             layout="stack"
             title={t("profile.strengthTitle")}
+            hint={selectAll}
             choices={CORE_STRENGTH}
             selected={strength}
-            onToggle={(id) => setStrength((prev) => (prev === id ? "" : id))}
-          />
-
-          <ChipGroup
-            id="finishing"
-            mode="single"
-            layout="stack"
-            title={t("profile.finishingTitle")}
-            choices={FINISHING}
-            selected={finishing}
-            onToggle={(id) => setFinishing((prev) => (prev === id ? "" : id))}
+            onToggle={(id) => setStrength((prev) => toggleIn(prev, id))}
           />
         </Card>
 
@@ -426,7 +414,7 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
           <ChipGroup
             id="pipeline"
             title={t("profile.pipelineTitle")}
-            hint={t("profile.pipelineHint")}
+            hint={selectAll}
             choices={PIPELINE_AREAS}
             selected={pipeline}
             onToggle={(id) => setPipeline((prev) => toggleIn(prev, id))}
@@ -466,7 +454,7 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
                             : "border-line-strong bg-panel"
                         }`}
                       >
-                        {active && <span className="text-[10px] font-black text-ink-on">✓</span>}
+                        {active && <span className="text-[10px] font-semibold text-ink-on">✓</span>}
                       </span>
                       {t(type.labelKey)}
                     </button>

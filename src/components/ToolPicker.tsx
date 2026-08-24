@@ -10,7 +10,7 @@ interface ToolPickerProps {
 }
 
 /**
- * 300 checkboxes across 20 production areas, packed as a real mosaic.
+ * 90 checkboxes across 8 production areas, packed as a real mosaic.
  *
  * `columns: 280px` is `repeat(auto-fill, minmax(280px, 1fr))` with masonry
  * packing — as many columns as fit at 280px or wider, each stretching to fill,

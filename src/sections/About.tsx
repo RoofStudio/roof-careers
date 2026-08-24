@@ -1,11 +1,17 @@
 import React from "react"
 import { motion } from "framer-motion"
 import { useTranslation } from "react-i18next"
-import { HiSparkles } from "react-icons/hi2"
 
-const PARAGRAPHS = ["about.p1", "about.p2"] as const
+const PARAGRAPHS = ["about.p1", "about.p2", "about.p3", "about.p4"] as const
 
-/** The role, in the deck's words. Copy only — the ask lives in the form below. */
+/**
+ * The role, in the deck's words. Copy only — the ask lives in the form below.
+ *
+ * "CREATIVE TALENT" is the section title now rather than a 14px subtitle under
+ * "Craft first", and "Craft first." closes the card as the signature line —
+ * which is exactly where the copy puts it. It used to run as the heading AND
+ * as a caption, so the reader met the tagline before the argument for it.
+ */
 const About: React.FC = () => {
   const { t } = useTranslation()
 
@@ -20,10 +26,12 @@ const About: React.FC = () => {
       >
         <p className="label mb-4">{t("about.label")}</p>
 
-        <h2 className="display text-2xl sm:text-3xl">{t("about.title")}</h2>
-        <p className="mt-1.5 text-sm font-medium tracking-wide text-brand-accent">
-          {t("about.subtitle")}
-        </p>
+        <h2
+          className="banner-type text-fg"
+          style={{ fontSize: "clamp(1.4rem, 4.4vw, 2.4rem)" }}
+        >
+          {t("about.title")}
+        </h2>
 
         <div className="mt-7 flex flex-col gap-5">
           {PARAGRAPHS.map((key) => (
@@ -33,9 +41,8 @@ const About: React.FC = () => {
           ))}
         </div>
 
-        <p className="mt-8 flex items-center gap-2 border-t border-line pt-6 text-lg text-fg">
-          <span className="note text-xl">{t("about.closing")}</span>
-          <HiSparkles aria-hidden className="h-4 w-4 shrink-0 text-viz-amber" />
+        <p className="note mt-8 border-t border-line pt-6 text-2xl text-fg sm:text-3xl">
+          {t("about.closing")}
         </p>
       </motion.div>
     </section>

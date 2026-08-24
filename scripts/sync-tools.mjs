@@ -31,9 +31,9 @@ const row = (id, text) => `  { id: ${js(id)}, label: ${js(text)} }`
 const choiceList = (choices) => choices.map((c) => row(c.id, label(c.labelKey))).join(",\n")
 
 /**
- * Distinct tools — 204, not the 300 checkboxes. The sheet gets one column per
- * tool holding the areas it was picked in, so a tool that lives in eight
- * categories still only costs one column.
+ * Distinct tools, not checkboxes. The sheet gets one column per tool holding
+ * the areas it was picked in, so a tool that lives in four categories still
+ * only costs one column.
  */
 const toolRows = Object.entries(TOOL_BY_ID)
   .map(([id, tool]) => row(id, tool.name))
@@ -59,20 +59,8 @@ var EXPERTISE_ROSTER = [
 ${choiceList(profile.PRIMARY_EXPERTISE)}
 ]
 
-var RESPONSIBILITY_ROSTER = [
-${choiceList(profile.RESPONSIBILITY)}
-]
-
-var WORK_MODE_ROSTER = [
-${choiceList(profile.WORK_MODE)}
-]
-
 var REACH_ROSTER = [
 ${choiceList(profile.PROJECT_REACH)}
-]
-
-var CHALLENGE_ROSTER = [
-${choiceList(profile.VISUAL_CHALLENGE)}
 ]
 
 var AI_INTEGRATION_ROSTER = [
@@ -85,10 +73,6 @@ ${choiceList(profile.AI_WORKFLOW)}
 
 var STRENGTH_ROSTER = [
 ${choiceList(profile.CORE_STRENGTH)}
-]
-
-var FINISHING_ROSTER = [
-${choiceList(profile.FINISHING)}
 ]
 
 var PIPELINE_ROSTER = [
