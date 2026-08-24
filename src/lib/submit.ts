@@ -47,8 +47,6 @@ export interface SubmissionPayload {
    * assumes one value per field will silently drop the extras.
    */
   expertise: string[]
-  reach: string[]
-  aiIntegration: string[]
   aiWorkflow: string[]
   strength: string[]
   pipeline: string[]
@@ -76,19 +74,17 @@ export interface SubmissionPayload {
 }
 
 /**
- * v6: the August 2026 trim — five questions instead of nine, all of them
+ * v7: the August 2026 trim — three questions instead of nine, all of them
  * multi-select, seven pipeline areas, six project types, eight tool areas,
  * and the contact links split into named fields.
  */
-export const FORM_VERSION = "6"
+export const FORM_VERSION = "7"
 
 const APPS_SCRIPT_URL = import.meta.env.VITE_APPS_SCRIPT_URL as string | undefined
 
 export const buildPayload = (input: {
   profile: ProfilePayload
   expertise: string[]
-  reach: string[]
-  aiIntegration: string[]
   aiWorkflow: string[]
   strength: string[]
   pipeline: string[]
@@ -105,8 +101,6 @@ export const buildPayload = (input: {
 }): SubmissionPayload => ({
   profile: input.profile,
   expertise: input.expertise,
-  reach: input.reach,
-  aiIntegration: input.aiIntegration,
   aiWorkflow: input.aiWorkflow,
   strength: input.strength,
   pipeline: input.pipeline,

@@ -26,7 +26,7 @@
  * filter then answers both who uses it and what they use it for, and 90
  * checkboxes still cost only 74 columns.
  *
- * EVERY QUESTION IS MULTI-SELECT as of v6. No column here holds "the" answer
+ * EVERY QUESTION IS MULTI-SELECT as of v6, and v7 is down to three of them. No column here holds "the" answer
  * to a question any more; the readable ones hold a comma-joined list in roster
  * order, and the per-option Yes/blank block on the right is what you filter on.
  *
@@ -163,19 +163,6 @@ var EXPERTISE_ROSTER = [
   { id: "designer", label: "Designer" },
   { id: "animator", label: "Animator" },
   { id: "other", label: "Other" }
-]
-
-var REACH_ROSTER = [
-  { id: "concept-development", label: "Concept and development" },
-  { id: "concept-production", label: "Concept through production" },
-  { id: "concept-final", label: "Concept through final execution" },
-  { id: "end-to-end", label: "End to end, including refinement and finishing" }
-]
-
-var AI_INTEGRATION_ROSTER = [
-  { id: "development", label: "Development. I use AI to develop concepts and visual solutions" },
-  { id: "production", label: "Production. I use AI as part of professional project workflows" },
-  { id: "pipeline", label: "Pipeline. I integrate multiple AI tools across different stages of production" }
 ]
 
 var AI_WORKFLOW_ROSTER = [
@@ -371,20 +358,6 @@ var BASE_COLUMNS = [
   // sheet. ALL FIVE ARE LISTS — v6 has no single-answer question left, so
   // every one of these resolves through `labelsFor`, never `labelOf`.
   {
-    header: "Project Reach",
-    width: 300,
-    value: function (payload) {
-      return labelsFor(REACH_ROSTER, payload.reach)
-    }
-  },
-  {
-    header: "AI Integration",
-    width: 340,
-    value: function (payload) {
-      return labelsFor(AI_INTEGRATION_ROSTER, payload.aiIntegration)
-    }
-  },
-  {
     header: "AI Workflow",
     width: 340,
     value: function (payload) {
@@ -477,8 +450,6 @@ var BASE_COLUMNS = [
  * obvious when scrolling.
  *
  *   Practice:  primary practice areas
- *   Reach:     how far they follow a project
- *   AI:        where AI sits in their process
  *   Workflow:  how they assemble tools
  *   Strength:  what they are best at
  *   Pipeline:  pipeline areas
@@ -511,12 +482,6 @@ function buildColumns() {
 
   flag("Practice", EXPERTISE_ROSTER, function (p) {
     return p.expertise
-  })
-  flag("Reach", REACH_ROSTER, function (p) {
-    return p.reach
-  })
-  flag("AI", AI_INTEGRATION_ROSTER, function (p) {
-    return p.aiIntegration
   })
   flag("Workflow", AI_WORKFLOW_ROSTER, function (p) {
     return p.aiWorkflow
@@ -563,7 +528,7 @@ function buildColumns() {
  * Must match FORM_VERSION in src/lib/submit.ts. It is reported by `doGet` so a
  * deployment can be identified from outside without opening the editor.
  */
-var SCHEMA_VERSION = "6"
+var SCHEMA_VERSION = "7"
 
 var COLUMNS = buildColumns()
 
@@ -915,14 +880,12 @@ function notify(payload) {
         profile.location,
         "",
         "Atuação: " + (labelsFor(EXPERTISE_ROSTER, payload.expertise) || "—"),
-        "Alcance: " + (labelsFor(REACH_ROSTER, payload.reach) || "—"),
         "Forte em: " + (labelsFor(STRENGTH_ROSTER, payload.strength) || "—"),
         "Liderou em: " + (labelsFor(PROJECT_TYPE_ROSTER, payload.projectTypes) || "—"),
         "",
         "Portfólio: " + (profile.portfolio || "—"),
         "Links: " + (linkSummary(profile) || "—"),
         "",
-        "IA: " + (labelsFor(AI_INTEGRATION_ROSTER, payload.aiIntegration) || "—"),
         "Pipeline: " + (labelsFor(PIPELINE_ROSTER, payload.pipeline) || "—"),
         distinctToolCount(payload) + " ferramentas",
         payload.otherTools ? "Outras: " + payload.otherTools : "",

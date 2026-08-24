@@ -72,8 +72,6 @@
     "selectAll": "Marque todas que se aplicam.",
     "practiceLabel": "Sua prática criativa",
     "expertiseTitle": "O que melhor descreve a sua área de atuação?",
-    "reachTitle": "Até onde você costuma acompanhar um projeto?",
-    "aiIntegrationTitle": "Como a IA está integrada ao seu processo criativo hoje?",
     "aiWorkflowTitle": "Como você trabalha com workflows de IA?",
     "strengthTitle": "Que tipo de trabalho melhor representa a sua força?",
     "pipelineLabel": "Pipeline de produção",
@@ -95,17 +93,6 @@
       "designer": "Designer",
       "animator": "Animador",
       "other": "Outro"
-    },
-    "reach": {
-      "concept-development": "Conceito e desenvolvimento",
-      "concept-production": "Do conceito até a produção",
-      "concept-final": "Do conceito até a execução final",
-      "end-to-end": "De ponta a ponta, incluindo refinamento e finalização"
-    },
-    "aiIntegration": {
-      "development": "Desenvolvimento. Uso IA para desenvolver conceitos e soluções visuais",
-      "production": "Produção. Uso IA dentro de workflows de projetos profissionais",
-      "pipeline": "Pipeline. Integro várias ferramentas de IA em etapas diferentes da produção"
     },
     "aiWorkflow": {
       "combine": "Combino ferramentas de IA diferentes no mesmo workflow",
@@ -141,8 +128,17 @@
     "label": "Suas ferramentas",
     "title": "Quais ferramentas de IA, generativas ou assistidas por IA você usa ou já usou?",
     "subtitle": "Marque todas que se aplicam.",
-    "selectedCount": "{{count}} selecionadas",
     "clear": "Limpar seleção",
+    "stepLabel": "Etapa {{n}} de {{total}}",
+    "pagination": "Etapas das ferramentas",
+    "prevPage": "Etapa anterior",
+    "nextPage": "Próxima etapa",
+    "goToStep": "Etapa {{n}}, {{part}}",
+    "sendOnLastStep": "O botão de enviar está na etapa {{total}}.",
+    "parts": {
+      "ai-concept": "IA e conceito",
+      "production": "3D e pós"
+    },
     "groups": {
       "ai-workflow": "AI workflow / node-based",
       "production-management": "Produção / planejamento",

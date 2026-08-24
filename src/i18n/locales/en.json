@@ -72,8 +72,6 @@
     "selectAll": "Select all that apply.",
     "practiceLabel": "Your creative practice",
     "expertiseTitle": "Which best describes your area of practice?",
-    "reachTitle": "How far do you typically follow a project?",
-    "aiIntegrationTitle": "How is AI integrated into your creative process today?",
     "aiWorkflowTitle": "How do you work with AI workflows?",
     "strengthTitle": "What type of work best represents your core strengths?",
     "pipelineLabel": "Production pipeline",
@@ -95,17 +93,6 @@
       "designer": "Designer",
       "animator": "Animator",
       "other": "Other"
-    },
-    "reach": {
-      "concept-development": "Concept and development",
-      "concept-production": "Concept through production",
-      "concept-final": "Concept through final execution",
-      "end-to-end": "End to end, including refinement and finishing"
-    },
-    "aiIntegration": {
-      "development": "Development. I use AI to develop concepts and visual solutions",
-      "production": "Production. I use AI as part of professional project workflows",
-      "pipeline": "Pipeline. I integrate multiple AI tools across different stages of production"
     },
     "aiWorkflow": {
       "combine": "I combine different AI tools in the same workflow",
@@ -141,8 +128,17 @@
     "label": "Your toolkit",
     "title": "Which AI, generative or AI-assisted creative tools do you use or have experience with?",
     "subtitle": "Select all that apply.",
-    "selectedCount": "{{count}} selected",
     "clear": "Clear selection",
+    "stepLabel": "Step {{n}} of {{total}}",
+    "pagination": "Toolkit steps",
+    "prevPage": "Previous step",
+    "nextPage": "Next step",
+    "goToStep": "Step {{n}}, {{part}}",
+    "sendOnLastStep": "The send button is on step {{total}}.",
+    "parts": {
+      "ai-concept": "AI & concept",
+      "production": "3D & post"
+    },
     "groups": {
       "ai-workflow": "AI workflow / node-based",
       "production-management": "Production management / planning",

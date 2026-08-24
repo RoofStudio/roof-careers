@@ -59,14 +59,6 @@ var EXPERTISE_ROSTER = [
 ${choiceList(profile.PRIMARY_EXPERTISE)}
 ]
 
-var REACH_ROSTER = [
-${choiceList(profile.PROJECT_REACH)}
-]
-
-var AI_INTEGRATION_ROSTER = [
-${choiceList(profile.AI_INTEGRATION)}
-]
-
 var AI_WORKFLOW_ROSTER = [
 ${choiceList(profile.AI_WORKFLOW)}
 ]

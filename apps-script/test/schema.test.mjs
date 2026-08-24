@@ -15,10 +15,8 @@ const PAYLOAD = {
     linkedin: "https://linkedin.com/in/ana",
     otherLink: ""
   },
-  // v6: every question is a list. A bare string here would be a regression.
+  // v7: every question is a list. A bare string here would be a regression.
   expertise: ["art-director", "animator"],
-  reach: ["end-to-end"],
-  aiIntegration: ["pipeline", "production"],
   aiWorkflow: ["combine", "node-based"],
   strength: ["languages-worlds"],
   aiLedLink: "https://vimeo.com/ai-led",
@@ -43,7 +41,7 @@ const PAYLOAD = {
     language: "pt-BR",
     timezone: "America/Sao_Paulo",
     userAgent: "Mozilla/5.0 test",
-    formVersion: "6"
+    formVersion: "7"
   },
   guard: { hp: "", elapsedMs: 20000, turnstileToken: "" }
 }
@@ -75,22 +73,23 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
     `roster=${sandbox.TOOL_ROSTER.length}`)
   check("1e one column per pipeline area",
     sandbox.PIPELINE_ROSTER.every((c) => headers.includes(`Pipeline: ${c.label}`)))
-  check("1f the five practice questions each get a readable column",
-    ["Primary Practice","Project Reach","AI Integration","AI Workflow","Core Strength"]
-      .every((h) => headers.includes(h)))
+  check("1f the three practice questions each get a readable column",
+    ["Primary Practice","AI Workflow","Core Strength"].every((h) => headers.includes(h)))
   check("1f2 the retired questions are gone from the schema",
     !headers.includes("Responsibility") && !headers.includes("Work Mode") &&
-      !headers.includes("Visual Challenge") && !headers.includes("Finishing"),
+      !headers.includes("Visual Challenge") && !headers.includes("Finishing") &&
+      !headers.includes("Project Reach") && !headers.includes("AI Integration"),
     "a question removed from the form must not keep writing a column")
   check("1f3 each contact link gets its own column, not one packed cell",
     ["Site","Behance","Vimeo","Instagram","LinkedIn","Other Link"]
       .every((h) => headers.includes(h)) && !headers.includes("Additional Links"))
   check("1f4 every multi-select question also gets a per-option filter column",
     sandbox.EXPERTISE_ROSTER.every((c) => headers.includes(`Practice: ${c.label}`)) &&
-      sandbox.REACH_ROSTER.every((c) => headers.includes(`Reach: ${c.label}`)) &&
-      sandbox.AI_INTEGRATION_ROSTER.every((c) => headers.includes(`AI: ${c.label}`)) &&
+      sandbox.AI_WORKFLOW_ROSTER.every((c) => headers.includes(`Workflow: ${c.label}`)) &&
       sandbox.STRENGTH_ROSTER.every((c) => headers.includes(`Strength: ${c.label}`)),
     "a joined list is unfilterable — the Yes/blank block is what replaces it")
+  check("1f5 the dropped questions take their filter columns with them",
+    !headers.some((h) => h.startsWith("Reach: ") || h.startsWith("AI: ")))
   check("1g project types get both a flag and a credits link",
     sandbox.PROJECT_TYPE_ROSTER.every(
       (c) => headers.includes(`Led: ${c.label}`) && headers.includes(`Link: ${c.label}`)
@@ -128,12 +127,6 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
     `${row["Site"]} / ${row["LinkedIn"]}`)
   check("2e2 a link left blank stays blank", row["Other Link"] === "",
     JSON.stringify(row["Other Link"]))
-  check("2f reach resolves",
-    row["Project Reach"] === "End to end, including refinement and finishing",
-    String(row["Project Reach"]))
-  check("2g AI integration keeps both, in ROSTER order not click order",
-    row["AI Integration"].startsWith("Production.") && row["AI Integration"].includes("Pipeline."),
-    String(row["AI Integration"]))
   check("2g2 the two AI project links land in their own columns",
     row["AI Project (led)"] === "https://vimeo.com/ai-led" &&
       row["AI Project (executed)"] === "https://vimeo.com/ai-exec")
@@ -191,11 +184,6 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
     row["Practice: Art Director"] === "Yes" && row["Practice: Animator"] === "Yes" &&
       row["Practice: Designer"] === "",
     `${row["Practice: Art Director"]} / ${row["Practice: Animator"]} / ${row["Practice: Designer"]}`)
-  check("3l reach flag", row["Reach: End to end, including refinement and finishing"] === "Yes")
-  check("3m AI integration flags, both of them",
-    row["AI: Pipeline. I integrate multiple AI tools across different stages of production"] ===
-      "Yes" &&
-      row["AI: Production. I use AI as part of professional project workflows"] === "Yes")
   check("3n strength flag", row["Strength: Creating visual languages and worlds"] === "Yes")
 }
 
@@ -208,8 +196,6 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
   post(sandbox, {
     ...PAYLOAD,
     expertise: [],
-    reach: [],
-    aiIntegration: [],
     aiWorkflow: [],
     strength: [],
     aiLedLink: "",
@@ -222,9 +208,9 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
   })
   const bare = asObject(sheet._grid[0], sheet._grid[1])
   check("4a empty questions are blank, not 'undefined'",
-    bare["Primary Practice"] === "" && bare["Project Reach"] === "" &&
+    bare["Primary Practice"] === "" && bare["AI Workflow"] === "" &&
       bare["Core Strength"] === "",
-    `${bare["Primary Practice"]} / ${bare["Project Reach"]}`)
+    `${bare["Primary Practice"]} / ${bare["Core Strength"]}`)
   check("4b empty multi-selects are blank",
     bare["AI Workflow"] === "" && bare["Pipeline Areas"] === "")
   check("4c tools count is a number, not blank", bare["Tools Count"] === 1)
@@ -243,10 +229,10 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
   check("4e unknown answer id resolves to blank", odd["Primary Practice"] === "")
   check("4f unknown tool does not appear anywhere", odd["All Tools"] === "Nope" && odd["Tools Count"] === 1)
 
-  // A v5 client still in someone's cached bundle posts strings, not arrays.
+  // An older client still in someone's cached bundle posts strings, not arrays.
   post(sandbox, { ...PAYLOAD, expertise: "art-director", pipeline: "direction" })
   const legacyShape = asObject(sheet._grid[0], sheet._grid[3])
-  check("4g a v5 payload's bare string cannot corrupt the row",
+  check("4g an older payload's bare string cannot corrupt the row",
     legacyShape["Full Name"] === "Ana Ribeiro" &&
       typeof legacyShape["Primary Practice"] === "string",
     String(legacyShape["Primary Practice"]))
@@ -341,7 +327,8 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
     asObject(headers, sheet._grid[2])["Tools Count"] === 3)
   check("6h dropped questions never come back as empty columns",
     !headers.includes("AI Experience") && !headers.includes("Practice Areas") &&
-      !headers.includes("AI Relationship") && !headers.includes("Responsibility"),
+      !headers.includes("AI Relationship") && !headers.includes("Responsibility") &&
+      !headers.includes("Project Reach"),
     "a removed question must not be re-created")
 }
 

@@ -193,6 +193,40 @@ export const TOOL_GROUPS: ToolGroup[] = [
   }
 ]
 
+/**
+ * The catalogue split in two, because 90 checkboxes in one mosaic is a wall
+ * and people bounce off walls.
+ *
+ * The cut is not "half the list". Part 1 is everything up to and including the
+ * image — workflow, planning, research, concept and boards. Part 2 is
+ * everything from the model onward — 3D, capture, video, comp. Someone who
+ * only does one of those two jobs can answer their half and skip the other
+ * without reading it, which is the actual saving.
+ *
+ * BOTH PARTS STAY REACHABLE AT ALL TIMES. The tabs are not a wizard: a
+ * candidate who never clicks part 2 would submit believing they had seen the
+ * whole list, and we would read that as "does not use Nuke".
+ */
+export interface ToolPart {
+  id: string
+  labelKey: string
+  /** Group ids, in the order they should appear. */
+  groups: string[]
+}
+
+export const TOOL_PARTS: ToolPart[] = [
+  {
+    id: "ai-concept",
+    labelKey: "tools.parts.ai-concept",
+    groups: ["ai-workflow", "production-management", "development", "concept"]
+  },
+  {
+    id: "production",
+    labelKey: "tools.parts.production",
+    groups: ["modeling", "mocap", "video", "vfx"]
+  }
+]
+
 /** A single checkbox: the same tool in two areas is two of these. */
 export const selectionKey = (groupId: string, toolId: string) => `${groupId}:${toolId}`
 
@@ -214,3 +248,26 @@ export const GROUP_BY_ID: Record<string, ToolGroup> = Object.fromEntries(
 export const TOTAL_CHECKBOXES = TOOL_GROUPS.reduce((n, group) => n + group.tools.length, 0)
 
 export const TOTAL_TOOLS = Object.keys(TOOL_BY_ID).length
+
+/** The groups of one part, resolved and in order. */
+export const groupsForPart = (part: ToolPart): ToolGroup[] =>
+  part.groups.map((id) => GROUP_BY_ID[id]).filter(Boolean)
+
+export const checkboxesInPart = (part: ToolPart) =>
+  groupsForPart(part).reduce((n, group) => n + group.tools.length, 0)
+
+/**
+ * Every group belongs to exactly one part. A group missing from TOOL_PARTS
+ * would simply never render — no error, no empty state, just tools nobody can
+ * tick — so the mismatch is caught here, at module load, in every environment
+ * that imports the catalogue.
+ */
+const assigned = TOOL_PARTS.flatMap((part) => part.groups)
+if (assigned.length !== TOOL_GROUPS.length || new Set(assigned).size !== assigned.length) {
+  throw new Error(
+    `TOOL_PARTS must list each of the ${TOOL_GROUPS.length} groups exactly once, got ${assigned.length}`
+  )
+}
+for (const id of assigned) {
+  if (!GROUP_BY_ID[id]) throw new Error(`TOOL_PARTS references unknown group "${id}"`)
+}

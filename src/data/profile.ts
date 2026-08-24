@@ -10,9 +10,13 @@
  * than about the person ("are you senior?"), which is the only version of that
  * question people answer honestly.
  *
- * FOUR OF THOSE NINE ARE GONE. Responsibility, work mode, visual challenge and
+ * SIX OF THOSE NINE ARE GONE. Responsibility, work mode, visual challenge and
  * finishing all asked the same thing from four angles, and by the fourth the
- * candidate can see the ruler being held up. What is left asks it once.
+ * candidate can see the ruler being held up. Project reach and AI integration
+ * followed them: reach is already answered by the pipeline areas someone ticks,
+ * and AI integration by the workflow question two rows below it.
+ *
+ * Three questions left, and each one is the only place it is asked.
  *
  * EVERY LIST IS MULTI-SELECT. There is no single-answer question left in the
  * form: a designer who also animates was previously forced to pick a lie, and
@@ -36,22 +40,8 @@ export const PRIMARY_EXPERTISE: Choice[] = ["art-director", "designer", "animato
   (id) => ({ id, labelKey: `profile.expertise.${id}` })
 )
 
-/** Q2 — how far down the pipeline they stay. Separates concept from finishing. */
-export const PROJECT_REACH: Choice[] = [
-  "concept-development",
-  "concept-production",
-  "concept-final",
-  "end-to-end"
-].map((id) => ({ id, labelKey: `profile.reach.${id}` }))
-
-/** Q3 — where AI actually sits in the process, from a tool to a pipeline. */
-export const AI_INTEGRATION: Choice[] = ["development", "production", "pipeline"].map((id) => ({
-  id,
-  labelKey: `profile.aiIntegration.${id}`
-}))
-
 /**
- * Q4 — modes, not rungs: someone can combine tools AND build custom workflows,
+ * Q2 — modes, not rungs: someone can combine tools AND build custom workflows,
  * and forcing a single answer would throw away the overlap that actually
  * distinguishes people.
  */
@@ -59,7 +49,7 @@ export const AI_WORKFLOW: Choice[] = ["combine", "customized", "node-based", "pe
   (id) => ({ id, labelKey: `profile.aiWorkflow.${id}` })
 )
 
-/** Q5 — what they are best at, in their own words but from a fixed list. */
+/** Q3 — what they are best at, in their own words but from a fixed list. */
 export const CORE_STRENGTH: Choice[] = [
   "concepts-directions",
   "complex-challenges",
