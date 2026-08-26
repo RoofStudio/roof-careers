@@ -53,12 +53,30 @@
       "links": {
         "label": "Links adicionais",
         "hint": "Uma linha para cada. Preencha só os que você usa.",
-        "website": { "label": "Site link", "placeholder": "seuestudio.com" },
-        "behance": { "label": "Behance link", "placeholder": "behance.net/voce" },
-        "vimeo": { "label": "Vimeo link", "placeholder": "vimeo.com/voce" },
-        "instagram": { "label": "Instagram link", "placeholder": "instagram.com/voce" },
-        "linkedin": { "label": "LinkedIn link", "placeholder": "linkedin.com/in/voce" },
-        "other": { "label": "Outro link", "placeholder": "Qualquer outro lugar onde seu trabalho esteja" }
+        "website": {
+          "label": "Site link",
+          "placeholder": "seuestudio.com"
+        },
+        "behance": {
+          "label": "Behance link",
+          "placeholder": "behance.net/voce"
+        },
+        "vimeo": {
+          "label": "Vimeo link",
+          "placeholder": "vimeo.com/voce"
+        },
+        "instagram": {
+          "label": "Instagram link",
+          "placeholder": "instagram.com/voce"
+        },
+        "linkedin": {
+          "label": "LinkedIn link",
+          "placeholder": "linkedin.com/in/voce"
+        },
+        "other": {
+          "label": "Outro link",
+          "placeholder": "Qualquer outro lugar onde seu trabalho esteja"
+        }
       }
     },
     "errors": {
@@ -129,12 +147,6 @@
     "title": "Quais ferramentas de IA, generativas ou assistidas por IA você usa ou já usou?",
     "subtitle": "Marque todas que se aplicam.",
     "clear": "Limpar seleção",
-    "stepLabel": "Etapa {{n}} de {{total}}",
-    "pagination": "Etapas das ferramentas",
-    "prevPage": "Etapa anterior",
-    "nextPage": "Próxima etapa",
-    "goToStep": "Etapa {{n}}, {{part}}",
-    "sendOnLastStep": "O botão de enviar está na etapa {{total}}.",
     "parts": {
       "ai-concept": "IA e conceito",
       "production": "3D e pós"

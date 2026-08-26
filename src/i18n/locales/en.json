@@ -53,12 +53,30 @@
       "links": {
         "label": "Additional links",
         "hint": "One line each. Fill in only the ones you use.",
-        "website": { "label": "Site link", "placeholder": "yourstudio.com" },
-        "behance": { "label": "Behance link", "placeholder": "behance.net/you" },
-        "vimeo": { "label": "Vimeo link", "placeholder": "vimeo.com/you" },
-        "instagram": { "label": "Instagram link", "placeholder": "instagram.com/you" },
-        "linkedin": { "label": "LinkedIn link", "placeholder": "linkedin.com/in/you" },
-        "other": { "label": "Other link", "placeholder": "Anywhere else your work lives" }
+        "website": {
+          "label": "Site link",
+          "placeholder": "yourstudio.com"
+        },
+        "behance": {
+          "label": "Behance link",
+          "placeholder": "behance.net/you"
+        },
+        "vimeo": {
+          "label": "Vimeo link",
+          "placeholder": "vimeo.com/you"
+        },
+        "instagram": {
+          "label": "Instagram link",
+          "placeholder": "instagram.com/you"
+        },
+        "linkedin": {
+          "label": "LinkedIn link",
+          "placeholder": "linkedin.com/in/you"
+        },
+        "other": {
+          "label": "Other link",
+          "placeholder": "Anywhere else your work lives"
+        }
       }
     },
     "errors": {
@@ -129,12 +147,6 @@
     "title": "Which AI, generative or AI-assisted creative tools do you use or have experience with?",
     "subtitle": "Select all that apply.",
     "clear": "Clear selection",
-    "stepLabel": "Step {{n}} of {{total}}",
-    "pagination": "Toolkit steps",
-    "prevPage": "Previous step",
-    "nextPage": "Next step",
-    "goToStep": "Step {{n}}, {{part}}",
-    "sendOnLastStep": "The send button is on step {{total}}.",
     "parts": {
       "ai-concept": "AI & concept",
       "production": "3D & post"

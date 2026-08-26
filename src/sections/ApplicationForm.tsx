@@ -13,7 +13,7 @@ import {
   PRIMARY_EXPERTISE,
   PROJECT_TYPES
 } from "../data/profile"
-import { TOOL_PARTS, TOTAL_CHECKBOXES } from "../data/tools"
+import { TOTAL_CHECKBOXES } from "../data/tools"
 import {
   LINK_FIELDS,
   buildPayload,
@@ -119,27 +119,6 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [otherTools, setOtherTools] = useState("")
 
-  /**
-   * The toolkit is a two-step control, and Send does not exist until the last
-   * step has been reached.
-   *
-   * This is the whole reason the steps are steps. Left to itself, someone
-   * skims part 1, sees a Send button under it and fires — and the sheet
-   * records "uses no 3D tools" for a 3D artist who was simply never shown the
-   * 3D list. A blank answer and an unseen question are indistinguishable once
-   * the row is written, so the form refuses to write the row.
-   *
-   * `toolsSeen` LATCHES: going back to step 1 to review does not take Send
-   * away again. The gate is "have you been shown everything", not "are you
-   * currently looking at the end".
-   */
-  const [toolStep, setToolStep] = useState(0)
-  const [toolsSeen, setToolsSeen] = useState(TOOL_PARTS.length <= 1)
-
-  const goToToolStep = (index: number) => {
-    setToolStep(index)
-    if (index >= TOOL_PARTS.length - 1) setToolsSeen(true)
-  }
   const [errors, setErrors] = useState<Errors>({})
   const [status, setStatus] = useState<"idle" | "sending" | "error">("idle")
 
@@ -188,15 +167,6 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
-
-    // Enter inside a text input submits a form natively, with no button
-    // involved — so hiding Send is not, on its own, a gate. Send them to the
-    // step they have not seen instead of writing a half-answered row.
-    if (!toolsSeen) {
-      goToToolStep(TOOL_PARTS.length - 1)
-      document.getElementById("tools")?.scrollIntoView({ behavior: "smooth", block: "start" })
-      return
-    }
 
     const found = validate()
     setErrors(found)
@@ -572,12 +542,7 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
             </div>
           </div>
 
-          <ToolPicker
-            selected={selected}
-            onToggle={toggleTool}
-            step={toolStep}
-            onStep={goToToolStep}
-          />
+          <ToolPicker selected={selected} onToggle={toggleTool} />
 
           <div className="text-column mt-4 rounded-card border border-line bg-panel p-5 shadow-card">
             <Field
@@ -600,10 +565,7 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
           )}
         </motion.div>
 
-        {/* ── Submit ─────────────────────────────────────────────────
-            Absent until the toolkit's last step has been reached. See
-            `toolsSeen` above — this is the gate, not the hidden button. */}
-        {toolsSeen && (
+        {/* ── Submit ───────────────────────────────────────────────── */}
         <div className="text-column flex flex-col items-center gap-4">
           {TURNSTILE_ENABLED && <div ref={turnstile.containerRef} className="min-h-[65px]" />}
 
@@ -638,7 +600,6 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
 
           <p className="text-center text-xs text-faint">{t("submit.privacy")}</p>
         </div>
-        )}
       </form>
     </section>
   )

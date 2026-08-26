@@ -190,15 +190,30 @@
   --s-lift: 0 2px 4px rgb(51 33 39 / 0.07), 0 16px 40px -16px rgb(51 33 39 / 0.24);
   --s-pop: 0 24px 60px -20px rgb(51 33 39 / 0.38);
 
-  /* The signature of the interface, and it is the studio's: yellow-1 bleeding
-     in from the top-left, purple-1 down the right, over the beige-1 ground.
-     Two hues only — the site never runs three at once. Radial layers instead
-     of one linear: a linear draws a hard diagonal, and this wants haze. */
+  /* The ground UNDER the animated blobs — see `.brand-bg` and
+     `BrandBackground.tsx`. It used to be the whole story, at roughly double
+     these alphas; now it is the bed the moving colour lies on, and the two
+     stack. Left at its old strength the pair cooked the top-left corner well
+     past anything the ink could survive. Measured at the hottest point, where
+     the yellow blob sits over the yellow radial:
+
+       ground #dcae67 → `muted` 4.1:1, within a tenth of the flat gradient it
+       replaced, and the emphasis now comes from the SHAPE of the colour
+       rather than from turning the haze up.
+
+     Radial layers instead of one linear: a linear draws a hard diagonal, and
+     this wants haze. */
   --canvas-gradient:
-    radial-gradient(1000px 680px at -5% -10%, rgb(202 158 63 / 0.62), transparent 62%),
-    radial-gradient(1000px 640px at 104% 8%, rgb(223 177 223 / 0.68), transparent 60%),
-    radial-gradient(1100px 800px at 110% 62%, rgb(223 177 223 / 0.5), transparent 58%),
+    radial-gradient(1000px 680px at -5% -10%, rgb(202 158 63 / 0.22), transparent 62%),
+    radial-gradient(1000px 640px at 104% 8%, rgb(223 177 223 / 0.3), transparent 60%),
+    radial-gradient(1100px 800px at 110% 62%, rgb(223 177 223 / 0.22), transparent 58%),
     linear-gradient(180deg, var(--c-surface), #ffcfae);
+
+  /* How much of the animated blob layer reaches the page. 0.5 is not a taste
+     call: it is the number that puts the composite ground back where the old
+     flat gradient had it, so nothing on the page lost contrast to the
+     animation. */
+  --blob-alpha: 0.5;
 
   /* Kept for the decorative slabs. NOT for type — see `.hero-text-gradient`. */
   --hero-gradient: linear-gradient(100deg, #ca9e3f 0%, #dfb1df 52%, #ffd6b8 100%);
@@ -244,10 +259,16 @@
   --s-pop: 0 24px 60px -20px rgb(0 0 0 / 0.7);
 
   --canvas-gradient:
-    radial-gradient(1000px 680px at -5% -10%, rgb(202 158 63 / 0.2), transparent 62%),
-    radial-gradient(1000px 640px at 104% 8%, rgb(223 177 223 / 0.18), transparent 60%),
-    radial-gradient(1100px 800px at 110% 62%, rgb(223 177 223 / 0.13), transparent 58%),
+    radial-gradient(1000px 680px at -5% -10%, rgb(202 158 63 / 0.1), transparent 62%),
+    radial-gradient(1000px 640px at 104% 8%, rgb(223 177 223 / 0.09), transparent 60%),
+    radial-gradient(1100px 800px at 110% 62%, rgb(223 177 223 / 0.07), transparent 58%),
     linear-gradient(180deg, var(--c-surface), #120b0e);
+
+  /* The blobs are brand colours, and brand colours are LIGHT. Over the brown
+     ground they glow rather than tint, so they need far less of themselves to
+     read as the same picture — at the light theme's 0.5 they would be three
+     lamps on a dark page. */
+  --blob-alpha: 0.26;
 
   --hero-gradient: linear-gradient(100deg, #ca9e3f 0%, #dfb1df 52%, #8a6a5a 100%);
 }
@@ -278,6 +299,39 @@ body {
   background-color: var(--c-surface);
   background-image: var(--canvas-gradient);
   background-attachment: fixed;
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+   The animated ground — the studio's own drifting blobs, drawn by
+   `BrandBackground.tsx`. The gradient above is what it lies on.
+
+   THE CANVAS OVERHANGS THE VIEWPORT BY 18% ON EVERY SIDE, and `OVERHANG` in
+   the component is the same 0.18. A blob is cut off square at the canvas
+   edge; run that cut through a 2rem blur and it becomes a bright seam down
+   the side of the screen. Pushing the edge off-screen is the whole fix, and
+   the wrapper's `overflow: hidden` is what keeps the overhang from growing
+   the page.
+
+   The blur lives here rather than in `ctx.filter` so it costs one composited
+   pass instead of a filter rebuilt on every frame, and so Safari — which
+   shipped canvas filters late — gets the same picture as everyone else.
+   ────────────────────────────────────────────────────────────────────── */
+.brand-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.brand-bg-canvas {
+  position: absolute;
+  inset: -18%;
+  opacity: var(--blob-alpha);
+  filter: blur(2rem);
+  /* Its own layer: the blur is then a GPU pass over a texture that changes,
+     not a re-blur of the whole page behind it. */
+  transform: translateZ(0);
 }
 
 /* The text caret must follow the theme, not the input color. */
@@ -418,28 +472,13 @@ select:focus-visible {
   line-height: 1;
 }
 
-/* Subtle floating blob animation used in the background. */
-@keyframes blob-drift {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  33% {
-    transform: translate3d(30px, -20px, 0) scale(1.05);
-  }
-  66% {
-    transform: translate3d(-20px, 25px, 0) scale(0.97);
-  }
-}
-.blob-drift {
-  animation: blob-drift 14s ease-in-out infinite;
-}
-
+/* `.blob-drift` used to live here: a keyframed float that no element ever
+   carried, left over from before the background was real. The drifting blobs
+   are `BrandBackground.tsx` now, and they honour reduced motion by never
+   starting the frame loop — there is no animation left for CSS to switch
+   off. */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
-  }
-  .blob-drift {
-    animation: none;
   }
 }
