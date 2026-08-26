@@ -34,7 +34,7 @@
      fg/muted/faint          text, strongest to faintest
      rule                    Deep Coffee: every hairline, border and outline
                              on the page, always at an opacity
-     accent (+soft/strong)   green-1 — ACTION only: submit, selected state
+     accent (+soft/strong)   Golden Ochre — SELECTION only: what is ticked
      ink-on                  Deep Coffee ink for text ON Powerful Green
      ink-on-dark             Soft Peach ink for text ON a Deep Coffee block
      roof-*                  the brand literals, unmodified
@@ -103,8 +103,9 @@
   --color-muted: var(--c-muted);
   --color-faint: var(--c-faint);
 
-  /* green-1 — action and selection ONLY. Paint decoration with it and it
-     stops meaning "this is the next step". */
+  /* Golden Ochre — SELECTION only. It marks what the candidate has ticked
+     and nothing else; paint decoration with it and it stops meaning "you
+     chose this". */
   --color-accent: var(--c-accent);
   --color-accent-soft: var(--c-accent-soft);
   --color-accent-strong: var(--c-accent-strong);
@@ -175,10 +176,21 @@
   --c-muted: #46353a; /* Deep Coffee → Base Sand, 10% */
   --c-faint: #503f43; /* Deep Coffee → Base Sand, 15% */
 
-  --c-accent: #d8ff6e; /* green-1, verbatim */
-  --c-accent-soft: #eefac6; /* green-1 → white-1, 68% */
-  --c-accent-strong: #b7d360; /* green-1 → brown-1, 20% */
-  --c-ink-on: #332127; /* Deep Coffee on Powerful Green — 13.7:1 */
+  /* SELECTION IS OCHRE, NOT GREEN.
+
+     A form of 200 checkboxes turns its selected colour into the dominant
+     colour of the page the moment anyone answers it, and Powerful Green at
+     that scale read as a wash of yellow-green over everything. Ochre is the
+     warm end of §2.2's own ramp, so a filled form now looks like the gradient
+     it came from rather than like a highlighter.
+
+     `accent-soft` is that ochre walked 65% toward Base Sand — the pale gold
+     the gradient passes through on its way to the light middle. Deep Coffee
+     on it is 10.0:1, and it is far enough off Base Sand to read as filled. */
+  --c-accent: #ca9e3f; /* Golden Ochre, verbatim */
+  --c-accent-soft: #e6d0a8; /* Golden Ochre → Base Sand, 65% */
+  --c-accent-strong: #b38b3b; /* Golden Ochre → Deep Coffee, 15% */
+  --c-ink-on: #332127; /* Deep Coffee on Golden Ochre — 6.1:1 */
   --c-ink-on-dark: #ffd6b8; /* Soft Peach on Deep Coffee — 11.2:1 */
 
   --c-positive: #5f8f2e; /* green-1 → brown-1, 58% */

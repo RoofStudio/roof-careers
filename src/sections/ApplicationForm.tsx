@@ -456,7 +456,6 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
                               id={`project-${type.id}`}
                               type="url"
                               label={t("profile.projectLinkLabel")}
-                              placeholder={t("profile.projectLinkPlaceholder")}
                               value={projectLinks[type.id] ?? ""}
                               onChange={(value) =>
                                 setProjectLinks((prev) => ({ ...prev, [type.id]: value }))
@@ -489,7 +488,6 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
                 id="aiLedLink"
                 type="url"
                 label={t("profile.projectLinkLabel")}
-                placeholder={t("profile.linkPlaceholder")}
                 value={aiLedLink}
                 onChange={setAiLedLink}
                 optional
@@ -504,7 +502,6 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
                 id="aiExecutedLink"
                 type="url"
                 label={t("profile.projectLinkLabel")}
-                placeholder={t("profile.linkPlaceholder")}
                 value={aiExecutedLink}
                 onChange={setAiExecutedLink}
                 optional

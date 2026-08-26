@@ -20,7 +20,7 @@ const About: React.FC = () => {
   const { t } = useTranslation()
 
   return (
-    <section className="wide-column pb-24">
+    <section id="about" className="wide-column scroll-mt-24 pb-24">
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}

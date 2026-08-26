@@ -35,8 +35,13 @@ const rise = (delay: number) => ({
 const Hero: React.FC = () => {
   const { t } = useTranslation()
 
-  const scrollToForm = () =>
-    document.getElementById("form")?.scrollIntoView({ behavior: "smooth", block: "start" })
+  /**
+   * The INVITATION, not the form. Sending someone straight to the first
+   * question skips the only part of the page that explains what they are
+   * applying to, and the button says "start" — the start is the argument.
+   */
+  const scrollToInvitation = () =>
+    document.getElementById("about")?.scrollIntoView({ behavior: "smooth", block: "start" })
 
   return (
     <section className="wide-column relative flex min-h-[85vh] flex-col items-center justify-center gap-8 py-24 text-center">
@@ -78,7 +83,7 @@ const Hero: React.FC = () => {
       </motion.p>
 
       <motion.div {...rise(0.36)} className="flex flex-col items-center gap-3">
-        <Button size="lg" onClick={scrollToForm} iconRight={<HiArrowDown className="h-4 w-4" />}>
+        <Button size="lg" onClick={scrollToInvitation} iconRight={<HiArrowDown className="h-4 w-4" />}>
           {t("hero.cta")}
         </Button>
         <span className="text-sm text-faint">{t("hero.time")}</span>

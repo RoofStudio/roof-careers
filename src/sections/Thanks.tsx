@@ -62,7 +62,7 @@ const Thanks: React.FC = () => {
             href={SITE_URL}
             target="_blank"
             rel="noreferrer noopener"
-            className="inline-flex items-center gap-2.5 rounded-full bg-accent px-9 py-4 text-lg font-semibold tracking-[-0.02em] text-ink-on uppercase transition-colors hover:bg-accent-strong"
+            className="inline-flex items-center gap-2.5 rounded-full bg-fg px-9 py-4 text-lg font-semibold tracking-[-0.02em] text-ink-on-dark uppercase transition-colors hover:bg-muted"
           >
             {t("thanks.cta")}
             <HiArrowUpRight aria-hidden className="h-4 w-4" />
