@@ -19,10 +19,9 @@ interface RoofWordmarkProps {
  * `roof-logo.png`: it is a different, outline drawing — 248×319 of contour, not
  * the mark — and it is what this page was wrongly painting behind the content.
  *
- * Only the ALPHA channel is used, as a mask, painted with `--brand-logo`. The
- * official brown and white files have identical alpha, so one asset serves both
- * themes: brown (#322127) on light, white (#f9f9f9) on dark. Two files would
- * only be two chances to forget one.
+ * Only the ALPHA channel is used, as a mask, painted with `--brand-logo` —
+ * Deep Coffee, which is what brandbook §1.2 draws the signature in on any
+ * light ground, and §1.3 forbids anything else outright.
  *
  * `--brand-logo` is a BRAND token, deliberately separate from `--fg`: the logo
  * does not follow the interface's ink, it has its own color.

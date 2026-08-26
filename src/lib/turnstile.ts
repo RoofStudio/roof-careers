@@ -37,7 +37,7 @@ const loadTurnstileScript = (): Promise<void> => {
  * `token` is "" until the challenge is solved and again once it expires, so a
  * stale token can never be submitted.
  */
-export const useTurnstile = (theme: "light" | "dark") => {
+export const useTurnstile = () => {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const widgetIdRef = useRef<string | null>(null)
   const [token, setToken] = useState("")
@@ -54,7 +54,7 @@ export const useTurnstile = (theme: "light" | "dark") => {
         if (cancelled || !window.turnstile) return
         widgetIdRef.current = window.turnstile.render(container, {
           sitekey: SITEKEY as string,
-          theme,
+          theme: "light",
           callback: (value) => setToken(value),
           "expired-callback": () => setToken(""),
           "error-callback": () => {
@@ -72,9 +72,10 @@ export const useTurnstile = (theme: "light" | "dark") => {
         widgetIdRef.current = null
       }
     }
-    // Re-rendering on theme change is intentional: the widget bakes its colors
-    // in at render time and would otherwise stay light inside a dark page.
-  }, [theme])
+    // Mount once. The widget bakes its colors in at render time, which used to
+    // mean re-rendering whenever the page changed theme — there is one theme
+    // now, so there is nothing left to react to.
+  }, [])
 
   const reset = useCallback(() => {
     setToken("")

@@ -1,35 +1,42 @@
 @import "tailwindcss";
-@custom-variant dark (&:where(.dark, .dark *));
 
 /* ──────────────────────────────────────────────────────────────────────
    ROOF IDENTITY
 
-   THE PALETTE IS NOT INVENTED HERE. Every value below traces back to the
-   nine variables roofstudio.tv declares on its own :root — copied verbatim:
+   THE PALETTE IS NOT INVENTED HERE. It is the Brandbook V1.0 §2.1, which
+   names SIX colours and no more. The variable names below are the ones
+   roofstudio.tv declares on its own :root; the brandbook's names are the ones
+   to speak out loud, because they are what the studio says in a review:
 
-     --black-1  #000000     --brown-1  #332127     --white-1  #F5EBE1
-     --beige-1  #FFD6B8     --beige-2  #F5EBE1     --yellow-1 #CA9E3F
-     --green-1  #D8FF6E     --purple-1 #DFB1DF     --red-1    #C50000
+     brown-1   #332127   Deep Coffee       beige-1  #FFD6B8   Soft Peach
+     white-1   #F5EBE1   Base Sand         purple-1 #DFB1DF   Warm Pink
+     yellow-1  #CA9E3F   Golden Ochre      green-1  #D8FF6E   Powerful Green
 
-   Nine colors cannot dress a form. A form needs a raised panel, a recessed
-   panel, a hairline, three weights of ink. Those are TINTS, and every one of
-   them names in a comment which brand color it is a tint of and how far it
-   was walked. A value that cannot name its parent does not belong in here.
+   ONE COLOUR BELOW IS NOT IN THE BRANDBOOK. `roof-red` (#C50000) comes from
+   the live site's :root, which predates the book. It is the error state, and
+   an interface owes the reader a red the brand did not think to specify — but
+   it is the one value on this page that cannot name a brandbook parent, so it
+   stays quarantined in `--c-negative` and nowhere else.
+
+   Six colors turned out to be enough. The page has no filled panel, no
+   recessed row, no shadow and no card — every surface is Base Sand, every
+   line is Deep Coffee at an opacity, and the only tints left are the two
+   quieter weights of ink. Each one names in a comment which brand color it
+   is a walk of and how far. A value that cannot name its parent does not
+   belong in here.
 
    A token is a ROLE ("recessed surface", "faint text"), never a literal
    ("gray-400"). The same name works in both themes, so a component never
    asks which theme is active.
 
    Vocabulary:
-     surface   page canvas — carries the gradient, rarely used flat
-     panel     raised surface: cards, inputs
-     panel-2   recessed: tool rows, quoted block
-     elevated  stacked over a panel: popover, selected chip
+     surface   the page — flat Base Sand, and the only surface there is
      fg/muted/faint          text, strongest to faintest
-     line/line-strong        borders and dividers
+     rule                    Deep Coffee: every hairline, border and outline
+                             on the page, always at an opacity
      accent (+soft/strong)   green-1 — ACTION only: submit, selected state
-     ink-on                  brown-1 ink for text ON green-1 (dark in both themes)
-     positive/negative/warn  state
+     ink-on                  Deep Coffee ink for text ON Powerful Green
+     ink-on-dark             Soft Peach ink for text ON a Deep Coffee block
      roof-*                  the brand literals, unmodified
    ────────────────────────────────────────────────────────────────────── */
 
@@ -73,7 +80,6 @@
 
 @theme {
   /* Brand literals, exactly as roofstudio.tv declares them. */
-  --color-roof-black: #000000;
   --color-roof-brown: #332127;
   --color-roof-white: #f5ebe1;
   --color-roof-beige: #ffd6b8;
@@ -87,11 +93,12 @@
 
   /* Semantic surfaces & text. */
   --color-surface: var(--c-surface);
-  --color-panel: var(--c-panel);
-  --color-panel-2: var(--c-panel-2);
-  --color-elevated: var(--c-elevated);
-  --color-line: var(--c-line);
-  --color-line-strong: var(--c-line-strong);
+  /* The hairline BETWEEN blocks — the studio's own way of dividing a page:
+     roofstudio.tv/contact separates SOCIAL from RECRUITMENT with a rule and
+     nothing else, no box anywhere. A BRAND colour rather than a tint, so it
+     reads at 25% against Base Sand — Deep Coffee, which is also
+     the pairing the brandbook uses for the signature itself. */
+  --color-rule: var(--c-rule);
   --color-fg: var(--c-fg);
   --color-muted: var(--c-muted);
   --color-faint: var(--c-faint);
@@ -102,6 +109,10 @@
   --color-accent-soft: var(--c-accent-soft);
   --color-accent-strong: var(--c-accent-strong);
   --color-ink-on: var(--c-ink-on);
+  /* Its opposite number: ink for text ON a Deep Coffee block. Soft Peach, per
+     brandbook §1.2, which draws the signature in exactly that pairing every
+     time it sits on the dark ground. */
+  --color-ink-on-dark: var(--c-ink-on-dark);
 
   --color-positive: var(--c-positive);
   --color-positive-soft: var(--c-positive-soft);
@@ -118,10 +129,6 @@
   --color-viz-beige: var(--c-viz-beige);
   --color-viz-yellow: var(--c-viz-yellow);
 
-  --shadow-soft: var(--s-soft);
-  --shadow-card: var(--s-card);
-  --shadow-lift: var(--s-lift);
-  --shadow-pop: var(--s-pop);
 
   --radius-card: 1.25rem;
   --radius-field: 0.75rem;
@@ -135,43 +142,44 @@
   --text-label--letter-spacing: 0.08em;
 }
 
-/* Light — beige-1 IS the page, white-1 is the paper laid on it.
+/* Light — BASE SAND IS THE PAGE, FLAT, AND NOTHING MOVES ON IT.
 
-   That is the studio site's own relationship, not a reading of it:
-   `body { background: var(--beige-1) }`. Getting it backwards (cream page,
-   peach only in the gradient) produces something that samples the right
-   hexes and still does not look like the brand, because the peach is the
-   ground everything else sits on. */
+   The page used to be Soft Peach carrying a gradient, and then Soft Peach
+   carrying three drifting blobs, because that is what roofstudio.tv does.
+   The printed pieces do not: the poster is flat Base Sand, Deep Coffee type,
+   ROOF across the foot, and no colour behind any of it. That is the reference
+   now, and a flat ground is not a weaker version of the animated one — it is
+   a different argument. Colour in this system comes from the green slab and
+   from the work itself, not from the paper.
+
+   Soft Peach keeps its place in the palette; it just is not the floor any
+   more. */
 :root {
-  --c-surface: #ffd6b8; /* beige-1, verbatim — the studio's page color */
-  --c-panel: #fbf3ea; /* white-1, lifted — paper on the peach */
-  --c-panel-2: #f3e6d8; /* white-1 → beige-1, 34% */
-  --c-elevated: #fffcf7; /* white-1, lifted further */
-  --c-line: #e4d3c3; /* white-1 → brown-1, 12% */
-  --c-line-strong: #cdb5a5; /* white-1 → brown-1, 26% */
+  --c-surface: #f5ebe1; /* Base Sand, verbatim — the page */
+  --c-rule: #332127; /* Deep Coffee, verbatim */
   --c-brand-logo: #332127; /* brown-1, verbatim */
   --c-brand-accent: #6e5230; /* yellow-1 → brown-1, 55%. Raw yellow-1 is
                                 2.3:1 on cream — a display color, not a
                                 text color. */
 
-  /* brown-1 is the studio's ink. A neutral gray over peach reads as dirty.
+  /* Deep Coffee is the studio's ink, and the quieter tiers are walks of it
+     toward Base Sand. There is no other way: the brandbook has no grey in
+     it, and a neutral grey laid over this paper reads as dirty.
 
-     Both tints are darker than they would need to be on cream, and that is
-     the price of the peach: beige-1 has a relative luminance of 0.73 against
-     white-1's 0.84, so every ink on it loses roughly half a point of
-     contrast. Measured against the SURFACE, which is the worst case —
-     `.hero` puts faint text straight onto it:
-       fg     11.6:1    muted   6.2:1    faint   4.8:1
-     Faint used to sit at 3.1:1, below the 4.5 small text owes the reader,
-     and it carries every form hint on the page. */
-  --c-fg: #332127; /* brown-1, verbatim */
-  --c-muted: #5c4850; /* brown-1 → white-1, 14% */
-  --c-faint: #6d5a64; /* brown-1 → white-1, 24% */
+     Both are darker than the pair that was here when the page was Soft Peach.
+     Base Sand is the lighter floor — 0.84 against the peach's 0.73 — so the
+     ink could have gone the other way; it went darker because the poster
+     does, where even the address line sits at very nearly full Deep Coffee.
+     Against the flat page: fg 15.9:1, muted 9.8:1, faint 8.4:1. */
+  --c-fg: #332127; /* Deep Coffee, verbatim */
+  --c-muted: #46353a; /* Deep Coffee → Base Sand, 10% */
+  --c-faint: #503f43; /* Deep Coffee → Base Sand, 15% */
 
   --c-accent: #d8ff6e; /* green-1, verbatim */
   --c-accent-soft: #eefac6; /* green-1 → white-1, 68% */
   --c-accent-strong: #b7d360; /* green-1 → brown-1, 20% */
-  --c-ink-on: #332127; /* brown-1 on green-1 — 13.7:1 */
+  --c-ink-on: #332127; /* Deep Coffee on Powerful Green — 13.7:1 */
+  --c-ink-on-dark: #ffd6b8; /* Soft Peach on Deep Coffee — 11.2:1 */
 
   --c-positive: #5f8f2e; /* green-1 → brown-1, 58% */
   --c-positive-soft: #e6f5c6; /* green-1 → white-1, 72% */
@@ -185,96 +193,35 @@
   --c-viz-beige: #ffd6b8; /* beige-1 */
   --c-viz-yellow: #ca9e3f; /* yellow-1 */
 
-  --s-soft: 0 1px 2px rgb(51 33 39 / 0.05);
-  --s-card: 0 1px 2px rgb(51 33 39 / 0.05), 0 8px 24px -12px rgb(51 33 39 / 0.14);
-  --s-lift: 0 2px 4px rgb(51 33 39 / 0.07), 0 16px 40px -16px rgb(51 33 39 / 0.24);
-  --s-pop: 0 24px 60px -20px rgb(51 33 39 / 0.38);
 
-  /* The ground UNDER the animated blobs — see `.brand-bg` and
-     `BrandBackground.tsx`. It used to be the whole story, at roughly double
-     these alphas; now it is the bed the moving colour lies on, and the two
-     stack. Left at its old strength the pair cooked the top-left corner well
-     past anything the ink could survive. Measured at the hottest point, where
-     the yellow blob sits over the yellow radial:
+  /* No gradient. `body` paints `--c-surface` and stops. The token survives
+     as an empty layer so `body` needs no theme-aware rule of its own. */
+  --canvas-gradient: none;
 
-       ground #dcae67 → `muted` 4.1:1, within a tenth of the flat gradient it
-       replaced, and the emphasis now comes from the SHAPE of the colour
-       rather than from turning the haze up.
-
-     Radial layers instead of one linear: a linear draws a hard diagonal, and
-     this wants haze. */
-  --canvas-gradient:
-    radial-gradient(1000px 680px at -5% -10%, rgb(202 158 63 / 0.22), transparent 62%),
-    radial-gradient(1000px 640px at 104% 8%, rgb(223 177 223 / 0.3), transparent 60%),
-    radial-gradient(1100px 800px at 110% 62%, rgb(223 177 223 / 0.22), transparent 58%),
-    linear-gradient(180deg, var(--c-surface), #ffcfae);
-
-  /* How much of the animated blob layer reaches the page. 0.5 is not a taste
-     call: it is the number that puts the composite ground back where the old
-     flat gradient had it, so nothing on the page lost contrast to the
-     animation. */
-  --blob-alpha: 0.5;
-
-  /* Kept for the decorative slabs. NOT for type — see `.hero-text-gradient`. */
-  --hero-gradient: linear-gradient(100deg, #ca9e3f 0%, #dfb1df 52%, #ffd6b8 100%);
 }
 
-/* Dark — the SAME concept, darkened. Swapping it for neutral gray would ship
-   a different product. Every value here is brown-1 or white-1 walked toward
-   black-1; green-1 never moves, because it is a light color in both themes. */
-:root.dark {
-  --c-surface: #1a1114; /* brown-1 → black-1, 62% */
-  --c-panel: #2a1c21; /* brown-1 → black-1, 30% */
-  --c-panel-2: #211519; /* brown-1 → black-1, 48% */
-  --c-elevated: #35242a; /* brown-1, lifted */
-  --c-line: #402c33; /* brown-1, lifted 12% */
-  --c-line-strong: #573c45; /* brown-1, lifted 28% */
-  --c-brand-logo: #f5ebe1; /* white-1, verbatim */
-  --c-brand-accent: #ddbe7c; /* yellow-1 → white-1, 40% */
+/* ──────────────────────────────────────────────────────────────────────
+   THE ROOT IS 18px, NOT 16.
 
-  --c-fg: #f5ebe1; /* white-1, verbatim */
-  --c-muted: #b3a099; /* white-1 → brown-1, 32% */
-  --c-faint: #8d7a78; /* white-1 → brown-1, 52% */
+   Measured off the brandbook rather than guessed. §3.2 sets three tiers on
+   one page, and the ratios between them are the spec even though the point
+   sizes are not: headline : subheadline : paragraph comes out at 100 : 56 :
+   37. The §4.0 web mock-ups then give the absolute end of it — the hero
+   headline there runs at about 6.9% of the browser's width, which is 99px on
+   a 1440 screen where this page was drawing 68.
 
-  --c-accent: #d8ff6e; /* green-1, verbatim — unchanged on purpose */
-  --c-accent-soft: #384415; /* green-1 → black-1, 78% */
-  --c-accent-strong: #e6ff9b; /* green-1 → white-1, 32% */
-  --c-ink-on: #332127; /* stays brown-1: green-1 is light in both themes */
-
-  --c-positive: #a9dd6a; /* green-1 → brown-1, 22% */
-  --c-positive-soft: #2c3a14;
-  --c-negative: #e2726c; /* red-1 → white-1, 42% */
-  --c-negative-soft: #3d1618;
-  --c-warn: #d8b063; /* yellow-1 → white-1, 22% */
-  --c-warn-soft: #3d2e12;
-
-  --c-viz-green: #d8ff6e;
-  --c-viz-purple: #dfb1df;
-  --c-viz-beige: #ffd6b8;
-  --c-viz-yellow: #d8b063; /* raw yellow-1 goes muddy against brown */
-
-  --s-soft: 0 1px 2px rgb(0 0 0 / 0.3);
-  --s-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -12px rgb(0 0 0 / 0.5);
-  --s-lift: 0 2px 4px rgb(0 0 0 / 0.35), 0 16px 40px -16px rgb(0 0 0 / 0.6);
-  --s-pop: 0 24px 60px -20px rgb(0 0 0 / 0.7);
-
-  --canvas-gradient:
-    radial-gradient(1000px 680px at -5% -10%, rgb(202 158 63 / 0.1), transparent 62%),
-    radial-gradient(1000px 640px at 104% 8%, rgb(223 177 223 / 0.09), transparent 60%),
-    radial-gradient(1100px 800px at 110% 62%, rgb(223 177 223 / 0.07), transparent 58%),
-    linear-gradient(180deg, var(--c-surface), #120b0e);
-
-  /* The blobs are brand colours, and brand colours are LIGHT. Over the brown
-     ground they glow rather than tint, so they need far less of themselves to
-     read as the same picture — at the light theme's 0.5 they would be three
-     lamps on a dark page. */
-  --blob-alpha: 0.26;
-
-  --hero-gradient: linear-gradient(100deg, #ca9e3f 0%, #dfb1df 52%, #8a6a5a 100%);
-}
-
+   Everything below is either a `clamp` on `vw` (the display tiers, which have
+   to track the window) or a rem multiple of this root (the interface, which
+   does not). Moving the root moves the whole interface together instead of
+   forty class names one at a time.
+   ────────────────────────────────────────────────────────────────────── */
 html {
+  font-size: 112.5%;
   scroll-behavior: smooth;
+  /* One theme. Without this the browser paints its own controls — scrollbars,
+     date pickers, autofill — for whatever the OS prefers, and a dark autofill
+     lands on a Base Sand page. */
+  color-scheme: light;
 }
 
 html,
@@ -283,10 +230,7 @@ body,
   min-height: 100%;
 }
 
-/* ONLY the body paints, exactly as in roof-intelligence. Giving `#root` a
-   background-color too lays an opaque cream sheet over the gradient — the haze
-   is then computed, composited and completely invisible, and the page reads as
-   flat cream. The gradient IS the identity; nothing may cover it. */
+/* Base Sand, flat, on every screen. */
 body {
   margin: 0;
   font-family: var(--font-display);
@@ -295,46 +239,18 @@ body {
      one thing that reliably makes a licensed typeface look counterfeit. */
   font-synthesis-weight: none;
   -webkit-font-smoothing: antialiased;
+  /* Brandbook §3.2, PARAGRAPH: leading 150%, tracking −2%. Set on `body` so
+     every tier inherits the tracking and only the headline tiers have to
+     restate their leading. */
+  line-height: 1.5;
+  letter-spacing: -0.02em;
   color: var(--c-fg);
   background-color: var(--c-surface);
-  background-image: var(--canvas-gradient);
+  background-image: var(--canvas-gradient); /* `none` in both themes */
   background-attachment: fixed;
 }
 
-/* ──────────────────────────────────────────────────────────────────────
-   The animated ground — the studio's own drifting blobs, drawn by
-   `BrandBackground.tsx`. The gradient above is what it lies on.
-
-   THE CANVAS OVERHANGS THE VIEWPORT BY 18% ON EVERY SIDE, and `OVERHANG` in
-   the component is the same 0.18. A blob is cut off square at the canvas
-   edge; run that cut through a 2rem blur and it becomes a bright seam down
-   the side of the screen. Pushing the edge off-screen is the whole fix, and
-   the wrapper's `overflow: hidden` is what keeps the overhang from growing
-   the page.
-
-   The blur lives here rather than in `ctx.filter` so it costs one composited
-   pass instead of a filter rebuilt on every frame, and so Safari — which
-   shipped canvas filters late — gets the same picture as everyone else.
-   ────────────────────────────────────────────────────────────────────── */
-.brand-bg {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.brand-bg-canvas {
-  position: absolute;
-  inset: -18%;
-  opacity: var(--blob-alpha);
-  filter: blur(2rem);
-  /* Its own layer: the blur is then a GPU pass over a texture that changes,
-     not a re-blur of the whole page behind it. */
-  transform: translateZ(0);
-}
-
-/* The text caret must follow the theme, not the input color. */
+/* The caret is Deep Coffee like everything else that writes on this page. */
 input,
 textarea,
 select,
@@ -346,8 +262,8 @@ input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
   outline: none;
-  border-color: var(--c-accent-strong);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-accent) 40%, transparent);
+  border-color: var(--c-rule);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-rule) 12%, transparent);
 }
 
 /* Keyboard users must always see where they are — the tool rows and buttons
@@ -375,8 +291,12 @@ select:focus-visible {
   background-clip: content-box;
 }
 
+/* Golden Ochre, not Powerful Green. Green is the page's ACTION colour — the
+   submit button, the selected checkbox, the active language — and a drag of
+   the mouse across a paragraph is not an action. Ochre carries Deep Coffee at
+   6.1:1, so a selected line stays as readable as an unselected one. */
 ::selection {
-  background: var(--c-accent);
+  background: var(--color-roof-yellow);
   color: var(--c-ink-on);
 }
 
@@ -384,23 +304,42 @@ select:focus-visible {
    Typography — three voices: display, label, note.
    ────────────────────────────────────────────────────────────────────── */
 
-/** Section title: uppercase, tight, Ambit 600 — the heaviest weight that
-    exists in this family. Presence comes from the tracking, not from a
-    weight the font does not ship. */
-.display {
-  font-size: 1.5rem;
-  line-height: 1;
+/** HEADLINE SANS — Ambit Semibold, ALL CAPS, leading 90%, tracking −2%.
+
+    All four numbers are the brandbook's (§3.2), including the caps: the page
+    that specifies them carries a box marked *Attention: all headlines must be
+    set in ALL CAPS*. The uppercase lives HERE and not in the locale files, so
+    the copy stays readable in the JSON and a change of mind is one line. */
+.headline {
+  font-family: var(--font-display);
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: -0.01em;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
   color: var(--c-fg);
 }
 
-/** Section small-caps: "SOBRE VOCÊ", "FERRAMENTAS".
-    `muted`, not `faint`: it is 11px TEXT and needs 4.5:1. Faint is for
-    decoration (icon, hairline), where the ruler does not apply. */
+/** SUBHEADLINE SANS — the same voice at leading 100%. Section titles.
+
+    Sized here rather than at the call sites, which were all passing the same
+    two Tailwind steps and none of them tracked the window. */
+.display {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 3.2vw, 3rem);
+  line-height: 1;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  color: var(--c-fg);
+}
+
+/** Small caps: "O CONVITE", "SUAS FERRAMENTAS" — the left-hand label of every
+    block. This is the ONE place the page tracks positive: it is 12px caps
+    doing the job a margin note does, and Ambit at −2% closes into a smear at
+    that size. */
 .label {
-  font-size: 0.6875rem;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
   line-height: 1.1;
   letter-spacing: 0.08em;
   font-weight: 600;
@@ -408,75 +347,106 @@ select:focus-visible {
   color: var(--c-muted);
 }
 
-/** Italic serif — a note from the designer, never data. */
-.note {
+/** GT Alpina Light Italic — THE RUNNING VOICE OF THE PAGE, not an accent.
+
+    On roofstudio.tv this is the half of every pair that speaks: "OUR WORK" is
+    Ambit and "Built from Scratch, Seen Worldwide" underneath it is this. The
+    headline, the lead, the question and the whole invitation are set in it;
+    Ambit is left to labels, section titles, buttons and the form. */
+.voice {
   font-family: var(--font-note);
   font-style: italic;
+  font-weight: 300;
+  letter-spacing: -0.02em;
   color: var(--c-muted);
 }
 
-/* ──────────────────────────────────────────────────────────────────────
-   Measure — two column widths for the whole page, so nothing is sized
-   ad hoc.
-
-   `.text-column` is proportional (≈60% of the window) instead of a fixed
-   max-width, so the reading blocks keep the same relationship to the
-   viewport at every size rather than drifting from edge-to-edge to a thin
-   ribbon. The floor keeps the line from collapsing on a tablet; the ceiling
-   keeps it from passing the ~75-character measure on a wide monitor.
-
-     360px  -> 331 (92vw, full bleed)
-     768px  -> 544 (the 34rem floor)
-    1280px  -> 768 (60vw exactly)
-    1920px  -> 1088 (the 68rem ceiling)
-   ────────────────────────────────────────────────────────────────────── */
-.text-column {
-  width: min(92vw, max(60vw, 34rem), 68rem);
-  margin-inline: auto;
+/** The same face at headline leading, for the lines that carry weight. */
+.voice-display {
+  font-family: var(--font-note);
+  font-style: italic;
+  font-weight: 300;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  color: var(--c-fg);
 }
 
-/* The mosaic and anything else that wants the full spread. */
+/* ──────────────────────────────────────────────────────────────────────
+   Measure — one width for the whole page.
+
+   `.text-column` used to live here too, a narrow reading measure for the
+   cards. The cards are gone: every block is now a label column plus a content
+   column, and the content caps itself at 46rem where it needs to. One
+   container left means one place to change the page's margins.
+   ────────────────────────────────────────────────────────────────────── */
 .wide-column {
   width: min(94vw, 78rem);
   margin-inline: auto;
 }
 
-/** A decorative band. NOT for type — the studio has no gradient-filled
-    letterform anywhere: the ROOF wordmark and every page headline are flat
-    brown-1 over a coloured field, and the gradient stays in the ground. */
-.hero-gradient {
-  background-image: var(--hero-gradient);
+/* ──────────────────────────────────────────────────────────────────────
+   TEXT GRADIENT (§2.3)
+
+   Golden Ochre → Base Sand → Warm Pink, painted THROUGH the letterforms and
+   sitting on a Deep Coffee block. Both halves are the brandbook's: the ramp
+   is §2.2's horizontal linear, and §2.3 shows it on exactly this dark ground,
+   reserved for "headlines, keywords and other high-impact typographic
+   elements".
+
+   THE BLOCK CANNOT BE THIS ELEMENT. `background-clip: text` clips the whole
+   background — colour as well as image — so painting the Deep Coffee here
+   would clip that to the glyphs too and the panel would vanish. The dark
+   block is the parent; this only ever draws the ramp.
+
+   The fallback is Base Sand ink, not a transparent colour: a browser that
+   cannot clip a background to text would otherwise render the phrase
+   invisible rather than merely flat. Base Sand on Deep Coffee is 15.9:1, and
+   the ramp's own worst point — the ochre end — is 6.1:1.
+   ────────────────────────────────────────────────────────────────────── */
+.text-gradient {
+  color: var(--color-roof-white);
+}
+
+@supports (-webkit-background-clip: text) or (background-clip: text) {
+  .text-gradient {
+    background-image: linear-gradient(
+      90deg,
+      var(--color-roof-yellow) 0%,
+      var(--color-roof-white) 50%,
+      var(--color-roof-purple) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
 }
 
 /* ──────────────────────────────────────────────────────────────────────
    CREATIVE TALENT — the banner line.
 
-   This is the one piece of type on the page allowed to behave like signage
-   rather than like an interface. It is set in Ambit at the family's real
-   600, blown up and tracked WIDE (uppercase Ambit at +0.16em is the
-   studio's own signage voice), and it sits on green-1 with brown-1 ink —
-   the brand's highest-contrast pair, 13.7:1.
+   It was the §3.3 highlight for a while: Powerful Green behind Deep Coffee
+   caps. It is the §2.3 text gradient now — the same phrase, on the dark block
+   instead of the lime one, with the colour inside the letters rather than
+   behind them. Green is left to mean "action" and nothing else.
 
-   `clamp` rather than breakpoints: the line must fill its measure at every
-   width, and the floor is set where "CREATIVE TALENT" still fits one line
-   on a 360px phone.
+   IT USED TO BE TRACKED AT +0.16em, on the theory that wide uppercase Ambit
+   was the studio's signage voice. §3.2 says otherwise — every headline tier
+   in the book is −2% — and the highlight sample in §3.3 is set tight. The
+   line is narrower now, and it is the guide's line.
+
+   `clamp` rather than breakpoints: the phrase must fill its measure at every
+   width, and the floor is where "CREATIVE TALENT" still fits one line on a
+   360px phone.
    ────────────────────────────────────────────────────────────────────── */
 .banner-type {
   font-family: var(--font-display);
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.16em;
-  /* Tracking adds space AFTER the last letter too, which reads as a limp
-     right edge on a centered line. Pull it back. */
-  margin-right: -0.16em;
+  letter-spacing: -0.02em;
   line-height: 1;
 }
 
-/* `.blob-drift` used to live here: a keyframed float that no element ever
-   carried, left over from before the background was real. The drifting blobs
-   are `BrandBackground.tsx` now, and they honour reduced motion by never
-   starting the frame loop — there is no animation left for CSS to switch
-   off. */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

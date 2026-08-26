@@ -3,13 +3,14 @@
     "logoAlt": "Roof Studio"
   },
   "nav": {
-    "toLight": "Switch to light theme",
-    "toDark": "Switch to dark theme",
     "language": "Language"
   },
   "hero": {
     "kicker": "Creative Talent",
-    "headline": "We're Roof Studio, and we want to meet you.",
+    "headline": {
+      "line1": "We're Roof Studio,",
+      "line2": "and we want to meet you."
+    },
     "lead": "We've always believed great animation should feel like you could hold it in your hand.",
     "question": "Sound like you?",
     "cta": "Get started",

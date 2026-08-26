@@ -22,7 +22,6 @@ import {
   type ProfilePayload
 } from "../lib/submit"
 import { TURNSTILE_ENABLED, useTurnstile } from "../lib/turnstile"
-import { useTheme } from "../theme"
 
 const CONTACT_EMAIL = "hello@roofstudio.tv"
 
@@ -79,7 +78,18 @@ const isUsableUrl = (value: string) => {
 const toggleIn = (list: string[], id: string) =>
   list.includes(id) ? list.filter((x) => x !== id) : [...list, id]
 
-/** A card section, so the page reads as a sequence of short steps. */
+/**
+ * A block, set the way roofstudio.tv sets every block: a hairline across the
+ * top, the label alone in a narrow left column, the content to its right.
+ *
+ * It used to be a card — rounded, filled, shadowed — which is a shape the
+ * brand does not have anywhere. The label column carries the structure now,
+ * and on a phone it simply stacks above the content.
+ *
+ * The content is capped at 46rem even though the column is wider. Nothing is
+ * gained by a 950px-wide text input, and the reference pages cap their body
+ * the same way.
+ */
 const Card: React.FC<{ label: string; children: React.ReactNode; id?: string }> = ({
   label,
   children,
@@ -91,10 +101,10 @@ const Card: React.FC<{ label: string; children: React.ReactNode; id?: string }> 
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true, amount: 0.1 }}
     transition={{ duration: 0.5, ease: "easeOut" }}
-    className="text-column scroll-mt-20 rounded-card border border-line bg-panel p-7 shadow-card sm:p-10"
+    className="grid scroll-mt-24 gap-8 border-t border-rule/25 pt-10 md:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] md:gap-14"
   >
-    <p className="label mb-6">{label}</p>
-    <div className="flex flex-col gap-8">{children}</div>
+    <p className="label md:pt-1">{label}</p>
+    <div className="flex max-w-[46rem] flex-col gap-10">{children}</div>
   </motion.section>
 )
 
@@ -104,7 +114,6 @@ interface ApplicationFormProps {
 
 const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
   const { t, i18n } = useTranslation()
-  const { resolvedTheme } = useTheme()
 
   const [profile, setProfile] = useState<ProfilePayload>(EMPTY_PROFILE)
   // Every question is multi-select now, so every answer is a list.
@@ -126,7 +135,7 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
   const [hp, setHp] = useState("")
   const mountedAt = useRef(Date.now())
 
-  const turnstile = useTurnstile(resolvedTheme)
+  const turnstile = useTurnstile()
   const selectedCount = selected.size
 
   const setField = (key: FieldKey) => (value: string) => {
@@ -231,13 +240,13 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
   const selectAll = t("profile.selectAll")
 
   return (
-    <section id="form" className="wide-column scroll-mt-20 pb-24">
-      <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-8">
+    <section id="form" className="wide-column scroll-mt-20 pb-28">
+      <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-16">
         {/* ── The basics ─────────────────────────────────────────────── */}
         <Card label={t("form.label")}>
           <div>
-            <h2 className="display text-2xl sm:text-3xl">{t("form.title")}</h2>
-            <p className="mt-2 text-sm text-muted">{t("form.subtitle")}</p>
+            <h2 className="display">{t("form.title")}</h2>
+            <p className="voice mt-4 text-xl text-muted">{t("form.subtitle")}</p>
 
             <div className="mt-7 grid gap-5 sm:grid-cols-2">
               <div className="sm:col-span-2">
@@ -307,8 +316,8 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
               this used to be. People filled that box with three URLs, a comma
               and a note, and the sheet got a column nobody could filter. */}
           <div>
-            <p className="text-sm font-semibold text-fg">{t("form.fields.links.label")}</p>
-            <p className="mt-1 text-xs text-faint">{t("form.fields.links.hint")}</p>
+            <p className="text-base font-semibold text-fg">{t("form.fields.links.label")}</p>
+            <p className="mt-1 text-sm text-faint">{t("form.fields.links.hint")}</p>
 
             <div className="mt-4 flex flex-col gap-4">
               {LINK_FIELDS.map((key) => (
@@ -401,8 +410,8 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
             person. The link appears per type, only once that type is ticked. */}
         <Card label={t("profile.projectLabel")}>
           <div className="flex flex-col gap-2">
-            <p className="text-sm font-semibold text-fg">{t("profile.projectTitle")}</p>
-            <p className="mb-1 text-xs text-faint">{t("profile.projectHint")}</p>
+            <p className="text-base font-semibold text-fg">{t("profile.projectTitle")}</p>
+            <p className="mb-1 text-sm text-faint">{t("profile.projectHint")}</p>
 
             <ul className="flex flex-col gap-2">
               {PROJECT_TYPES.map((type) => {
@@ -414,10 +423,10 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
                       role="checkbox"
                       aria-checked={active}
                       onClick={() => setProjectTypes((prev) => toggleIn(prev, type.id))}
-                      className={`flex w-full cursor-pointer items-center gap-2 rounded-field border px-3.5 py-2 text-left text-sm font-medium transition-colors ${
+                      className={`flex w-full cursor-pointer items-center gap-2 rounded-field border px-3.5 py-2.5 text-left text-base font-medium transition-colors ${
                         active
                           ? "border-accent-strong bg-accent-soft font-semibold text-fg"
-                          : "border-line bg-panel-2 text-muted hover:border-line-strong hover:text-fg"
+                          : "border-rule/25 text-muted hover:border-rule/60 hover:text-fg"
                       }`}
                     >
                       <span
@@ -425,7 +434,7 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
                         className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-[4px] border ${
                           active
                             ? "border-accent-strong bg-accent text-ink-on"
-                            : "border-line-strong bg-panel"
+                            : "border-rule/40"
                         }`}
                       >
                         {active && <span className="text-[10px] font-semibold text-ink-on">✓</span>}
@@ -471,11 +480,11 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
             who DIRECTED the use of AI versus who operated it. */}
         <Card label={t("profile.aiProjectsLabel")}>
           <div className="grid gap-6">
-            <p className="text-sm text-muted">{t("profile.aiProjectsIntro")}</p>
+            <p className="voice text-xl text-muted">{t("profile.aiProjectsIntro")}</p>
 
             <div>
-              <p className="mb-1 text-sm font-semibold text-fg">{t("profile.ledLabel")}</p>
-              <p className="mb-3 text-xs text-faint">{t("profile.ledHint")}</p>
+              <p className="mb-1 text-base font-semibold text-fg">{t("profile.ledLabel")}</p>
+              <p className="mb-3 text-sm text-faint">{t("profile.ledHint")}</p>
               <Field
                 id="aiLedLink"
                 type="url"
@@ -489,8 +498,8 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
             </div>
 
             <div>
-              <p className="mb-1 text-sm font-semibold text-fg">{t("profile.executedLabel")}</p>
-              <p className="mb-3 text-xs text-faint">{t("profile.executedHint")}</p>
+              <p className="mb-1 text-base font-semibold text-fg">{t("profile.executedLabel")}</p>
+              <p className="mb-3 text-sm text-faint">{t("profile.executedHint")}</p>
               <Field
                 id="aiExecutedLink"
                 type="url"
@@ -514,18 +523,23 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
           transition={{ duration: 0.5, ease: "easeOut" }}
           className="scroll-mt-20"
         >
-          <div className="text-column mb-6 flex flex-col gap-2 text-center">
-            <p className="label">{t("tools.label")}</p>
-            <h2 className="display text-2xl text-balance sm:text-3xl">{t("tools.title")}</h2>
-            <p className="note text-lg">{t("tools.subtitle")}</p>
+          {/* Head in the block grid, mosaic underneath at full width — 90
+              checkboxes squeezed into a content column would be four columns
+              of one. */}
+          <div className="mb-10 grid gap-8 md:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] md:gap-14">
+            <p className="label md:pt-1">{t("tools.label")}</p>
 
-            <div className="mt-2 flex items-center justify-center gap-3">
+            <div className="flex max-w-[46rem] flex-col gap-3">
+            <h2 className="display text-balance">{t("tools.title")}</h2>
+            <p className="voice text-xl text-muted">{t("tools.subtitle")}</p>
+
+            <div className="mt-2 flex items-center gap-3">
               <span
                 aria-live="polite"
                 className={`rounded-full border px-3 py-1 text-xs font-semibold tabular-nums transition-colors ${
                   selectedCount > 0
                     ? "border-accent-strong bg-accent-soft text-fg"
-                    : "border-line bg-panel text-muted"
+                    : "border-rule/25 text-muted"
                 }`}
               >
                 {toolProgress}
@@ -534,17 +548,19 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
                 <button
                   type="button"
                   onClick={() => setSelected(new Set())}
-                  className="cursor-pointer text-xs font-medium text-muted underline underline-offset-4 hover:text-fg"
+                  className="cursor-pointer text-sm font-medium text-muted underline underline-offset-4 hover:text-fg"
                 >
                   {t("tools.clear")}
                 </button>
               )}
             </div>
+            </div>
           </div>
 
           <ToolPicker selected={selected} onToggle={toggleTool} />
 
-          <div className="text-column mt-4 rounded-card border border-line bg-panel p-5 shadow-card">
+          <div className="mt-10 grid gap-8 md:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] md:gap-14">
+            <span aria-hidden />
             <Field
               id="otherTools"
               label={t("tools.other.label")}
@@ -559,14 +575,16 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
           </div>
 
           {errors.tools && (
-            <p role="alert" className="mt-3 text-center text-sm font-medium text-negative">
+            <p role="alert" className="mt-3 text-sm font-medium text-negative">
               {errors.tools}
             </p>
           )}
         </motion.div>
 
         {/* ── Submit ───────────────────────────────────────────────── */}
-        <div className="text-column flex flex-col items-center gap-4">
+        <div className="grid gap-8 border-t border-rule/25 pt-10 md:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] md:gap-14">
+          <span aria-hidden />
+          <div className="flex max-w-[46rem] flex-col items-start gap-5">
           {TURNSTILE_ENABLED && <div ref={turnstile.containerRef} className="min-h-[65px]" />}
 
           {status === "error" && (
@@ -598,7 +616,8 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
             {sending ? t("submit.sending") : t("submit.cta")}
           </Button>
 
-          <p className="text-center text-xs text-faint">{t("submit.privacy")}</p>
+            <p className="text-sm text-faint">{t("submit.privacy")}</p>
+          </div>
         </div>
       </form>
     </section>

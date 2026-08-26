@@ -32,7 +32,7 @@ const Field: React.FC<FieldProps> = ({
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="flex items-baseline gap-2 text-sm font-semibold text-fg">
+      <label htmlFor={id} className="flex items-baseline gap-2 text-base font-semibold text-fg">
         {label}
         {optional && <span className="label normal-case">{t("form.optional")}</span>}
       </label>
@@ -48,12 +48,12 @@ const Field: React.FC<FieldProps> = ({
         onChange={(e) => onChange(e.target.value)}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? errorId : undefined}
-        className={`w-full rounded-field border bg-panel px-4 py-3 text-sm text-fg shadow-soft transition-colors placeholder:text-faint
-          ${error ? "border-negative" : "border-line hover:border-line-strong"}`}
+        className={`w-full rounded-field border bg-transparent px-4 py-3 text-base text-fg transition-colors placeholder:text-faint
+          ${error ? "border-negative" : "border-rule/30 hover:border-rule/60"}`}
       />
 
       {error && (
-        <p id={errorId} role="alert" className="text-xs font-medium text-negative">
+        <p id={errorId} role="alert" className="text-sm font-medium text-negative">
           {error}
         </p>
       )}

@@ -7,43 +7,51 @@ const PARAGRAPHS = ["about.p1", "about.p2", "about.p3", "about.p4"] as const
 /**
  * The role, in the deck's words. Copy only — the ask lives in the form below.
  *
- * "CREATIVE TALENT" is the section title now rather than a 14px subtitle under
- * "Craft first", and "Craft first." closes the card as the signature line —
- * which is exactly where the copy puts it. It used to run as the heading AND
- * as a caption, so the reader met the tagline before the argument for it.
+ * THE PAGE'S LAYOUT IS THE STUDIO'S: a narrow label column on the left, the
+ * content on the right, a hairline across the top and nothing boxed. It is
+ * how roofstudio.tv sets AWARDS, how it sets a project's credits, and how
+ * every block on this page is set from here down.
+ *
+ * The copy is GT Alpina Light Italic — the running voice — with only the
+ * label and the title left in Ambit. "Craft first." closes the block as the
+ * signature line, which is exactly where the copy puts it.
  */
 const About: React.FC = () => {
   const { t } = useTranslation()
 
   return (
-    <section className="text-column pb-20">
+    <section className="wide-column pb-24">
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="rounded-card border border-line bg-panel p-7 shadow-card sm:p-10"
+        className="grid gap-8 border-t border-rule/25 pt-10 md:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] md:gap-14"
       >
-        <p className="label mb-4">{t("about.label")}</p>
+        <div>
+          <p className="label">{t("about.label")}</p>
+          <h2
+            className="banner-type mt-3 text-fg"
+            style={{ fontSize: "clamp(1.75rem, 3.4vw, 2.75rem)" }}
+          >
+            {t("about.title")}
+          </h2>
+        </div>
 
-        <h2
-          className="banner-type text-fg"
-          style={{ fontSize: "clamp(1.4rem, 4.4vw, 2.4rem)" }}
-        >
-          {t("about.title")}
-        </h2>
-
-        <div className="mt-7 flex flex-col gap-5">
+        <div className="flex flex-col gap-6">
           {PARAGRAPHS.map((key) => (
-            <p key={key} className="text-[0.95rem] leading-relaxed text-muted sm:text-base">
+            <p key={key} className="voice max-w-[58ch] text-xl text-muted sm:text-2xl">
               {t(key)}
             </p>
           ))}
-        </div>
 
-        <p className="note mt-8 border-t border-line pt-6 text-2xl text-fg sm:text-3xl">
-          {t("about.closing")}
-        </p>
+          <p
+            className="voice mt-4 text-fg"
+            style={{ fontSize: "clamp(1.75rem, 3.4vw, 2.75rem)" }}
+          >
+            {t("about.closing")}
+          </p>
+        </div>
       </motion.div>
     </section>
   )

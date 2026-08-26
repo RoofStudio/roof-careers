@@ -73,7 +73,7 @@ const ChipGroup: React.FC<ChipGroupProps> = ({
               } ${
                 active
                   ? "border-accent-strong bg-accent-soft font-semibold text-fg"
-                  : "border-line bg-panel-2 text-muted hover:border-line-strong hover:text-fg"
+                  : "border-rule/25 text-muted hover:border-rule/60 hover:text-fg"
               }`}
             >
               <span
@@ -81,7 +81,7 @@ const ChipGroup: React.FC<ChipGroupProps> = ({
                 className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-[4px] border transition-colors ${
                   active
                     ? "border-accent-strong bg-accent text-ink-on"
-                    : "border-line-strong bg-panel"
+                    : "border-rule/40"
                 }`}
               >
                 {active && <HiCheck className="h-3 w-3" />}

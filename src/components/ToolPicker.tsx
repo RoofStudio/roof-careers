@@ -66,12 +66,12 @@ const ToolPicker: React.FC<ToolPickerProps> = ({ selected, onToggle }) => {
               <h3 id={`part-${part.id}`} className="label shrink-0 text-fg">
                 {t(part.labelKey)}
               </h3>
-              <span aria-hidden className="h-px flex-1 bg-line-strong" />
+              <span aria-hidden className="h-px flex-1 bg-rule/25" />
               <span
                 className={`shrink-0 rounded-full border px-2.5 py-0.5 text-xs font-semibold tabular-nums transition-colors ${
                   picked > 0
                     ? "border-accent-strong bg-accent-soft text-fg"
-                    : "border-line bg-panel text-muted"
+                    : "border-rule/25 text-muted"
                 }`}
               >
                 {picked}/{checkboxesInPart(part)}
@@ -87,12 +87,12 @@ const ToolPicker: React.FC<ToolPickerProps> = ({ selected, onToggle }) => {
                 return (
                   <section
                     key={group.id}
-                    className="mb-4 break-inside-avoid rounded-card border border-line bg-panel p-5 shadow-card"
+                    className="mb-4 break-inside-avoid p-5"
                     aria-labelledby={`group-${group.id}`}
                   >
                     <h4
                       id={`group-${group.id}`}
-                      className="mb-2 flex items-center gap-2 border-b border-line pb-2"
+                      className="mb-2 flex items-center gap-2 border-b border-rule/25 pb-2"
                     >
                       <span aria-hidden className={`h-2 w-2 shrink-0 rounded-full ${group.accent}`} />
                       <span className="label flex-1">{t(group.labelKey)}</span>
@@ -116,7 +116,7 @@ const ToolPicker: React.FC<ToolPickerProps> = ({ selected, onToggle }) => {
                               aria-checked={isSelected}
                               onClick={() => onToggle(key)}
                               className={`flex w-full cursor-pointer items-start gap-2 rounded-field px-2 py-1 text-left transition-colors ${
-                                isSelected ? "bg-accent-soft" : "hover:bg-panel-2"
+                                isSelected ? "bg-accent-soft" : "hover:bg-rule/5"
                               }`}
                             >
                               <span
@@ -124,13 +124,13 @@ const ToolPicker: React.FC<ToolPickerProps> = ({ selected, onToggle }) => {
                                 className={`mt-[3px] flex h-4 w-4 shrink-0 items-center justify-center rounded-[4px] border transition-colors ${
                                   isSelected
                                     ? "border-accent-strong bg-accent text-ink-on"
-                                    : "border-line-strong bg-panel-2"
+                                    : "border-rule/40"
                                 }`}
                               >
                                 {isSelected && <HiCheck className="h-3 w-3" />}
                               </span>
                               <span
-                                className={`text-sm leading-snug text-fg ${isSelected ? "font-semibold" : ""}`}
+                                className={`text-[0.95rem] leading-snug text-fg ${isSelected ? "font-semibold" : ""}`}
                               >
                                 {tool.name}
                               </span>
