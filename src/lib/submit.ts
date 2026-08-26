@@ -60,6 +60,16 @@ export interface SubmissionPayload {
   otherTools: string
   meta: {
     submittedAt: string
+    /**
+     * Stable for the life of one filled form, across every retry of it.
+     *
+     * The script writes the row BEFORE it answers, and the answer travels back
+     * over a redirect hop that can be lost — so a submission that times out on
+     * this side may already exist on that side. Without an id, the candidate's
+     * retry would write a second row; with one, the script recognises it and
+     * answers `{ok:true, duplicate:true}` without writing again.
+     */
+    submissionId: string
     language: string
     timezone: string
     userAgent: string
@@ -98,6 +108,7 @@ export const buildPayload = (input: {
   elapsedMs: number
   turnstileToken: string
   language: string
+  submissionId: string
 }): SubmissionPayload => ({
   profile: input.profile,
   expertise: input.expertise,
@@ -126,6 +137,7 @@ export const buildPayload = (input: {
   otherTools: input.otherTools.trim(),
   meta: {
     submittedAt: new Date().toISOString(),
+    submissionId: input.submissionId,
     language: input.language,
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone ?? "",
     userAgent: navigator.userAgent,
@@ -141,6 +153,34 @@ export const buildPayload = (input: {
 export class SubmitError extends Error {}
 
 /**
+ * How long to wait before giving up on the round trip.
+ *
+ * THERE WAS NO CEILING HERE, AND THAT IS THE WHOLE OF THE SECOND BUG. Apps
+ * Script answers a POST to `/exec` with a 302 to `script.googleusercontent.com`
+ * — the row is written on the first hop and the body comes back on the second.
+ * Lose the second hop and `fetch` never settles: the row is in the sheet, the
+ * promise is pending forever, and the submit button stays disabled with no
+ * message, which is exactly what was reported.
+ *
+ * 25s is chosen against the slow path, not the fast one: a cold Apps Script
+ * start plus `lock.waitLock(15000)` plus the notification mail can legitimately
+ * take fifteen or more. Anything under that would start reporting failures for
+ * submissions that were about to succeed.
+ */
+const TIMEOUT_MS = 25_000
+
+/** Raised when the round trip ran out of time — see `TIMEOUT_MS`. */
+export class SubmitTimeout extends SubmitError {}
+
+const makeSubmissionId = () => {
+  const c = globalThis.crypto
+  if (c && typeof c.randomUUID === "function") return c.randomUUID()
+  return `sub-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
+}
+
+export { makeSubmissionId }
+
+/**
  * POST the payload to the Apps Script Web App.
  *
  * `text/plain` is deliberate: it keeps this a CORS "simple request", so the
@@ -152,16 +192,25 @@ export const submitApplication = async (payload: SubmissionPayload): Promise<voi
     throw new SubmitError("VITE_APPS_SCRIPT_URL is not set — see README.md")
   }
 
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS)
+
   let response: Response
   try {
     response = await fetch(APPS_SCRIPT_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify(payload),
-      redirect: "follow"
+      redirect: "follow",
+      signal: controller.signal
     })
   } catch (cause) {
+    if (controller.signal.aborted) {
+      throw new SubmitTimeout(`no answer in ${TIMEOUT_MS}ms`)
+    }
     throw new SubmitError(`network error: ${String(cause)}`)
+  } finally {
+    clearTimeout(timer)
   }
 
   if (!response.ok) {

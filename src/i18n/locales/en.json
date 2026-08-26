@@ -171,7 +171,9 @@
     "checkFields": "Some fields above still need your attention.",
     "failed": "We couldn't send it right now.",
     "failedHint": "Try again in a moment. If it keeps failing, write to {{email}}.",
-    "retry": "Try again"
+    "retry": "Try again",
+    "timedOut": "We didn't hear back in time.",
+    "timedOutHint": "It may well have gone through. Send it again — if it did, we won't record it twice. If it keeps failing, write to {{email}}."
   },
   "thanks": {
     "title": "Thank you for your interest in working with us!",

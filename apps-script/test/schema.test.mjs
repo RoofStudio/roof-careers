@@ -337,18 +337,46 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
   const { sandbox, sheet } = run([])
   sandbox.setupSheet()
 
-  post(sandbox, { ...PAYLOAD, guard: { hp: "bot", elapsedMs: 20000 } })
-  check("7a honeypot writes nothing", sheet._grid.length === 1)
+  // A tripped honeypot is WRITTEN AND FLAGGED, not discarded. It used to be
+  // discarded, and a password manager filling the hidden field was enough to
+  // make a real application disappear with a thank-you on screen.
+  const trap = post(sandbox, { ...PAYLOAD, guard: { hp: "bot", elapsedMs: 20000 } })
+  const headers7 = sheet._grid[0]
+  check("7a honeypot writes a flagged row", sheet._grid.length === 2, String(sheet._grid.length))
+  check("7a2 the flag says which guard caught it",
+    asObject(headers7, sheet._grid[1]).Flags === "honeypot",
+    JSON.stringify(asObject(headers7, sheet._grid[1]).Flags))
+  check("7a3 the bot still hears ok, so it has nothing to iterate against",
+    trap._text === '{"ok":true}', trap._text)
 
   post(sandbox, { ...PAYLOAD, guard: { hp: "", elapsedMs: 500 } })
-  check("7b too-fast writes nothing", sheet._grid.length === 1)
+  check("7b too-fast writes nothing", sheet._grid.length === 2)
 
   post(sandbox, { ...PAYLOAD, profile: { ...PAYLOAD.profile, email: "" } })
-  check("7c missing email rejected", sheet._grid.length === 1)
+  check("7c missing email rejected", sheet._grid.length === 2)
 
   const res = post(sandbox, PAYLOAD)
-  check("7d valid submission accepted", sheet._grid.length === 2)
+  check("7d valid submission accepted", sheet._grid.length === 3)
   check("7e responds ok:true", res._text === '{"ok":true}', res._text)
+
+  // The retry case: the row was written, the answer was lost, they pressed
+  // send again. Same id, so it must not become two applications.
+  const retried = { ...PAYLOAD, meta: { ...PAYLOAD.meta, submissionId: "sub-fixed-1" } }
+  post(sandbox, retried)
+  check("7f a submission with an id is written once", sheet._grid.length === 4)
+  const again = post(sandbox, retried)
+  check("7g the same id is not written twice", sheet._grid.length === 4, String(sheet._grid.length))
+  check("7h and the retry is reported as a success, not an error",
+    again._text === '{"ok":true,"duplicate":true}', again._text)
+
+  // Two different people are still two rows.
+  post(sandbox, { ...PAYLOAD, meta: { ...PAYLOAD.meta, submissionId: "sub-fixed-2" } })
+  check("7i different ids still write separate rows", sheet._grid.length === 5)
+
+  // An old client that predates the id must never be deduped into silence.
+  post(sandbox, PAYLOAD)
+  post(sandbox, PAYLOAD)
+  check("7j payloads with no id are always written", sheet._grid.length === 7)
 }
 
 /* ── 7b. The health check identifies the deployment ─────────────────────── */

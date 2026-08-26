@@ -16,7 +16,9 @@ import {
 import { TOTAL_CHECKBOXES } from "../data/tools"
 import {
   LINK_FIELDS,
+  SubmitTimeout,
   buildPayload,
+  makeSubmissionId,
   submitApplication,
   type LinkField,
   type ProfilePayload
@@ -130,6 +132,20 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
 
   const [errors, setErrors] = useState<Errors>({})
   const [status, setStatus] = useState<"idle" | "sending" | "error">("idle")
+  /**
+   * A timeout is not a failure, and must not be reported as one: the script
+   * writes the row before it answers, so a submission that ran out of time may
+   * well be in the sheet already. The copy for this case says so.
+   */
+  const [timedOut, setTimedOut] = useState(false)
+
+  /**
+   * One id per filled form, reused by every retry of it. This is what lets the
+   * script tell "they sent it twice" from "they sent it once and we lost the
+   * answer" — see `meta.submissionId` in `submit.ts`. Minting it per attempt
+   * instead would defeat the whole point.
+   */
+  const submissionId = useRef(makeSubmissionId())
 
   /** Honeypot — hidden from humans, irresistible to naive bots. */
   const [hp, setHp] = useState("")
@@ -190,11 +206,21 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
       return
     }
 
-    // A filled honeypot means a bot. Show the same success it would see from a
-    // real submit, and drop the payload on the floor.
-    if (hp.trim()) return onSuccess()
-
+    /*
+     * THE HONEYPOT IS NO LONGER JUDGED HERE, and that is a bug fix.
+     *
+     * This used to be `if (hp.trim()) return onSuccess()` — thank them, send
+     * nothing, keep no record. It is the exact shape of the report: the
+     * confirmation appears and no row ever arrives. A hidden input named
+     * `company-website` with a label reading "Company website" is precisely
+     * what a password manager fills when someone autofills their name and
+     * email, and `autocomplete="off"` has not stopped one for years.
+     *
+     * The field still exists and is still sent; the decision moved to the
+     * script, where it can be changed and, more to the point, LOGGED.
+     */
     setStatus("sending")
+    setTimedOut(false)
 
     try {
       await submitApplication(
@@ -219,6 +245,7 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
           selected,
           otherTools,
           hp,
+          submissionId: submissionId.current,
           elapsedMs: Date.now() - mountedAt.current,
           turnstileToken: turnstile.token,
           language: i18n.language
@@ -231,6 +258,7 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
     } catch (error) {
       console.error("[roof-careers] submit failed", error)
       turnstile.reset()
+      setTimedOut(error instanceof SubmitTimeout)
       setStatus("error")
     }
   }
@@ -337,15 +365,26 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
           </div>
 
           {/* Off-screen rather than display:none — some bots skip hidden fields
-              but happily fill a positioned one. Never announced, never tabbed. */}
+              but happily fill a positioned one. Never announced, never tabbed.
+
+              THE NAME AND LABEL USED TO BE "Company website", WHICH IS WHY
+              REAL PEOPLE KEPT FALLING IN. Autofill matches on the name, the
+              id and the label text, and "company website" is a field every
+              password manager knows how to fill. It is a meaningless token
+              now, and the three `data-*` opt-outs below are the ones 1Password,
+              LastPass and Dashlane actually honour — `autocomplete="off"` on
+              its own has not been respected for years. */}
           <div aria-hidden className="absolute -left-[9999px] h-px w-px overflow-hidden">
-            <label htmlFor="company-website">Company website</label>
+            <label htmlFor="rf-x9">rf-x9</label>
             <input
-              id="company-website"
-              name="company-website"
+              id="rf-x9"
+              name="rf-x9"
               type="text"
               tabIndex={-1}
               autoComplete="off"
+              data-1p-ignore
+              data-lpignore="true"
+              data-form-type="other"
               value={hp}
               onChange={(e) => setHp(e.target.value)}
             />
@@ -592,11 +631,17 @@ const ApplicationForm: React.FC<ApplicationFormProps> = ({ onSuccess }) => {
               <HiExclamationTriangle aria-hidden className="mt-0.5 h-5 w-5 shrink-0 text-negative" />
               <div className="text-sm">
                 <p className="font-semibold text-fg">
-                  {hasFieldErrors ? t("submit.checkFields") : t("submit.failed")}
+                  {hasFieldErrors
+                    ? t("submit.checkFields")
+                    : timedOut
+                      ? t("submit.timedOut")
+                      : t("submit.failed")}
                 </p>
                 {!hasFieldErrors && (
                   <p className="mt-1 text-muted">
-                    {t("submit.failedHint", { email: CONTACT_EMAIL })}
+                    {timedOut
+                      ? t("submit.timedOutHint", { email: CONTACT_EMAIL })
+                      : t("submit.failedHint", { email: CONTACT_EMAIL })}
                   </p>
                 )}
               </div>

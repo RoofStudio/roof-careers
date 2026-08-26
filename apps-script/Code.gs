@@ -296,6 +296,9 @@ function distinctToolCount(payload) {
   return Object.keys(seen).length
 }
 
+/** The header `appendRow` looks in to decide whether it has seen a row. */
+var SUBMISSION_ID_HEADER = "Submission Id"
+
 var TRIAGE_STATUSES = ["Novo", "Em análise", "Contatado", "Shortlist", "Arquivado"]
 var RATINGS = ["1", "2", "3", "4", "5"]
 
@@ -433,6 +436,24 @@ var BASE_COLUMNS = [
   { header: "Timezone", width: 150, value: metaField("timezone") },
   { header: "Submitted At (client)", width: 165, value: metaField("submittedAt") },
   { header: "Form Version", width: 95, align: "center", value: metaField("formVersion") },
+  {
+    // The client's id for one filled form, the same across every retry of it.
+    // `appendRow` refuses to write a row whose id is already here — see the
+    // comment there for why a retry is a normal thing to expect.
+    header: SUBMISSION_ID_HEADER,
+    width: 150,
+    value: metaField("submissionId")
+  },
+  {
+    // Empty for an ordinary submission. "honeypot" means the hidden field came
+    // back filled, which USED TO MEAN the row was silently discarded.
+    header: "Flags",
+    width: 110,
+    align: "center",
+    value: function (payload) {
+      return String((payload.guard || {}).flags || "")
+    }
+  },
   { header: "User Agent", width: 240, value: metaField("userAgent") },
   {
     // Free space for the team. No extractor: the form has nothing to say here.
@@ -582,10 +603,24 @@ function doPost(e) {
     var payload = JSON.parse(e.postData.contents)
     var guard = payload.guard || {}
 
-    // Honeypot: a human never fills a field they cannot see. Answer `ok` so
-    // the bot has no signal to iterate against, and write nothing.
+    /*
+     * Honeypot: a human never fills a field they cannot see — except that a
+     * password manager fills it FOR them, and then the person is not a bot and
+     * we have just thrown their application away.
+     *
+     * This used to `return json({ ok: true })` and write nothing, which is
+     * indistinguishable, from the outside, from the form working. The row is
+     * written now and marked in the Flags column instead. Spam is a row Cris
+     * can filter; a lost candidate is not recoverable.
+     *
+     * The mail notification is the one thing a flagged row does not get, so a
+     * flood cannot turn into a flood of email. If real spam ever arrives, the
+     * escalation is TURNSTILE_SECRET, which is already wired below.
+     */
     if (guard.hp) {
-      return json({ ok: true })
+      console.warn("honeypot tripped — writing flagged: " + String(guard.hp).slice(0, 80))
+      guard.flags = "honeypot"
+      payload.guard = guard
     }
 
     if (typeof guard.elapsedMs === "number" && guard.elapsedMs < MIN_ELAPSED_MS) {
@@ -603,8 +638,15 @@ function doPost(e) {
       return json({ ok: false, error: "missing required fields" })
     }
 
-    appendRow(payload)
-    notify(payload)
+    var written = appendRow(payload)
+
+    // A duplicate is the expected shape of a retry, not an error: the row is
+    // written before this answer travels back, and the answer can be lost.
+    if (!written) {
+      return json({ ok: true, duplicate: true })
+    }
+
+    if (!guard.flags) notify(payload)
 
     return json({ ok: true })
   } catch (err) {
@@ -820,6 +862,20 @@ function appendRow(payload) {
     var sheet = getSheet()
     var headers = syncHeaders(sheet)
 
+    /*
+     * ALREADY HERE? THEN THIS IS A RETRY, NOT A SECOND APPLICATION.
+     *
+     * A POST to /exec is answered across a redirect, and the row is written on
+     * the first hop. Lose the second hop — a phone changing cell, a tab closed,
+     * the 25s ceiling in the browser — and the candidate is told it failed
+     * while the row sits in the sheet. They press send again, as anyone would.
+     *
+     * The scan runs inside the lock this function already holds, so two copies
+     * arriving at once cannot both miss each other. It reads one column, which
+     * at this volume is a single cheap range read.
+     */
+    if (!isNewSubmission(sheet, headers, payload)) return false
+
     // Values are placed BY HEADER NAME, never by position. Reorder the columns
     // in Sheets and the data still lands where it belongs; a header we do not
     // know (someone's own column) is left untouched.
@@ -834,9 +890,34 @@ function appendRow(payload) {
     })
 
     sheet.appendRow(row)
+    return true
   } finally {
     lock.releaseLock()
   }
+}
+
+/**
+ * False when this submission id is already in the sheet.
+ *
+ * An id we were not given cannot be checked, so an old client — one built
+ * before `meta.submissionId` existed — is always treated as new. That is the
+ * safe direction: a possible duplicate row beats a dropped application.
+ */
+function isNewSubmission(sheet, headers, payload) {
+  var id = String((payload.meta || {}).submissionId || "").trim()
+  if (!id) return true
+
+  var index = headers.indexOf(SUBMISSION_ID_HEADER)
+  if (index === -1) return true
+
+  var lastRow = sheet.getLastRow()
+  if (lastRow < 2) return true
+
+  var seen = sheet.getRange(2, index + 1, lastRow - 1, 1).getValues()
+  for (var i = 0; i < seen.length; i++) {
+    if (String(seen[i][0]).trim() === id) return false
+  }
+  return true
 }
 
 /* ────────────────────────────────────────────────────────────────────────

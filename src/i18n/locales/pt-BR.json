@@ -171,7 +171,9 @@
     "checkFields": "Falta preencher alguns campos acima.",
     "failed": "Não conseguimos enviar agora.",
     "failedHint": "Tente de novo em alguns instantes. Se continuar, escreva para {{email}}.",
-    "retry": "Tentar de novo"
+    "retry": "Tentar de novo",
+    "timedOut": "Não tivemos resposta a tempo.",
+    "timedOutHint": "Pode ser que tenha chegado. Envie de novo — se chegou, não vamos registrar duas vezes. Se continuar, escreva para {{email}}."
   },
   "thanks": {
     "title": "Obrigada pelo seu interesse em trabalhar conosco!",
