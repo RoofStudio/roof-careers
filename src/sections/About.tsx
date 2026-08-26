@@ -2,7 +2,9 @@ import React from "react"
 import { motion } from "framer-motion"
 import { useTranslation } from "react-i18next"
 
-const PARAGRAPHS = ["about.p1", "about.p2", "about.p3", "about.p4"] as const
+// Three, not four. `p2` and `p4` both opened with "We're looking for" and
+// were the same paragraph twice; they are one now.
+const PARAGRAPHS = ["about.p1", "about.p2", "about.p3"] as const
 
 /**
  * The role, in the deck's words. Copy only — the ask lives in the form below.
