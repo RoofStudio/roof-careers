@@ -355,28 +355,47 @@ const asObject = (headers, row) => Object.fromEntries(headers.map((h, i) => [h, 
   post(sandbox, { ...PAYLOAD, profile: { ...PAYLOAD.profile, email: "" } })
   check("7c missing email rejected", sheet._grid.length === 2)
 
+  // The other three were guarded by the browser alone until now. A stale
+  // bundle, or anything that is not the form, could write a half row.
+  for (const field of ["fullName", "phone", "location", "portfolio"]) {
+    const res = post(sandbox, { ...PAYLOAD, profile: { ...PAYLOAD.profile, [field]: "" } })
+    check(`7c-${field} missing ${field} rejected`, sheet._grid.length === 2, String(sheet._grid.length))
+    check(`7c-${field}-msg the answer names it`, res._text.includes(field), res._text)
+  }
+
+  // Answerable by ticking something OR by typing it — same as the form.
+  post(sandbox, { ...PAYLOAD, tools: [], otherTools: "" })
+  check("7c-tools an empty toolkit is rejected", sheet._grid.length === 2)
+  post(sandbox, {
+    ...PAYLOAD,
+    tools: [],
+    otherTools: "Nuke",
+    meta: { ...PAYLOAD.meta, submissionId: "sub-other-tools" }
+  })
+  check("7c-tools2 but the free-text box answers it", sheet._grid.length === 3)
+
   const res = post(sandbox, PAYLOAD)
-  check("7d valid submission accepted", sheet._grid.length === 3)
+  check("7d valid submission accepted", sheet._grid.length === 4)
   check("7e responds ok:true", res._text === '{"ok":true}', res._text)
 
   // The retry case: the row was written, the answer was lost, they pressed
   // send again. Same id, so it must not become two applications.
   const retried = { ...PAYLOAD, meta: { ...PAYLOAD.meta, submissionId: "sub-fixed-1" } }
   post(sandbox, retried)
-  check("7f a submission with an id is written once", sheet._grid.length === 4)
+  check("7f a submission with an id is written once", sheet._grid.length === 5)
   const again = post(sandbox, retried)
-  check("7g the same id is not written twice", sheet._grid.length === 4, String(sheet._grid.length))
+  check("7g the same id is not written twice", sheet._grid.length === 5, String(sheet._grid.length))
   check("7h and the retry is reported as a success, not an error",
     again._text === '{"ok":true,"duplicate":true}', again._text)
 
   // Two different people are still two rows.
   post(sandbox, { ...PAYLOAD, meta: { ...PAYLOAD.meta, submissionId: "sub-fixed-2" } })
-  check("7i different ids still write separate rows", sheet._grid.length === 5)
+  check("7i different ids still write separate rows", sheet._grid.length === 6)
 
   // An old client that predates the id must never be deduped into silence.
   post(sandbox, PAYLOAD)
   post(sandbox, PAYLOAD)
-  check("7j payloads with no id are always written", sheet._grid.length === 7)
+  check("7j payloads with no id are always written", sheet._grid.length === 8)
 }
 
 /* ── 7b. The health check identifies the deployment ─────────────────────── */

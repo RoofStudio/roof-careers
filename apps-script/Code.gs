@@ -296,6 +296,38 @@ function distinctToolCount(payload) {
   return Object.keys(seen).length
 }
 
+/**
+ * THE SAME CONTRACT THE BROWSER ENFORCES, RESTATED WHERE IT CANNOT BE SKIPPED.
+ *
+ * `validate()` in ApplicationForm.tsx asks for these five and for at least one
+ * tool. This used to ask for two of them, which meant three were guarded by
+ * nothing but the copy of the bundle in front of the candidate — a stale one
+ * out of the Pages cache, or anything that is not the form at all, could write
+ * a row with no phone, no location and no portfolio and be thanked for it.
+ *
+ * Keep this list and `validate()` in step. They are two files that cannot
+ * import each other, so nothing but attention keeps them together.
+ */
+var REQUIRED_PROFILE_FIELDS = ["fullName", "email", "phone", "location", "portfolio"]
+
+/** The names of the required things this payload does not have. */
+function missingRequired(payload) {
+  var profile = payload.profile || {}
+
+  var missing = REQUIRED_PROFILE_FIELDS.filter(function (name) {
+    return !String(profile[name] || "").trim()
+  })
+
+  // The toolkit is answerable either by ticking something or by typing it in
+  // the "anything else" box, exactly as the form has it.
+  var tools = payload.tools || []
+  if (!tools.length && !String(payload.otherTools || "").trim()) {
+    missing.push("tools")
+  }
+
+  return missing
+}
+
 /** The header `appendRow` looks in to decide whether it has seen a row. */
 var SUBMISSION_ID_HEADER = "Submission Id"
 
@@ -633,9 +665,13 @@ function doPost(e) {
       return json({ ok: false, error: "failed verification" })
     }
 
-    var profile = payload.profile || {}
-    if (!String(profile.fullName || "").trim() || !String(profile.email || "").trim()) {
-      return json({ ok: false, error: "missing required fields" })
+    var missing = missingRequired(payload)
+    if (missing.length) {
+      // Named in the log and in the answer: a row that never arrived is a
+      // question someone will ask, and "missing required fields" alone is not
+      // an answer to it.
+      console.warn("rejected — missing: " + missing.join(", "))
+      return json({ ok: false, error: "missing required fields: " + missing.join(", ") })
     }
 
     var written = appendRow(payload)

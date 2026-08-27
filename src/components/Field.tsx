@@ -46,6 +46,19 @@ const Field: React.FC<FieldProps> = ({
         autoComplete={autoComplete}
         inputMode={inputMode}
         onChange={(e) => onChange(e.target.value)}
+        /**
+         * Derived from `optional`, not a second prop. Every field on this form
+         * is one or the other — the optional ones already say so next to their
+         * label — so a separate `required` flag would only be a chance for the
+         * two to disagree.
+         *
+         * The form carries `noValidate`, so this does not hand submission back
+         * to the browser: `validate()` still owns the messages and the
+         * scroll-to-first-problem. What it buys is the contract being IN the
+         * markup — a screen reader announces the field as required, which it
+         * had no way of knowing before.
+         */
+        required={!optional}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? errorId : undefined}
         className={`w-full rounded-field border bg-transparent px-4 py-3 text-base text-fg transition-colors placeholder:text-faint
