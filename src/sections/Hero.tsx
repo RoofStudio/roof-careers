@@ -1,8 +1,6 @@
 import React from "react"
 import { motion } from "framer-motion"
 import { useTranslation } from "react-i18next"
-import { HiArrowDown } from "react-icons/hi2"
-import Button from "../components/Button"
 
 const rise = (delay: number) => ({
   initial: { opacity: 0, y: 18 },
@@ -16,8 +14,8 @@ const rise = (delay: number) => ({
  * THE TWO FACES SPLIT THE WAY THE STUDIO SPLITS THEM. On roofstudio.tv every
  * block is a pair — "OUR WORK" in Ambit caps, then "Built from Scratch, Seen
  * Worldwide" underneath in GT Alpina Light Italic. That is the pattern here:
- * CREATIVE TALENT and the button are Ambit, and everything that actually
- * speaks — the headline, the lead, the question — is the italic serif.
+ * CREATIVE TALENT is Ambit, and everything that actually speaks — the
+ * headline, the lead, the question — is the italic serif.
  *
  * CREATIVE TALENT is the brandbook's text gradient (§2.3): a Deep Coffee
  * block with Golden Ochre → Base Sand → Warm Pink running through the
@@ -31,17 +29,15 @@ const rise = (delay: number) => ({
  * name of the studio does not get split, so the break lives in the locale
  * file where a translator can see it, the width cap is gone, and the clamp
  * floor is set where the longer of the two lines still fits a 360px phone.
+ *
+ * THERE IS NO BUTTON ON THIS SCREEN, AND THAT IS THE POINT. It used to close
+ * the hero, and anyone who took it jumped straight past the invitation — the
+ * one screen that says what they would be applying to. The call to action now
+ * sits at the foot of that copy, in About, where it is asking them to answer
+ * an argument they have actually read. This screen ends on the question.
  */
 const Hero: React.FC = () => {
   const { t } = useTranslation()
-
-  /**
-   * The INVITATION, not the form. Sending someone straight to the first
-   * question skips the only part of the page that explains what they are
-   * applying to, and the button says "start" — the start is the argument.
-   */
-  const scrollToInvitation = () =>
-    document.getElementById("about")?.scrollIntoView({ behavior: "smooth", block: "start" })
 
   return (
     <section className="wide-column relative flex min-h-[85vh] flex-col items-center justify-center gap-8 py-24 text-center">
@@ -81,13 +77,6 @@ const Hero: React.FC = () => {
       >
         {t("hero.question")}
       </motion.p>
-
-      <motion.div {...rise(0.36)} className="flex flex-col items-center gap-3">
-        <Button size="lg" onClick={scrollToInvitation} iconRight={<HiArrowDown className="h-4 w-4" />}>
-          {t("hero.cta")}
-        </Button>
-        <span className="text-sm text-faint">{t("hero.time")}</span>
-      </motion.div>
     </section>
   )
 }
