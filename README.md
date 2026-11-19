@@ -1,318 +1,400 @@
 # roof-careers
 
-Landing page de uma tela só para captação de talento criativo. O candidato lê
-a chamada, preenche o cadastro, marca em que funções já entregou projeto, onde
-seu trabalho já apareceu e quais ferramentas fazem parte do processo dele. Cada
-resposta vira uma linha numa planilha do Google.
+A single-page landing site Roof Studio uses to recruit creative talent. A
+candidate reads the invitation, fills in their profile, ticks which roles and
+pipeline stages they work in, the project types they have led, and the tools
+that are part of their process. Each application becomes one row in a Google
+Sheet.
 
-**O enquadramento é deliberado: a página fala de ofício, não de IA.** O briefing
-foi "quero chamar atenção de Creative Talents, não de AI Creative Talents".
-Nenhum título ou rótulo da página carrega "AI" — a palavra aparece só dentro do
-texto do convite e nas perguntas específicas sobre ferramentas, onde ela é
-precisa em vez de ser um crachá.
+**The framing is deliberate: the page talks about craft, not about AI.** The
+brief was "attract Creative Talents, not AI Creative Talents". No title or
+label on the page carries "AI" — the word appears only inside the invitation
+copy and in the questions that are specifically about tools and workflows,
+where it is precise rather than a badge.
 
-O conteúdo vem de FORMULARIO ROUGH V9, na versão enxugada de agosto/2026:
-8 áreas de produção, 90 checkboxes, **74 ferramentas distintas**, mais cinco
-perguntas de prática criativa, 7 etapas de pipeline e 6 tipos de projeto.
+The content comes from the FORM ROUGH V9 questionnaire, in the trimmed August
+2026 version (schema / form version **7**): 8 production areas, 90 tool
+checkboxes, **74 distinct tools**, three profile questions, 7 pipeline stages
+and 6 project types.
 
-**Nenhuma pergunta é de resposta única.** Todas aceitam múltipla marcação —
-um Designer que também anima não precisa escolher uma mentira. Isso muda a
-planilha: veja "Uma coluna por clique" abaixo.
+**No question is single-answer.** Every list accepts multiple selections — a
+Designer who also animates should not have to pick a lie. That shapes the
+spreadsheet: see [One column per click](#spreadsheet-columns) below.
 
-Site estático (Vite + React + TypeScript + Tailwind v4), publicado no GitHub
-Pages. A paleta e as fontes são as do próprio `roofstudio.tv` — os nove hexes
-que o site declara no `:root` e as faces **Ambit** e **GT-Alpina**,
-auto-hospedadas em `public/fonts/`. Nada de Google Fonts. Cada tom derivado em
-`src/styles/index.css` diz em comentário de qual cor da marca ele saiu.
+Static site (Vite + React + TypeScript + Tailwind v4), published on GitHub
+Pages. The palette and typefaces are Roof Studio's own (brandbook / the colors
+`roofstudio.tv` declares on its `:root`), with the **Ambit** and **GT-Alpina**
+faces self-hosted in `public/fonts/` — no Google Fonts, no third-party font
+requests. Comments in `src/styles/index.css` say which brand color each
+derived token comes from.
 
-- **PT-BR / EN** com toggle no topo (e `?lang=en` na URL).
-- **Tema claro/escuro**, seguindo o sistema por padrão.
-- **Sem backend próprio**: um Web App do Google Apps Script grava na planilha.
+- **PT-BR / EN** with a toggle in the top bar (also `?lang=en` / `?lang=pt-BR`
+  in the URL). Language is detected from the query string, then
+  `localStorage`, then the browser; any `pt-*` browser lands on Portuguese,
+  everything else on English.
+- **One light theme** (Base Sand / Soft Peach ground, Deep Coffee ink). There
+  is no dark mode or theme toggle.
+- **No backend of its own**: a Google Apps Script Web App writes to the sheet.
 
 ---
 
-## Segurança: por que dá para publicar isso num repo público
+## Tech stack
 
-A pergunta certa a fazer. A resposta curta é que **nenhuma credencial do Google
-chega ao navegador**.
+| Area | Tools |
+| --- | --- |
+| Site | Vite 6, React 18, TypeScript 5.6, Tailwind CSS 4 (`@tailwindcss/vite`) |
+| UI | framer-motion, react-icons |
+| i18n | i18next, react-i18next, i18next-browser-languagedetector |
+| Backend | Google Apps Script Web App (`apps-script/Code.gs`) writing to Google Sheets |
+| Anti-spam | Honeypot, minimum fill time, optional Cloudflare Turnstile |
+| Hosting / CI | GitHub Pages via GitHub Actions (`.github/workflows/deploy.yml`) |
+| Tooling | ESLint, Prettier, Node scripts for roster sync and sheet tests |
 
-O que vai no bundle público é só a **URL `/exec`** do Web App. Ela não é um
-segredo e não é uma chave: não dá acesso à sua conta, nem à planilha, nem a
-nenhum outro dado. É um endpoint que sabe fazer exatamente uma coisa — a que
-está escrita em [`apps-script/Code.gs`](apps-script/Code.gs).
+---
 
-Três regras sustentam isso:
+## Security: why this is safe to publish in a public repo
 
-1. **O script só escreve, nunca lê.** Não existe caminho no código que devolva
-   linhas da planilha. *Nunca adicione um.* Enquanto isso valer, o pior que um
-   estranho com a URL consegue fazer é criar linhas de lixo — jamais ler o que
-   os candidatos enviaram.
-2. **As credenciais ficam no Google.** O script roda *como você*, no servidor
-   do Google. O navegador não guarda token, chave nem service account.
-3. **O segredo do Turnstile mora em Script Properties**, do lado do servidor.
-   Só a *sitekey* é pública — é assim que o Turnstile foi desenhado.
+The right question to ask. The short answer is that **no Google credential
+ever reaches the browser**.
 
-O risco real, portanto, não é vazamento: é **spam**. Contra isso há três
-camadas, em ordem crescente de força:
+The only thing in the public bundle is the Web App's **`/exec` URL**. It is
+not a secret and not a key: it grants no access to your account, to the sheet
+or to any other data. It is an endpoint that can do exactly one thing — what
+is written in [`apps-script/Code.gs`](apps-script/Code.gs).
 
-| Camada | Onde | Pega |
+Three rules hold this up:
+
+1. **The script only writes, it never returns data.** It reads row 1 (the
+   header names) to place values in the right columns, and that is all. No
+   code path returns sheet rows; `doGet` is a health check that only reports
+   schema constants. *Never add one that does.* As long as this holds, the
+   worst a stranger with the URL can do is add junk rows — never read what
+   candidates submitted.
+2. **Credentials stay at Google.** The script runs *as you*, on Google's
+   servers. The browser holds no token, key or service account.
+3. **The Turnstile secret lives in Script Properties**, server-side. Only the
+   *sitekey* is public — that is how Turnstile is designed.
+
+The real risk, then, is not leakage: it is **spam**. There are three layers
+against it, in increasing strength:
+
+| Layer | Where | What happens |
 | --- | --- | --- |
-| Honeypot (campo invisível) | cliente + script | bots ingênuos |
-| Tempo mínimo de preenchimento (4s) | cliente + script | scripts automatizados |
-| Cloudflare Turnstile (opcional) | sitekey no cliente, secret no script | bots de verdade |
+| Honeypot (hidden field) | sent by the client, judged by the script | The row is still written but marked `honeypot` in the `Flags` column, and no notification email is sent. (Password managers sometimes fill hidden fields, so rows are flagged rather than dropped.) |
+| Minimum fill time (4 s) | client timestamp, checked by the script | Rejected with `too fast` |
+| Cloudflare Turnstile (optional) | sitekey in the client, secret in the script | Rejected with `failed verification` |
 
-O que **não** funciona e por isso não está aqui: token secreto embutido no
-bundle e checagem de `Origin`/`Referer` — os dois são triviais de contornar e
-só dariam uma sensação falsa de proteção.
+What does **not** work, and is therefore not here: a secret token embedded in
+the bundle, and `Origin`/`Referer` checks — both are trivial to bypass and
+would only give a false sense of protection.
+
+The script also:
+
+- re-checks the required fields server-side (`fullName`, `email`, `phone`,
+  `location`, `portfolio`, and at least one tool or an "other tools" entry),
+  mirroring `validate()` in `ApplicationForm.tsx`;
+- prefixes values starting with `=`, `+`, `-`, `@`, tab or CR with an
+  apostrophe so Sheets never evaluates candidate input as a formula;
+- de-duplicates retries by the client-generated `Submission Id`, under a
+  script lock, so a resent form never produces two rows.
 
 ---
 
 ## Setup
 
-### 1. Planilha + Apps Script
+### 1. Spreadsheet + Apps Script
 
-1. Crie (ou abra) a planilha que vai receber as respostas.
-2. **Extensões → Apps Script**. Apague o conteúdo e cole
+1. Create (or open) the spreadsheet that will receive applications.
+2. **Extensions → Apps Script**. Delete the contents and paste
    [`apps-script/Code.gs`](apps-script/Code.gs).
-3. **Configurações do projeto → Propriedades do script**, adicione o que quiser
-   (todas opcionais):
+3. **Project Settings → Script Properties**, add whichever you need (all
+   optional):
 
-   | Propriedade | Efeito |
+   | Property | Effect |
    | --- | --- |
-   | `SPREADSHEET_ID` | fixa a planilha de destino pelo ID (o trecho entre `/d/` e `/edit` na URL) |
-   | `SHEET_NAME` | nome da aba (padrão: `Applications`) |
-   | `TURNSTILE_SECRET` | liga a verificação do Turnstile |
-   | `NOTIFY_EMAIL` | manda um e-mail a cada inscrição nova |
+   | `SPREADSHEET_ID` | Pins the destination spreadsheet by ID (the part between `/d/` and `/edit` in its URL). Without it the script uses the bound spreadsheet, and fails loudly if there is none. |
+   | `SHEET_NAME` | Tab name (default: `Applications`) |
+   | `TURNSTILE_SECRET` | Turns on Cloudflare Turnstile verification |
+   | `NOTIFY_EMAIL` | Sends an email for each new (unflagged) application |
 
-   > **Uma planilha só, uma aba só.** Toda resposta vira uma linha na mesma
-   > tabela — é ela a visão de todo mundo que se inscreveu. Nada no script
-   > ramifica por idioma, por área ou por qualquer outra coisa. Se o script foi
-   > criado pelo menu da própria planilha, ele já fica amarrado a ela; o
-   > `SPREADSHEET_ID` só torna isso explícito e à prova de engano.
+   > **One spreadsheet, one tab.** Every response becomes a row in the same
+   > table — that is the single view of everyone who applied. Nothing in the
+   > script branches by language, role or anything else. If the script was
+   > created from the spreadsheet's own menu it is already bound to it;
+   > `SPREADSHEET_ID` just makes that explicit and mistake-proof.
 
-4. Rode a função **`setupSheet`** uma vez e aprove as permissões. Ela cria a aba
-   e o cabeçalho.
-5. **Implantar → Nova implantação → App da Web**
-   - Executar como: **Eu**
-   - Quem tem acesso: **Qualquer pessoa**
-6. Copie a URL `/exec`.
+4. Run the **`setupSheet`** function once and approve the permissions. It
+   creates the tab and builds the header and formatting.
+5. **Deploy → New deployment → Web app**
+   - Execute as: **Me**
+   - Who has access: **Anyone**
+6. Copy the `/exec` URL.
 
-> Toda vez que editar o `Code.gs`, é preciso criar uma **nova versão de
-> implantação** — senão a URL continua servindo o código antigo.
+> Every time you edit `Code.gs` you must create a **new deployment version** —
+> otherwise the URL keeps serving the old code. A `GET` on the `/exec` URL
+> returns `{ ok, service, schema, columns, tools, areas }`, which tells you
+> which schema version a deployment is actually running.
 
-### 2. Local
+### 2. Local development
+
+Prerequisites: Node.js and npm (CI uses Node 20 for the build). The
+`sync:tools` and `test:sheet` scripts import `.ts` files directly, so they
+need a Node version with built-in TypeScript type stripping.
 
 ```bash
 npm install
 ```
 
-Crie um `.env.local` a partir do `.env.example`:
+Create a `.env.local` from `.env.example`:
 
-```
-VITE_APPS_SCRIPT_URL=https://script.google.com/macros/s/AKfycb.../exec
-```
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `VITE_APPS_SCRIPT_URL` | yes | The Web App `/exec` URL from step 1. Without it, submitting throws an error. |
+| `VITE_TURNSTILE_SITEKEY` | no | Cloudflare Turnstile sitekey. Leave empty to disable the widget. |
 
 ```bash
 npm run dev
 ```
 
-Abre em `http://localhost:5173/roof-careers/` (o `base` do Vite é o caminho do
-GitHub Pages; veja abaixo).
+Opens at `http://localhost:5173/roof-careers/` (Vite's `base` is the GitHub
+Pages path; see below).
 
 ### 3. GitHub Pages
 
-O workflow [`deploy.yml`](.github/workflows/deploy.yml) builda e publica a cada
-push na `main`.
+The [`deploy.yml`](.github/workflows/deploy.yml) workflow builds and publishes
+on every push to `main` (and can be run manually). It runs `npm ci`,
+`npm run build`, copies `dist/index.html` to `dist/404.html`, and deploys
+`dist/` to Pages.
 
-No repositório:
+In the repository:
 
 1. **Settings → Pages → Source: GitHub Actions**.
 2. **Settings → Secrets and variables → Actions**:
-   - *Secret* `VITE_APPS_SCRIPT_URL` — a URL do passo 1.
-   - *Variable* `BASE_PATH` — só se usar domínio próprio: `/`.
-     Sem ela, o build assume `/roof-careers/`.
-   - *Variable* `VITE_TURNSTILE_SITEKEY` — só se for usar Turnstile.
+   - *Secret* `VITE_APPS_SCRIPT_URL` — the URL from step 1. (It ships in the
+     bundle anyway; it is a secret only so it is not hard-coded in source.)
+   - *Variable* `BASE_PATH` — only for a custom domain: `/`. Without it the
+     build uses `/roof-careers/`.
+   - *Variable* `VITE_TURNSTILE_SITEKEY` — only if you use Turnstile.
 
-### 4. Turnstile (opcional, ligue quando o spam aparecer)
+`index.html` also contains a small self-heal script: GitHub Pages can serve a
+cached `index.html` that points at hashed assets deleted by the latest deploy,
+so the page detects that and reloads once (guarded by `sessionStorage`).
 
-1. Crie um widget em [Cloudflare Turnstile](https://dash.cloudflare.com/?to=/:account/turnstile).
-2. `VITE_TURNSTILE_SITEKEY` → variable do repositório (pública, tudo bem).
-3. `TURNSTILE_SECRET` → Script Properties do Apps Script (**nunca** no repo).
+### 4. Turnstile (optional — turn it on when spam shows up)
 
-Sem sitekey, o widget simplesmente não aparece e o resto continua funcionando.
+1. Create a widget in [Cloudflare Turnstile](https://dash.cloudflare.com/?to=/:account/turnstile).
+2. `VITE_TURNSTILE_SITEKEY` → repository variable (public, that's fine).
+3. `TURNSTILE_SECRET` → Apps Script Script Properties (**never** in the repo).
+
+Without a sitekey the widget simply does not render and everything else keeps
+working.
 
 ---
 
-## Estrutura
+## npm scripts
+
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Vite dev server |
+| `npm run build` | Type-check (`tsc`) and build to `dist/` |
+| `npm run preview` | Serve the production build locally |
+| `npm run lint` | ESLint over `.ts` / `.tsx` |
+| `npm run format` | Prettier over `src/` |
+| `npm run sync:tools` | Rewrite the `GENERATED` block of `apps-script/Code.gs` from the site's data |
+| `npm run test:sheet` | `sync:tools --check` (fails if `Code.gs` is out of date), then the Apps Script schema tests |
+
+---
+
+## Structure
 
 ```
 src/
-  assets/roof-wordmark.png   a marca OFICIAL (arte cheia), usada só como máscara alfa
-  data/tools.ts          lista de ferramentas do deck, agrupada — fonte da verdade
-  i18n/                  pt-BR + en; todo texto visível mora aqui
-  lib/submit.ts          monta o payload e faz o POST
-  lib/turnstile.ts       carrega e monta o widget (no-op sem sitekey)
-  sections/              Hero → About → ApplicationForm → Thanks
-  styles/index.css       tokens do Roof (portados do onboarding-app)
-  theme.ts               claro/escuro/sistema
-apps-script/Code.gs      o Web App que grava na planilha
+  assets/roof-wordmark.png   the OFFICIAL Roof mark (filled artwork), used only as an alpha mask
+  components/                TopBar, Button, Field, ChipGroup, ToolPicker, RoofWordmark
+  data/tools.ts              tool catalogue, grouped by area and split into two parts — source of truth
+  data/profile.ts            profile question option ids — source of truth
+  i18n/                      pt-BR + en; all visible text lives here
+  lib/submit.ts              builds the payload and POSTs it (FORM_VERSION lives here)
+  lib/turnstile.ts           loads and mounts the widget (no-op without a sitekey)
+  sections/                  Hero → About → ApplicationForm → Thanks
+  styles/index.css           Roof brand tokens, fonts, layout
+apps-script/
+  Code.gs                    the Web App that writes to the sheet
+  test/                      sandbox harness with stubbed Google APIs + schema tests
+scripts/sync-tools.mjs       copies the rosters from src/data into Code.gs
+public/fonts/                self-hosted Ambit and GT-Alpina
 ```
 
-### Mexer nos textos
+### Editing copy
 
-Tudo em `src/i18n/locales/`. Não há string solta nos componentes — se editar um
-idioma, edite o outro.
+Everything is in `src/i18n/locales/`. There are no loose strings in the
+components — if you edit one language, edit the other.
 
-### Mexer na lista de ferramentas
+### Editing the tool list
 
-`src/data/tools.ts` — 8 áreas de produção, começando por AI workflow /
-node-based e Produção / planejamento. Edição, color, voz, som, música e
-marketing saíram: estavam perguntando a um Designer sobre software de ADR.
+`src/data/tools.ts` — 8 production areas, starting with AI workflow /
+node-based and Production management / planning, split into two parts in the
+picker. Editing, color, voice, sound, music and marketing were removed: they
+were asking a Designer about ADR software.
 
-**A mesma ferramenta aparece em todas as áreas a que pertence, de propósito.**
-Runway está lá 3 vezes, ComfyUI 4. Isso não é duplicação para limpar: "Runway
-para VFX" e "Runway para storyboard" são fatos diferentes sobre a pessoa, e
-essa diferença é justamente o que torna a resposta útil. Por isso uma seleção é
-identificada por **área + ferramenta**, nunca por ferramenta sozinha.
+**The same tool appears in every area it belongs to, on purpose.** Runway is
+there 3 times, ComfyUI 4. This is not duplication to clean up: "Runway for
+VFX" and "Runway for storyboard" are different facts about a person, and that
+difference is exactly what makes the answer useful. So a selection is
+identified by **area + tool** (`${groupId}:${toolId}`), never by tool alone.
 
-Na planilha os dois lados se reconciliam: **uma coluna por ferramenta distinta**
-(74, não 90), guardando a lista de áreas em que a pessoa marcou. Um filtro só
-responde "quem trabalha com Stable Diffusion" *e* "para quê".
+In the sheet the two views reconcile: **one column per distinct tool** (74,
+not 90), holding the list of areas the person ticked it in. One filter
+answers both "who works with Stable Diffusion" *and* "for what".
 
-O V9 abandonou o nível por ferramenta. Pedir nível em cada uma não é um
-formulário que alguém termine — e uma escala repetida dezenas de vezes é
-respondida por reflexo, não por reflexão. Profundidade passou a ser perguntada
-uma vez só, nas perguntas de experiência.
+A tool's `id` becomes a spreadsheet column, so it must stay stable: if a
+product renames itself, change its `name`, keep its `id`.
 
-### Mexer nas perguntas de perfil
+V9 dropped the per-tool proficiency level. Asking for a level on every tool
+is not a form anyone finishes — and a scale repeated dozens of times gets
+answered by reflex, not reflection.
 
-`src/data/profile.ts` — cinco perguntas, todas de múltipla escolha, numeradas
-na tela. Nenhuma delas tem campo de texto: o briefing era descobrir se a pessoa
-já dirigiu, se tem curta e qual a pipeline dela "sem perguntar explicitamente e
-sem deixar a pessoa escrever sobre isso".
+### Editing the profile questions
 
-O V9 fazia nove. Quatro delas — responsabilidade, modo de trabalho, desafio
-visual e finalização — eram a mesma pergunta de senioridade com quatro chapéus,
-e na quarta o candidato já enxerga a régua sendo levantada. Saíram.
+`src/data/profile.ts` — every question is multiple choice; none has a free
+text field. The brief was to find out whether a person has directed, has a
+short film, and what their pipeline is "without asking explicitly and without
+letting the person write about it".
 
-`PROJECT_TYPES` é a mais afiada — pergunta em que tipos de projeto a pessoa teve
-**papel criativo de liderança**, então "já dirigiu?" é respondido como fato
-sobre o trabalho, e cada tipo revela o próprio link de créditos só quando
-marcado.
+| Roster | Question |
+| --- | --- |
+| `PRIMARY_EXPERTISE` | Q1 — primary practice (Art Director, Designer, Animator, Other) |
+| `AI_WORKFLOW` | Q2 — how they build workflows |
+| `CORE_STRENGTH` | Q3 — what they are best at |
+| `PIPELINE_AREAS` | Pipeline stages they work in (7) |
+| `PROJECT_TYPES` | Project types where they held a creative **leadership** role (6); each reveals its own credits-link field when ticked |
 
-### Depois de mexer em qualquer um dos dois
+The form also asks for two optional links: an AI project they led and one
+they executed.
+
+V9 had nine profile ladders. Responsibility, work mode, visual challenge and
+finishing were the same seniority question wearing four hats, and project
+reach and AI integration were already answered by the pipeline and workflow
+questions — so they were cut. Option ids become spreadsheet columns, so keep
+them stable; labels live in the locale files.
+
+### After changing either of them
 
 ```bash
 npm run sync:tools
 ```
 
-Reescreve o bloco `GENERATED` do `apps-script/Code.gs` com todos os rosters — o
-script precisa deles para criar uma coluna por resposta. `npm run test:sheet`
-roda `--check` antes dos testes e **falha** se os dois lados divergirem.
+This rewrites the `GENERATED` block in `apps-script/Code.gs` with every
+roster (labels come from `en.json` — sheet headers are English by design).
+The script needs them to create one column per answer. `npm run test:sheet`
+runs `--check` first and **fails** if the two sides have diverged. Then
+redeploy the Apps Script (new version) and re-run `setupSheet`.
+
+If the payload shape changes, bump `FORM_VERSION` in `src/lib/submit.ts`
+and `SCHEMA_VERSION` in `Code.gs` together.
 
 ---
 
-## Colunas da planilha
+## Spreadsheet columns
 
-`setupSheet` monta a aba inteira: cria as colunas, aplica largura, formato,
-alinhamento, validação, cabeçalho no marrom da marca, congelamento, filtro e
-faixas zebradas. Rode de novo sempre que o schema mudar — é idempotente e
-**nunca reescreve uma linha de dados**.
+`setupSheet` builds the whole tab: creates the columns and applies width,
+number format, alignment, validation, a header in Roof brown (`#322127`),
+frozen header row and frozen columns through `Full Name`, a filter and
+banded rows. Re-run it whenever the schema changes — it is idempotent and
+**never rewrites a data row**.
 
-São **144 colunas**, em duas metades com trabalhos diferentes.
+There are **137 columns**, in two halves with different jobs.
 
-**A metade legível (32 colunas, à esquerda)** — o que você olha ao ler *um*
-candidato: `Received At · Full Name · Status · Rating · Primary Practice ·
-Email · Phone / WhatsApp · Location · Portfolio / Demo Reel · Site · Behance ·
-Vimeo · Instagram · LinkedIn · Other Link · Project Reach · AI Integration ·
-AI Workflow · Core Strength · Led Projects · Pipeline Areas · AI Project (led) ·
-AI Project (executed) · Tools Count · All Tools · Other Tools · Language ·
-Timezone · Submitted At (client) · Form Version · User Agent · Notes`
+**The readable half (32 columns, on the left)** — what you look at when
+reading *one* candidate:
 
-Cada link de contato tem coluna própria. A caixa livre "Additional Links" que
-existia antes juntava três URLs e um comentário numa célula só — dá para ler,
-não dá para filtrar nem clicar.
+`Received At · Full Name · Status · Rating · Primary Practice · Email ·
+Phone / WhatsApp · Location · Portfolio / Demo Reel · Site · Behance · Vimeo ·
+Instagram · LinkedIn · Other Link · AI Workflow · Core Strength ·
+Led Projects · Pipeline Areas · AI Project (led) · AI Project (executed) ·
+Tools Count · All Tools · Other Tools · Language · Timezone ·
+Submitted At (client) · Form Version · Submission Id · Flags · User Agent ·
+Notes`
 
-**O bloco de filtragem (112 colunas, à direita)** — uma coluna por clique:
+Each contact link has its own column, so it can be filtered and clicked.
 
-| Prefixo | Quantas | Valor |
+**The filtering block (105 columns, on the right)** — one column per click:
+
+| Prefix | Count | Value |
 | --- | --- | --- |
-| `Practice:` | 4 | `Yes` ou vazio — área de atuação |
-| `Reach:` | 4 | `Yes` ou vazio — até onde acompanha o projeto |
-| `AI:` | 3 | `Yes` ou vazio — onde a IA entra no processo |
-| `Workflow:` | 4 | `Yes` ou vazio — como monta workflows |
-| `Strength:` | 4 | `Yes` ou vazio — no que é mais forte |
-| `Pipeline:` | 7 | `Yes` ou vazio — etapas de pipeline |
-| `Led:` | 6 | `Yes` ou vazio — liderou projeto desse tipo |
-| `Link:` | 6 | o link de créditos daquele tipo, ao lado |
-| `Tool:` | 74 | **as áreas** em que usa a ferramenta |
+| `Practice:` | 4 | `Yes` or blank — primary practice |
+| `Workflow:` | 4 | `Yes` or blank — how they build workflows |
+| `Strength:` | 4 | `Yes` or blank — what they are best at |
+| `Pipeline:` | 7 | `Yes` or blank — pipeline stages |
+| `Led:` | 6 | `Yes` or blank — led a project of this type |
+| `Link:` | 6 | the credits link for that project type, next to it |
+| `Tool:` | 74 | **the areas** in which they use the tool |
 
-**Toda pergunta ganhou esse bloco na v6, e não é enfeite.** Enquanto as
-perguntas eram de resposta única, a coluna legível já servia de filtro: escolhia
-um valor no dropdown e pronto. Múltipla escolha matou isso — `Art Director,
-Animator` e `Animator, Art Director` viram dois valores diferentes no filtro, e
-nenhum dos dois é "todo mundo que anima". Uma coluna `Yes`/vazio por opção é o
-único formato que sobrevive à mudança.
+**Every question gets this block, and it is not decoration.** When questions
+were single-answer, the readable column was already a filter: pick a value
+in the dropdown and you were done. Multi-select broke that — `Art Director,
+Animator` and `Animator, Art Director` are two different filter values, and
+neither is "everyone who animates". A `Yes`/blank column per option is the
+only shape that survives the change.
 
-As colunas de ferramenta guardam a lista de áreas, não um tique. Um filtro só em
-`Tool: Runway` responde quem usa **e** para quê — e as 90 caixas do formulário
-custam 74 colunas em vez de 90.
+Tool columns hold the list of areas, not a tick. A single filter on
+`Tool: Runway` answers who uses it **and** for what — and the form's 90
+checkboxes cost 74 columns instead of 90.
 
-`Status` (dropdown), `Rating` (1–5, numérico e ordenável) e `Notes` são as três
-colunas que o formulário não preenche — são do time.
+`Status` (dropdown: `Novo`, `Em análise`, `Contatado`, `Shortlist`,
+`Arquivado` — i.e. New, Under review, Contacted, Shortlist, Archived),
+`Rating` (1–5, numeric and sortable) and `Notes` are not filled by the form —
+they belong to the team.
 
-`Full Name` é a segunda coluna de propósito: o congelamento para nela, então o
-nome fica visível enquanto você rola pelo bloco largo.
+`Full Name` is the second column on purpose: the frozen panes stop there, so
+the name stays visible while you scroll through the wide block.
 
-### Como o schema se mantém honesto
+### How the schema stays honest
 
-Cabeçalho, largura, formato e o extrator do valor moram no **mesmo objeto**, em
-`COLUMNS`. Os valores são posicionados **por nome de coluna**, nunca por índice:
+Header, width, format and value extractor live on the **same object**, in
+`COLUMNS`. Values are placed **by column name**, never by index:
 
-- arrastar uma coluna no Sheets não quebra nada;
-- uma coluna sua, que o script não conhece, é preservada;
-- rodar `setupSheet` numa planilha antiga **acrescenta** as colunas que faltam à
-  direita, sem mexer nas existentes nem nos dados sob elas.
+- dragging a column around in Sheets breaks nothing;
+- a column of your own that the script does not know about is preserved;
+- running `setupSheet` on an older sheet **appends** the missing columns on
+  the right, without touching existing ones or the data under them.
 
-Nada é apagado automaticamente: remover coluna tem perda de dado junto, e essa
-decisão é de um humano.
+Nothing is deleted automatically: removing a column means losing data, and
+that decision belongs to a human.
 
 ```bash
 npm run test:sheet
 ```
 
-Roda o `Code.gs` num sandbox com as APIs do Google stubadas e checa **64
-asserções** — planilha nova, colunas reordenadas à mão, planilha v2 subindo para
-v3, a mesma ferramenta marcada em várias áreas, ids desconhecidos, seleções
-vazias, honeypot, envio rápido demais e idempotência. Apps Script não tem teste
-local; isso é o substituto.
+Runs `Code.gs` in a sandbox with the Google APIs stubbed
+(`apps-script/test/harness.mjs`) and checks the schema end to end — fresh
+sheet, hand-reordered columns, older sheets being upgraded, the same tool
+ticked in several areas, unknown ids, empty selections, the honeypot,
+too-fast submissions, duplicates and idempotency. Apps Script has no local
+test runner; this is the substitute.
 
-> O sandbox recusa `getRange` além da largura da planilha, como o Google faz.
-> Foi assim que apareceu um bug real: uma planilha nova tem 26 colunas, e
-> escrever os cabeçalhos de uma vez lança exceção — `setupSheet` teria quebrado
-> na primeira execução de verdade.
+> The sandbox refuses `getRange` beyond the sheet's width, as Google does.
+> That is how a real bug surfaced: a new sheet has 26 columns, and writing
+> all the headers at once throws — `setupSheet` would have failed on its
+> first real run.
 
 ---
 
-## A marca
+## The brand mark
 
-`src/assets/roof-wordmark.png` (892×319) é a arte **oficial** — o mesmo arquivo
-que o roof-onboarding-app chama de `roof-logo-brown.png` e que o
-roof-intelligence usa como máscara. Não use o `roof-logo.png` daquele repo: é
-outro desenho, em contorno (248×92), e não é a marca.
+`src/assets/roof-wordmark.png` (892×319) is the **official** artwork — the
+same file roof-onboarding-app ships as `roof-logo-brown.png`. Do not use that
+repo's `roof-logo.png`: it is a different, outline drawing, not the mark.
 
-Só o **canal alfa** entra, como máscara, pintado por `--brand-logo`. As versões
-brown e white oficiais têm alfa idêntico, então um arquivo serve os dois temas:
-`#322127` no claro, `#f9f9f9` no escuro. O mesmo asset desenha a marca d'água
-gigante do fundo, com `--watermark-ink`.
+Only the **alpha channel** is used, as a CSS mask painted with the
+`--brand-logo` token (Deep Coffee). `--brand-logo` is deliberately separate
+from the text color: the logo has its own color and does not follow the
+interface ink. The same asset draws the large closing mark at the bottom of
+the page, with padding equal to the brandbook's safety margin.
 
-## Larguras
+## Layout width
 
-Duas medidas para a página inteira, em `styles/index.css`:
-
-- `.text-column` — os blocos de leitura. Proporcional (≈60% da janela) em vez de
-  um `max-width` fixo, com piso de 34rem e teto de 68rem. A relação com a janela
-  se mantém em qualquer tamanho, em vez de ir de borda-a-borda a uma fita fina.
-- `.wide-column` — o mosaico de ferramentas e a barra do topo.
-
-Nenhum bloco define largura por conta própria.
+The page uses one container, `.wide-column` in `src/styles/index.css`
+(`width: min(94vw, 78rem)`), for the top bar, every section and the tool
+mosaic. Content inside caps its own measure where needed; no block sets the
+page width on its own.
